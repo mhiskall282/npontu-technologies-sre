@@ -63,12 +63,6 @@ RUN mkdir -p storage/framework/{cache,sessions,views} \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 755 storage bootstrap/cache
 
-# Run artisan optimise (generates optimised class files)
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan event:cache
-
 # Startup script: migrate + seed (if first deploy) then start Apache
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
