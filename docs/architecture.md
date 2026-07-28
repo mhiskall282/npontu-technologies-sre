@@ -1,142 +1,167 @@
-﻿# Architecture — Support Activity Tracker
+# Architecture — Support Activity Tracker
 
-> **Status**: Placeholder — to be completed in Prompt 2 (architecture review session).
-> Do not implement application code until this document is approved.
+This document describes the architectural layout, entity relationships, database schema, and security enforcement mechanisms for the Npontu Technologies Support Activity Tracker.
 
 ---
 
 ## 1. Entity-Relationship Diagram (ERD)
 
-> **TODO — Prompt 2**: Produce a full ERD covering all entities below.
-> Use Mermaid erDiagram syntax so it renders in GitHub and the agent IDE.
+The diagram below defines the relationships between the database entities. Note that `activity_logs` represents the append-only history of activity state changes, whereas `audit_logs` is the compliance/security audit trail.
 
-### Anticipated Entities
+```mermaid
+erDiagram
+    users ||--o{ activities : "creates"
+    users ||--o{ activity_logs : "updates (actor snapshot)"
+    users ||--o{ audit_logs : "performs actions"
 
-| Entity | Purpose |
-|---|---|
-| `users` | Authenticated support personnel + admins |
-| `activities` | The trackable operational items per day |
-| `activity_updates` | Each status change / remark on an activity (history-preserving) |
-| `audit_logs` | Immutable event log: actor, event type, subject, before/after JSON, IP |
+    activities ||--o{ activity_logs : "has history"
 
-### Anticipated Relationships
+    audit_logs }o--|| activities : "polymorphic subject"
+    audit_logs }o--|| users : "polymorphic subject"
 
-- A `user` creates many `activities`
-- An `activity` has many `activity_updates`
-- An `activity_update` belongs to a `user` (the updater)
-- `audit_logs` are polymorphic — can point to any subject (`activities`, `activity_updates`, `users`)
+    users {
+        unsignedBigInteger id PK
+        string name
+        string email
+        string password
+        string role "admin | lead | agent"
+        string designation
+        string phone
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    activities {
+        unsignedBigInteger id PK
+        string title
+        text description
+        string category
+        enum recurrence "daily | adhoc"
+        boolean is_active
+        unsignedBigInteger created_by FK
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    activity_logs {
+        unsignedBigInteger id PK
+        unsignedBigInteger activity_id FK
+        date date
+        enum status "pending | done"
+        text remark
+        unsignedBigInteger updated_by FK
+        string actor_name "denormalised"
+        string actor_role "denormalised"
+        string actor_designation "denormalised"
+        string actor_ip
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    audit_logs {
+        unsignedBigInteger id PK
+        unsignedBigInteger actor_id FK
+        string actor_name
+        string actor_role
+        string actor_ip
+        string subject_type
+        unsignedBigInteger subject_id
+        string event "created | updated | status_changed | deleted | restored"
+        json old_values
+        json new_values
+        timestamp created_at
+    }
+```
 
 ---
 
 ## 2. Module Boundaries
 
-> **TODO — Prompt 2**: Define bounded contexts / Laravel module groupings.
+The application is structured using a clean, layered architectural pattern matching the requirements in `AGENTS.md`:
 
-### Anticipated Modules
+```
+┌────────────────────────────────────────────────────────┐
+│                      HTTP Layer                        │
+│   (Controllers / Request Validation / Livewire Views)   │
+└──────────────────────────┬─────────────────────────────┘
+                           │
+                           ▼
+┌────────────────────────────────────────────────────────┐
+│                    Business Actions                    │
+│           (CreateActivityAction, etc.)                 │
+└────────────┬─────────────────────────────┬─────────────┘
+             │                             │
+             ▼                             ▼
+┌────────────────────────┐     ┌─────────────────────────┐
+│     Domain Models      │     │    Compliance Audit     │
+│   (Activity, User)     │     │     (AuditService)      │
+└────────────────────────┘     └─────────────────────────┘
+```
 
-| Module | Namespace | Responsibility |
-|---|---|---|
-| Auth | `App\Http\Controllers\Auth` | Login, logout, session |
-| Activities | `App\Actions\Activities`, `App\Http\Controllers\ActivityController` | CRUD, status update |
-| Reporting | `App\Services\ReportingService`, `App\Http\Controllers\ReportController` | Date-range queries, aggregations |
-| Audit | `App\Services\AuditService`, `App\Models\AuditLog` | Write-only log, query for display |
-| Admin | `App\Http\Controllers\Admin` | User management (admin role only) |
+### Components
 
-### Livewire Components (anticipated)
-
-| Component | Purpose |
+| Component | Responsibility |
 |---|---|
-| `DailyActivityBoard` | Today's activities + real-time status, shift handover view |
-| `ActivityStatusUpdater` | Inline status + remark form |
-| `ReportingDateRange` | Date picker + filter UI for FR-5 |
-| `ActivityForm` | Create / edit activity |
+| **Auth** | Handles sign-in form rendering, credential validation, session creation, and secure logout. |
+| **Activities** | Manages creating, updating details, deleting (soft-delete), and status updating. |
+| **Reporting** | Performs date-range queries over activity history and handles status filtering. |
+| **Audit** | Write-only compliance service recording every user mutation. |
+| **Admin** | User management features restricted strictly to the `admin` role. |
 
 ---
 
 ## 3. Request Lifecycle
 
-> **TODO — Prompt 2**: Draw a sequence diagram for the critical path:
-> User updates activity status → Form Request validates → Action writes update → Audit log written → Livewire refreshes view.
+The diagram below details the sequence of execution when a user updates an activity's status:
 
-`
-[Browser] → [Livewire Component] → [Form Request] → [Action Class] → [Model] → [DB]
-                                                            ↓
-                                                    [AuditService]
-                                                            ↓
-                                                    [audit_logs table]
-`
+```
+[Browser]             [Livewire Component]         [Action Class]          [AuditService]          [Database]
+    │                          │                         │                       │                     │
+    │───(Submit Status/Remark)─>                         │                       │                     │
+    │                          │───(Validate Input)─────>│                       │                     │
+    │                          │                         │───(Create Log Row)───>│                     │
+    │                          │                         │                       │────────────────────>│
+    │                          │                         │───(Log Audit)────────>│                     │
+    │                          │                         │                       │───(Create Entry)───>│
+    │                          │                         │                       │                     │
+    │                          │<──(Return Fresh State)──│                       │                     │
+    │<──(Refresh HTML view)────│                         │                       │                     │
+```
 
 ---
 
 ## 4. Database Schema (Detailed)
 
-> **TODO — Prompt 2**: Produce column-level schema for each table with types, constraints, and indexes.
+### Key Indexes
 
-### Anticipated Key Indexes
-
-- `activities.date` — supports FR-4 (daily view) and FR-5 (date-range query)
-- `activities.status` — supports filtering in reporting view
-- `activity_updates.activity_id` — FK, supports joining updates to activities
-- `audit_logs.subject_type + subject_id` — composite, supports polymorphic lookup
-- `audit_logs.created_at` — supports time-range audit queries
+- `activities.is_active` & `activities.category` - speeds up retrieval of active items on the board.
+- `activity_logs.date + activity_logs.activity_id` (composite) - supports rendering daily boards quickly.
+- `activity_logs.date + activity_logs.status` (composite) - speeds up history reporting.
+- `audit_logs.subject_type + audit_logs.subject_id` - supports polymorphic morphTo queries.
+- `audit_logs.created_at` - enables timeline sorting.
 
 ---
 
-## 5. Deployment Diagram
+## 5. Security Architecture
 
-> **TODO — Prompt 2**: Illustrate the target runtime environment.
+### Role Enforcement Points
 
-### Anticipated Stack (local / development)
-
-`
-┌─────────────────────────────┐
-│         Browser             │
-└────────────┬────────────────┘
-             │ HTTP
-┌────────────▼────────────────┐
-│   Laravel Dev Server        │
-│   php artisan serve         │
-│   :8000                     │
-└────────────┬────────────────┘
-             │ PDO / MySQL
-┌────────────▼────────────────┐
-│   MySQL 8.0                 │
-│   npontu_tracker (db)       │
-└─────────────────────────────┘
-`
-
-### Production Target (to be confirmed)
-
-- PHP 8.2+ on Linux (Ubuntu 22.04 assumed)
-- Nginx as web server
-- MySQL 8.0 managed instance
-- Laravel Octane optional (out of scope for base submission)
-- Queue driver: `sync` for base submission (no Redis required unless notifications are added)
-
----
-
-## 6. Security Architecture
-
-> **TODO — Prompt 2**: Document auth flow, session config, and role enforcement points.
-
-### Role Enforcement Points (anticipated)
-
-| Route group | Middleware | Policy |
+| Route / Capability | Action / Middleware | Authorized Roles |
 |---|---|---|
-| All app routes | `auth` | — |
-| Admin routes | `auth`, `role:admin` | `UserPolicy` |
-| Activity create | `auth` | `ActivityPolicy@create` |
-| Activity update | `auth` | `ActivityPolicy@update` |
-| Reports | `auth` | `ActivityPolicy@viewAny` |
+| Access Application | `auth` middleware | All authenticated users |
+| View Activity Board | `ActivityPolicy@viewAny` | `admin`, `lead`, `agent` |
+| Create Activity | `ActivityPolicy@create` | `admin`, `lead` |
+| Edit Activity | `ActivityPolicy@update` | `admin`, `lead` |
+| Update Status & Remark | `ActivityPolicy@updateStatus` | All authenticated users |
+| Delete Activity | `ActivityPolicy@delete` | `admin` |
+| Manage Users | `admin` prefix + `role:admin` | `admin` |
 
 ---
 
-## 7. Open Architecture Questions
+## 6. Architecture Decisions & Resolving Open Questions
 
-> These must be resolved in Prompt 2 before implementation begins.
-
-- [ ] Will roles be stored as a `role` enum column on `users`, or use a pivot/roles table?
-- [ ] Is soft-delete on `activities` confirmed? (Recommended — see requirements.md §Open Questions)
-- [ ] What is the target PHP/Laravel version deployed on the evaluator's machine?
-- [ ] Will the evaluation be done via Docker, `php artisan serve`, or a shared hosting environment?
-- [ ] Should `activity_updates` store a full snapshot of the activity at time of update, or only the changed fields?
+1. **Role Storage**: Roles are stored as a `role` string column (`admin`, `lead`, `agent`) on the `users` table.
+2. **Soft Deletes**: Soft-delete is active on `activities` and `users` to ensure historical logs/reports are never broken by model deletions.
+3. **Activity Updates Format**: Every status change generates an append-only row in `activity_logs` rather than performing in-place updates. This ensures the full handover timeline can be drawn.
