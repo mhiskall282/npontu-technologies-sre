@@ -1,7 +1,8 @@
 # Project Submission Report — Npontu Support Activity Tracker
 
 **Application Name**: Support Activity Tracker — Npontu Technologies  
-**Live Production URL**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)  
+**Developer**: John Okyere (`hello@johnokyere.xyz`)  
+**Live Custom Domain**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)  
 **Render Endpoint**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)  
 **GitHub Repository**: [https://github.com/mhiskall282/npontu-technologies-sre](https://github.com/mhiskall282/npontu-technologies-sre)  
 **Date of Submission**: 28th July 2026  
