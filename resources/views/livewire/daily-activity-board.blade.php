@@ -20,6 +20,55 @@
         </div>
     </div>
 
+    {{-- ── Role-based Welcome & Console ────────────────────────── --}}
+    <div class="grid grid-cols-1 gap-6 mb-6">
+        @if(auth()->user()->isAdmin())
+        <div class="bg-gradient-to-br from-[#12492A] to-[#1B6B3A] rounded-xl shadow-sm p-6 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <span class="bg-[#F5C518] text-gray-900 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Administrator Console</span>
+                <h2 class="text-xl font-bold mt-2">Welcome back, {{ auth()->user()->name }}</h2>
+                <p class="text-green-100 text-sm mt-1">Manage system configurations, user access, and oversee SRE shift operations.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('admin.activities.index') }}" class="px-4 py-2 bg-white text-[#1B6B3A] hover:bg-green-50 text-sm font-bold rounded-lg transition-colors">
+                    Manage Activities
+                </a>
+                <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-[#F5C518] text-gray-900 hover:bg-[#E0B310] text-sm font-bold rounded-lg transition-colors">
+                    Manage Users
+                </a>
+            </div>
+        </div>
+        @elseif(auth()->user()->isLead())
+        <div class="bg-gradient-to-br from-[#12492A] to-[#1B6B3A] rounded-xl shadow-sm p-6 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <span class="bg-emerald-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Team Lead Dashboard</span>
+                <h2 class="text-xl font-bold mt-2">Welcome back, {{ auth()->user()->name }}</h2>
+                <p class="text-green-100 text-sm mt-1">Review shift handovers, manage tasks, and generate performance reports.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('admin.activities.index') }}" class="px-4 py-2 bg-white text-[#1B6B3A] hover:bg-green-50 text-sm font-bold rounded-lg transition-colors">
+                    Create/Edit Checks
+                </a>
+                <a href="{{ route('reports.index') }}" class="px-4 py-2 bg-[#F5C518] text-gray-900 hover:bg-[#E0B310] text-sm font-bold rounded-lg transition-colors">
+                    System Reports
+                </a>
+            </div>
+        </div>
+        @else
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <span class="bg-slate-100 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">Operator Portal</span>
+                <h2 class="text-xl font-bold text-gray-900 mt-2">Hello, {{ auth()->user()->name }}</h2>
+                <p class="text-gray-500 text-sm mt-1">You are logged in as a Support Operator. Review and complete shift checkoff duties below.</p>
+            </div>
+            <div class="text-right flex-shrink-0">
+                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Current Designation</p>
+                <p class="text-sm font-bold text-gray-800">{{ auth()->user()->designation ?? 'Support Operator' }}</p>
+            </div>
+        </div>
+        @endif
+    </div>
+
     {{-- ── Stats bar ──────────────────────────────────────────── --}}
     <div class="grid grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100 text-center">
@@ -177,6 +226,53 @@
     </section>
     @endif
 
+    @endif
+
+    {{-- ── Audit Log Timeline (Admin & Lead only) ──────────────── --}}
+    @if(auth()->user()->canManageActivities() && isset($recentAudits) && $recentAudits->isNotEmpty())
+    <section class="mt-10 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-3">
+            <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#1B6B3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Recent Audit Trail (Supervisor Console)
+            </h2>
+            <span class="text-xs text-gray-400">Live operational events</span>
+        </div>
+        <div class="flow-root">
+            <ul role="list" class="-mb-8">
+                @foreach($recentAudits as $audit)
+                <li>
+                    <div class="relative pb-8">
+                        @if(!$loop->last)
+                        <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                        @endif
+                        <div class="relative flex space-x-3">
+                            <div>
+                                <span class="h-8 w-8 rounded-full bg-green-50 flex items-center justify-center ring-8 ring-white">
+                                    <svg class="w-4 h-4 text-[#1B6B3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </span>
+                            </div>
+                            <div class="flex-1 min-w-0 pt-1.5 flex justify-between space-x-4">
+                                <div>
+                                    <p class="text-sm text-gray-800">
+                                        <span class="font-semibold text-gray-900">{{ $audit->actor_name }}</span>
+                                        <span class="capitalize text-gray-500 font-medium ml-1">({{ $audit->event }})</span>
+                                        <span class="text-gray-600 ml-1">
+                                            {{ class_basename($audit->subject_type) }} #{{ $audit->subject_id }}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="text-right text-xs whitespace-nowrap text-gray-400 font-mono">
+                                    {{ $audit->created_at->diffForHumans() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+        </div>
+    </section>
     @endif
 
     {{-- wire:poll auto-refreshes the board every 30s for live shift updates --}}

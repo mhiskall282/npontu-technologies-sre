@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\AuditLog;
 use App\Services\ReportingService;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
@@ -33,6 +34,11 @@ class DailyActivityBoard extends Component
         $pending = $activities->filter(fn ($a) => $a->current_status === 'pending');
         $done = $activities->filter(fn ($a) => $a->current_status === 'done');
 
-        return view('livewire.daily-activity-board', compact('pending', 'done'));
+        $recentAudits = null;
+        if (auth()->user()->canManageActivities()) {
+            $recentAudits = AuditLog::latest()->limit(5)->get();
+        }
+
+        return view('livewire.daily-activity-board', compact('pending', 'done', 'recentAudits'));
     }
 }
