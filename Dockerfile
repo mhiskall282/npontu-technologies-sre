@@ -47,15 +47,14 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy PHP dependencies (update lock file inline during image build)
-COPY composer.json composer.lock ./
-RUN composer update fakerphp/faker --no-interaction && composer install --no-dev --optimize-autoloader --no-scripts
+# Copy full application code first
+COPY . .
 
 # Copy compiled assets from stage 1
 COPY --from=assets /app/public/build ./public/build
 
-# Copy the rest of the application
-COPY . .
+# Install PHP dependencies
+RUN composer update fakerphp/faker --no-interaction --no-scripts && composer install --no-dev --optimize-autoloader --no-scripts
 
 # Laravel storage and cache directories
 RUN mkdir -p storage/framework/{cache,sessions,views} \
