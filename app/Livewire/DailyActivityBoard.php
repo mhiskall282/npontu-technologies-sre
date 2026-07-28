@@ -6,9 +6,11 @@ namespace App\Livewire;
 
 use App\Services\ReportingService;
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Layout('layouts.app')]
 #[Title('Daily Activity Board — Support Tracker')]
 class DailyActivityBoard extends Component
 {
