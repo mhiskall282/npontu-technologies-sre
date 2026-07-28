@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Livewire\DailyActivityBoard;
@@ -44,6 +45,11 @@ Route::middleware('auth')->group(function () {
             'db' => DB::select('SELECT 1') ? 'ok' : 'error',
         ]);
     })->name('health');
+
+    // SRE Monitoring (admin + lead)
+    Route::get('/monitoring', [MonitoringController::class, 'index'])
+        ->name('monitoring.index')
+        ->middleware('role:admin,lead');
 
     // Admin-only routes
     Route::prefix('admin')

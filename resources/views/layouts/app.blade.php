@@ -56,6 +56,15 @@
                               {{ request()->routeIs('admin.*') ? 'bg-[#12492A] text-white' : 'text-green-100 hover:text-white hover:bg-[#12492A]' }}">
                         Admin
                     </a>
+                    <a href="{{ route('monitoring.index') }}"
+                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 flex items-center gap-1.5
+                              {{ request()->routeIs('monitoring.*') ? 'bg-[#12492A] text-white' : 'text-green-100 hover:text-white hover:bg-[#12492A]' }}">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-300 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                        </span>
+                        Monitoring
+                    </a>
                     @endif
                 </div>
 
