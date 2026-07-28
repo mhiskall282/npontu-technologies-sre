@@ -13,33 +13,43 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin — can manage users + activities
-        User::factory()->admin()->create([
-            'name' => 'Kwame Mensah',
-            'email' => 'admin@npontu.local',
-            'password' => Hash::make('password'),
-            'designation' => 'Systems Administrator',
-            'phone' => '+233 20 000 0001',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@npontu.local'],
+            [
+                'name' => 'Kwame Mensah',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'designation' => 'Systems Administrator',
+                'phone' => '+233 20 000 0001',
+            ]
+        );
 
         // Lead — can create/edit activities + update status
-        User::factory()->lead()->create([
-            'name' => 'Abena Owusu',
-            'email' => 'lead@npontu.local',
-            'password' => Hash::make('password'),
-            'designation' => 'Support Team Lead',
-            'phone' => '+233 20 000 0002',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'lead@npontu.local'],
+            [
+                'name' => 'Abena Owusu',
+                'password' => Hash::make('password'),
+                'role' => 'lead',
+                'designation' => 'Support Team Lead',
+                'phone' => '+233 20 000 0002',
+            ]
+        );
 
         // Agent — can update status/remark only
-        User::factory()->agent()->create([
-            'name' => 'Kofi Asante',
-            'email' => 'agent@npontu.local',
-            'password' => Hash::make('password'),
-            'designation' => 'Support Engineer',
-            'phone' => '+233 20 000 0003',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'agent@npontu.local'],
+            [
+                'name' => 'Kofi Asante',
+                'password' => Hash::make('password'),
+                'role' => 'agent',
+                'designation' => 'Support Engineer',
+                'phone' => '+233 20 000 0003',
+            ]
+        );
 
-        // Extra agents for realistic seed data
-        User::factory()->agent()->count(3)->create();
+        if (User::count() <= 3) {
+            User::factory()->agent()->count(3)->create();
+        }
     }
 }
