@@ -2,6 +2,8 @@
 
 > **A Laravel 11 web application for operations support teams** to log daily shift activities, record status updates with immutable audit trails, and facilitate clean shift handovers.
 
+🌐 **Production Deployment**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)
+
 [![Tests](https://img.shields.io/badge/tests-14%20passing-brightgreen)](tests/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)

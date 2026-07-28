@@ -330,7 +330,8 @@ prefix /admin  (role:admin,lead)
 
 ## Live Deployment URL & Endpoints
 
-- **Live URL**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)
+- **Live Custom Domain**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)
+- **Render Primary Endpoint**: `https://npontu-support-tracker.onrender.com`
 - **Shift Board**: `GET /daily`
 - **SRE Monitoring**: `GET /monitoring` (Admin/Lead)
 - **Account Settings**: `GET /settings`
