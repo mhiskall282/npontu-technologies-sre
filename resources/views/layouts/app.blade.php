@@ -65,7 +65,11 @@
                         <p class="text-sm font-semibold leading-none">{{ auth()->user()->name }}</p>
                         <p class="text-xs text-green-300 mt-0.5 capitalize">{{ auth()->user()->role }}</p>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                    <a href="{{ route('settings.edit') }}"
+                       class="px-3 py-1.5 text-xs font-medium border border-green-400 text-green-100 rounded-md hover:bg-[#12492A] hover:border-transparent transition-colors duration-150 no-print">
+                        Settings
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline no-print">
                         @csrf
                         <button type="submit"
                                 class="px-3 py-1.5 text-xs font-medium border border-green-400 text-green-100

@@ -8,16 +8,16 @@
             @csrf @method('PATCH')
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" name="name" value="{{ old('name', $user->name) }}" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                <input type="text" name="name" value="{{ old('name', $user->name) }}" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" value="{{ old('email', $user->email) }}" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                <input type="email" name="email" value="{{ old('email', $user->email) }}" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                    <select name="role" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                    <select name="role" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
                         @foreach(['agent','lead','admin'] as $role)
                         <option value="{{ $role }}" {{ old('role', $user->role) === $role ? 'selected' : '' }}>{{ ucfirst($role) }}</option>
                         @endforeach
@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Designation</label>
-                    <input type="text" name="designation" value="{{ old('designation', $user->designation) }}" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                    <input type="text" name="designation" value="{{ old('designation', $user->designation) }}" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
                 </div>
             </div>
             <div class="flex gap-3 pt-2">

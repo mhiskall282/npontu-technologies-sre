@@ -6,6 +6,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingsController;
 use App\Livewire\DailyActivityBoard;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,11 @@ Route::middleware('auth')->group(function () {
     // Reporting
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::post('/reports/email', [ReportController::class, 'email'])->name('reports.email');
+
+    // Profile Settings
+    Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
 
     // Health check — beyond spec; included for SRE alignment (uptime monitoring)
     Route::get('/health', function () {

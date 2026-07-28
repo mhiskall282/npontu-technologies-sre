@@ -8,16 +8,16 @@
             @csrf @method('PATCH')
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input type="text" name="title" value="{{ old('title', $activity->title) }}" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                <input type="text" name="title" value="{{ old('title', $activity->title) }}" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="description" rows="3" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">{{ old('description', $activity->description) }}</textarea>
+                <textarea name="description" rows="3" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">{{ old('description', $activity->description) }}</textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select name="category" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                    <select name="category" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
                         <option value="">— Select —</option>
                         @foreach(['Application','Infrastructure','Database','Network','Security'] as $cat)
                         <option value="{{ $cat }}" {{ old('category', $activity->category) === $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -26,7 +26,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Recurrence</label>
-                    <select name="recurrence" class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                    <select name="recurrence" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
                         <option value="daily" {{ old('recurrence', $activity->recurrence) === 'daily' ? 'selected' : '' }}>Daily</option>
                         <option value="adhoc" {{ old('recurrence', $activity->recurrence) === 'adhoc' ? 'selected' : '' }}>Ad Hoc</option>
                     </select>

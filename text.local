@@ -1,0 +1,10 @@
+ Local Testing (Currently Running)
+The local development server is running in the background at: http://127.0.0.1:8000
+
+You can test using the following pre-seeded users (all passwords are password):
+
+Admin: admin@npontu.local
+Lead: lead@npontu.local
+Agent: agent@npontu.local
+
+

@@ -1,0 +1,319 @@
+# File Reference — Interview Q&A Guide
+
+> **Purpose**: This document explains what every significant file in this project does, why it exists,
+> and how to answer common interview questions about it. Keep this alongside the codebase as a study aid.
+
+---
+
+## `app/Models/`
+
+### `User.php`
+**What it does**: The authenticated user entity. Extends Laravel's `Authenticatable`, uses `SoftDeletes` (deleted users keep their activity log references intact), and declares three role helper methods.
+
+**Key properties**:
+- `$fillable`: `name`, `email`, `password`, `role`, `designation`, `phone`
+- `role`: one of `agent`, `lead`, `admin`
+
+**Role helper methods** (used everywhere for conditional UI and authorization):
+```php
+isAdmin(): bool
+isLead(): bool
+isAgent(): bool
+canManageActivities(): bool  // true for admin + lead
+```
+
+**Interview Q: Why soft-delete users instead of hard-delete?**
+> If a user is hard-deleted, their FK references in `activity_logs.updated_by` and `audit_logs.actor_id` would violate FK constraints (or cascade-delete the logs). Both columns use `nullOnDelete()`, meaning the FK becomes NULL on deletion. The `actor_name` field (denormalised snapshot) preserves the human-readable record even after the user account is gone.
+
+---
+
+### `Activity.php`
+**What it does**: Represents a recurring operational check (e.g. "Daily SMS count vs SMS count from logs"). Activities are the template — `ActivityLog` records the daily status events.
+
+**Key relationships**:
+- `hasMany(ActivityLog::class)` — all status events across all dates
+- `latestLog()` — scoped relationship for today's most-recent event (used for current status)
+
+**Interview Q: Why is `date` cast to `'date:Y-m-d'`?**
+> SQLite stores dates as strings. Without an explicit date cast, comparisons like `whereBetween('date', ['2026-07-01', '2026-07-31'])` fail when the stored value has a time suffix (e.g. `2026-07-01 00:00:00`). The explicit format cast forces consistent `Y-m-d` string representation.
+
+---
+
+### `ActivityLog.php`
+**What it does**: Append-only event store. Each row = one status-change event. The current status for an activity on a given date is **derived** as the status of the row with the highest `id` for that `(activity_id, date)` pair.
+
+**Why append-only?**
+> FR-4 (shift handover) requires showing "who updated what and when" as a timeline. A last-write-wins model loses history. By appending, we can reconstruct the full sequence of changes.
+
+**Interview Q: How do you derive "current status" without a mutable column?**
+```sql
+SELECT activity_id, status
+FROM activity_logs
+WHERE date = '2026-07-28'
+GROUP BY activity_id
+HAVING id = MAX(id)
+```
+> The `ReportingService::dailySummary()` implements this pattern using Eloquent's `latestOfMany()` scoped relationship.
+
+---
+
+### `AuditLog.php`
+**What it does**: Polymorphic compliance log. Stores every state mutation across all model types, with actor identity, IP address, and JSON before/after diffs.
+
+**Key columns**:
+| Column | Purpose |
+|---|---|
+| `actor_id` | FK to users (nullable — survives user deletion) |
+| `actor_name` | Denormalised snapshot (immutable historical record) |
+| `subject_type` + `subject_id` | Polymorphic reference to any model |
+| `event` | e.g. `created`, `status_changed`, `profile_updated` |
+| `old_values` / `new_values` | JSON diff of the change |
+| `ip_address` | Captured server-side from `Request::ip()` |
+
+**Interview Q: Why is actor identity captured server-side?**
+> Never from client-submitted data. A malicious actor could inject a different user's name in the request body. `AuditService` reads the actor from the authenticated session (`Auth::user()`) and the IP from `Request::ip()` — both are server-controlled.
+
+---
+
+## `app/Actions/Activities/`
+
+All Action classes follow the **Single Responsibility Principle**: one class, one operation.
+
+### `CreateActivityAction.php`
+**What it does**: Validates the business rules for creating an activity and persists the record. Called by `Admin\ActivityController@store`.
+
+### `UpdateActivityStatusAction.php`
+**What it does**: The most critical Action. Appends a new `ActivityLog` row and writes an `AuditLog` entry. Called by the `ActivityStatusUpdater` Livewire component.
+
+**Interview Q: Why put this logic in an Action class instead of the controller?**
+> Controllers should only handle HTTP concerns: validate the input, call the business logic, return a response. The action class is independently testable without HTTP — see `ActivityStatusFlowTest` which tests the action outcome directly via the Livewire component.
+
+---
+
+## `app/Services/`
+
+### `AuditService.php`
+**What it does**: Provides a single `log()` method that writes an `AuditLog` record. Reads actor identity from `Auth::user()` and IP from `Request::ip()` — never from caller-supplied data.
+
+**Interview Q: Why is this a Service rather than an Action?**
+> Actions implement business operations (create activity, update status). `AuditService` is a cross-cutting concern used by multiple Actions, Controllers, and Livewire components — it coordinates a supporting infrastructure concern, not a business workflow step.
+
+---
+
+### `ReportingService.php`
+**What it does**: Contains the two main query patterns used across the app:
+1. `dailySummary(string $date)` — returns all activities with their current status for the shift board
+2. `exportQuery(...)` — returns filtered `ActivityLog` rows for the reporting page and email
+
+**Interview Q: How does the daily summary query avoid N+1?**
+> It uses a single query joining `activities` with the `activity_logs` subquery for the given date, then eager-loads the latest log entry. The `with('latestLog')` eager load prevents per-row queries inside the Livewire render loop.
+
+---
+
+## `app/Http/Controllers/`
+
+### `ActivityController.php`
+**What it does**: Resource controller for the front-end activity views (index, show, edit, update). Agents use this to view activities and their history. The `show` action renders the 7-day completion bar chart.
+
+**Interview Q: How does authorization work here?**
+> Every method calls `$this->authorize(ability, $activity)` which delegates to `ActivityPolicy`. The policy checks the user's role (e.g. only admins can delete). This is separate from the middleware check — middleware handles route-level access, policies handle model-level access.
+
+---
+
+### `ReportController.php`
+**What it does**: Handles the reports page (`GET /reports`) and the email action (`POST /reports/email`).
+
+- `index()`: When `print=true` query param is present, bypasses pagination and returns the full collection for print-to-PDF. Otherwise paginates.
+- `email()`: Accepts custom `recipients[]`, `subject`, and `message` — builds and dispatches `ActivityReportMail`.
+
+---
+
+### `SettingsController.php`
+**What it does**: Allows any authenticated user to update their own profile (`PUT /settings`) and change their password (`PUT /settings/password`). Uses `UserPolicy` to verify the user can only update themselves (admins can update anyone).
+
+---
+
+### `Admin\UserController.php`
+**What it does**: Admin-only CRUD for team member accounts. Restricted via `role:admin` middleware. Uses `StoreUserRequest` and `UpdateUserRequest` for validation.
+
+---
+
+## `app/Livewire/`
+
+### `DailyActivityBoard.php`
+**What it does**: The main shift handover component. Holds a reactive `$date` property — changing the date picker re-renders the board via Livewire's two-way binding. Uses `wire:poll.30000ms` to auto-refresh every 30 seconds for live shift updates.
+
+**Interview Q: Why is this a Livewire component instead of a regular controller + view?**
+> The date picker needs to reactively re-fetch data without a full page reload. Livewire handles the AJAX round-trip transparently. The `wire:poll` directive also auto-refreshes for agents in the same shift, keeping the board live without websockets.
+
+---
+
+### `ActivityStatusUpdater.php`
+**What it does**: Inline status toggle embedded in each activity row. Submits `status` and `remark` via a Livewire action, which calls `UpdateActivityStatusAction`, then emits an event to refresh the parent board.
+
+**Interview Q: How does Livewire component isolation work here?**
+> `ActivityStatusUpdater` is a nested child component inside `DailyActivityBoard`. It receives `$activity` and `$date` as properties. When it dispatches a `statusUpdated` event, the parent board component listens and re-renders — keeping the two components decoupled.
+
+---
+
+## `app/Http/Middleware/`
+
+### `EnsureRole.php`
+**What it does**: Route middleware that checks `auth()->user()->role` against an allowed list. Registered as `role` alias in `bootstrap/app.php`. Usage: `->middleware('role:admin,lead')`.
+
+**Interview Q: Why use middleware AND policies?**
+> Middleware provides **route-level** access control (can this user even reach this route?). Policies provide **model-level** access control (can this user perform this action on this specific record?). Using both prevents a user from crafting direct HTTP requests to bypass controller-level checks.
+
+---
+
+### `SecureHeaders.php`
+**What it does**: Adds security HTTP response headers on every response:
+- `X-Frame-Options: DENY` — prevents clickjacking
+- `X-Content-Type-Options: nosniff` — prevents MIME sniffing
+- `Referrer-Policy: strict-origin-when-cross-origin`
+
+---
+
+## `app/Http/Requests/`
+
+All Form Requests follow the same pattern: `authorize()` calls the relevant Policy, `rules()` returns the validation array.
+
+| File | Purpose |
+|---|---|
+| `StoreActivityRequest` | Validation for creating activities (admin/lead only) |
+| `UpdateActivityRequest` | Validation for editing activities |
+| `UpdateActivityStatusRequest` | Validates status enum and remark for Livewire status toggle |
+| `StoreUserRequest` | Validates new user creation (admin only) |
+| `UpdateUserRequest` | Validates user edits |
+| `ReportRequest` | Validates date range, status filter, and email recipient fields |
+
+**Interview Q: Why use Form Requests instead of inline `$request->validate()`?**
+> Form Requests keep controllers thin and self-document the API surface of each endpoint. Authorization (`authorize()`) and validation (`rules()`) are co-located, making it easy to audit what each endpoint accepts and who can call it.
+
+---
+
+## `app/Policies/`
+
+### `ActivityPolicy.php`
+**What it does**: Defines who can perform each CRUD action on activities.
+
+| Method | Allowed |
+|---|---|
+| `viewAny` | All authenticated users |
+| `view` | All authenticated users |
+| `create` | Leads + Admins |
+| `update` | Leads + Admins |
+| `delete` | Admins only |
+
+### `UserPolicy.php`
+**What it does**: Who can manage users. `viewAny`/`create`/`delete` is Admin-only. `update` allows a user to update themselves — useful for the Settings page.
+
+---
+
+## `app/Mail/ActivityReportMail.php`
+**What it does**: Laravel Mailable that sends an activity report to a list of recipients. Accepts:
+- `$logs` — the collection of `ActivityLog` records to include
+- `$from` / `$to` — the date range string
+- `$subject` — custom email subject
+- `$message` — custom note from the sender
+
+Renders `resources/views/emails/activity_report.blade.php`.
+
+---
+
+## `database/migrations/`
+
+All migrations implement `down()` for rollback capability.
+
+| Migration | What it creates |
+|---|---|
+| `create_users_table` | Authentication + role columns |
+| `create_activities_table` | Activity definitions (title, category, recurrence, is_active) |
+| `create_activity_logs_table` | Append-only status event log with composite index on `(date, activity_id)` |
+| `create_audit_logs_table` | Polymorphic compliance log with JSON diff columns |
+
+**Interview Q: Why is there a composite index on `(date, activity_id)` in activity_logs?**
+> The daily shift board query filters by `date` first, then groups by `activity_id`. The composite index matches this query pattern exactly, keeping the board load fast even with large log volumes.
+
+---
+
+## `routes/web.php`
+**What it does**: All application routes, grouped under `auth` middleware. Key structure:
+
+```
+GET  /daily                    → DailyActivityBoard (Livewire)
+GET  /activities               → ActivityController@index
+GET  /activities/{id}          → ActivityController@show
+GET  /reports                  → ReportController@index
+POST /reports/email            → ReportController@email
+GET  /settings                 → SettingsController@edit
+PUT  /settings                 → SettingsController@update
+PUT  /settings/password        → SettingsController@updatePassword
+prefix /admin  (role:admin,lead)
+    /admin/activities/*        → Admin\ActivityController (resource)
+    /admin/users/*             → Admin\UserController (resource, role:admin only)
+```
+
+---
+
+## `tests/Feature/`
+
+| File | What it tests |
+|---|---|
+| `AuthenticationTest.php` | Login page renders; correct creds authenticate; wrong creds reject; logout works; unauthenticated redirect |
+| `ActivityCrudTest.php` | Create (lead/admin can, agent cannot); read (all auth); update; soft-delete |
+| `ActivityStatusFlowTest.php` | Livewire status toggle appends ActivityLog and AuditLog with correct values |
+| `ReportingTest.php` | Date-range query returns in-range records; excludes out-of-range; status filter works |
+| `ExampleTest.php` | Root redirect to login when unauthenticated |
+
+**Interview Q: What is `RefreshDatabase` and why do all tests use it?**
+> `RefreshDatabase` wraps each test in a transaction that is rolled back at the end, or re-runs migrations for each test. This ensures tests are isolated — one test's data cannot affect another. It prevents flaky, order-dependent test suites.
+
+---
+
+## `resources/views/layouts/app.blade.php`
+**What it does**: The main application shell. Contains:
+- Npontu branded navigation bar (logo, nav links, user name/role, Settings link, Sign Out)
+- Flash message display (`session('success')` / `session('error')`)
+- Yields a `content` section for page-specific content
+- Print CSS (`@media print`) that hides navigation and non-essential elements for PDF export
+
+---
+
+## `resources/views/livewire/daily-activity-board.blade.php`
+**What it does**: The shift handover board view. Key sections:
+1. **Date picker** — `wire:model` binding triggers reactive re-render
+2. **Role-based welcome banner** — Admin/Lead see green gradient console, Agents see operator card
+3. **Stats bar** — Total / Pending / Done counts with completion progress bar
+4. **Pending section** — Amber-highlighted cards for activities needing attention
+5. **Done section** — Faded green cards for completed items
+6. **Audit trail timeline** — Admin/Lead only; shows 5 most recent audit events
+
+---
+
+## `resources/views/reports/index.blade.php`
+**What it does**: The reports page with:
+- Date range + status + activity filters
+- Export CSV, Print PDF (opens new tab with all records + auto-triggers browser print), Email Report (modal)
+- Chart.js doughnut (status distribution) and bar chart (daily log volume)
+- Paginated or full-collection table (based on `print=true` param)
+- Email modal with recipient checkboxes, custom subject, and message body
+
+---
+
+## `render.yaml` + `build.sh`
+**What they do**: Render.com deployment configuration.
+
+- `render.yaml` — Blueprint declaring a web service with a 1 GB persistent disk at `/var/data` (SQLite file)
+- `build.sh` — Build phase: `composer install --no-dev`, `npm run build`, cache config/routes/views
+
+**Interview Q: Why SQLite for production on Render (free tier)?**
+> Free-tier Render services do not include a managed database. A persistent disk with SQLite is the simplest zero-cost production-grade persistence option for a small internal tool. At scale, the DB_CONNECTION would switch to MySQL and a managed database service would be provisioned.
+
+---
+
+## `.agents/AGENTS.md`
+**What it does**: Operating rules for AI coding agents working on this codebase. Enforces the fixed tech stack, coding standards (PSR-12, strict types), architecture rules (thin controllers, Action classes, Policies), security defaults, mandatory tests, and UI brand guidelines.
+
+**Interview Q: Why document agent rules in the repo?**
+> In a team that uses AI-assisted development, having explicit rules in the repo ensures consistent patterns regardless of which agent or developer makes a change. It acts as a living architecture decision record (ADR) and onboarding guide simultaneously.
