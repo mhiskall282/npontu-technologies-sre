@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Submission Report — Npontu Support Activity Tracker</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 15mm;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #1a1a1a;
+            font-size: 10pt;
+            line-height: 1.5;
+            background: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            border-bottom: 3px solid #1B6B3A;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand-title {
+            font-size: 18pt;
+            font-weight: 800;
+            color: #1B6B3A;
+        }
+        .brand-sub {
+            font-size: 9pt;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .meta-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 9pt;
+        }
+        .meta-item {
+            margin-bottom: 4px;
+        }
+        .meta-item strong {
+            color: #1B6B3A;
+        }
+        h2 {
+            font-size: 12pt;
+            color: #111827;
+            border-bottom: 1.5px solid #e5e7eb;
+            padding-bottom: 4px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+            margin-bottom: 15px;
+        }
+        th {
+            background: #1B6B3A;
+            color: #ffffff;
+            font-weight: 700;
+            text-align: left;
+            padding: 6px 10px;
+        }
+        td {
+            border: 1px solid #e5e7eb;
+            padding: 6px 10px;
+            color: #374151;
+        }
+        tr:nth-child(even) td {
+            background: #fafafa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 7.5pt;
+            font-weight: 700;
+        }
+        .badge-admin { background: #f3e8ff; color: #7e22ce; }
+        .badge-lead  { background: #dbeafe; color: #1e40af; }
+        .badge-agent { background: #f3f4f6; color: #374151; }
+        ul {
+            margin: 5px 0 15px 20px;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
+            font-size: 8pt;
+            color: #9ca3af;
+            text-align: center;
+        }
+        @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print" style="margin-bottom: 15px;">
+        <button onclick="window.print()" style="background:#1B6B3A; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">
+            🖨 Save / Download as PDF
+        </button>
+    </div>
+
+    <div class="header">
+        <div>
+            <div class="brand-title">Npontu Technologies</div>
+            <div class="brand-sub">Support Activity Tracker — Project Submission Report</div>
+        </div>
+        <div style="text-align: right; font-size: 8.5pt; color: #6b7280;">
+            Date: 28th July 2026<br>
+            Version: 1.0.0 (LTS)
+        </div>
+    </div>
+
+    <div class="meta-box">
+        <div class="meta-item"><strong>Live Custom Domain:</strong> <a href="https://npontu-tracker.johnokyere.xyz">https://npontu-tracker.johnokyere.xyz</a></div>
+        <div class="meta-item"><strong>Render Direct Endpoint:</strong> <a href="https://npontu-support-tracker.onrender.com">https://npontu-support-tracker.onrender.com</a></div>
+        <div class="meta-item"><strong>GitHub Repository:</strong> <a href="https://github.com/mhiskall282/npontu-technologies-sre">https://github.com/mhiskall282/npontu-technologies-sre</a></div>
+        <div class="meta-item"><strong>Architecture:</strong> Enterprise 4-Tier Pattern (Presentation, HTTP/App, Business/Services, Data Access)</div>
+    </div>
+
+    <h2>1. Executive Summary & Business Value</h2>
+    <p>The <strong>Support Activity Tracker</strong> is a specialized operations management platform built for SRE and Support Engineering teams at Npontu Technologies. It addresses shift handover fragmentation by offering real-time checklist tracking, immutable compliance logging, SRE monitoring metrics, multi-format reporting (PDF print & CSV export), and user role management.</p>
+
+    <h2>2. Default Evaluation Credentials</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Default Password</th>
+                <th>Access Privileges</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-admin">Administrator</span></td>
+                <td>Kwame Mensah</td>
+                <td>admin@npontu.local</td>
+                <td>password</td>
+                <td>Full system management, user CRUD, checklist configuration, audit logs</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-lead">Team Lead</span></td>
+                <td>Abena Owusu</td>
+                <td>lead@npontu.local</td>
+                <td>password</td>
+                <td>Shift board oversight, activity management, reports, SRE monitoring</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-agent">Support Agent</span></td>
+                <td>Kofi Asante</td>
+                <td>agent@npontu.local</td>
+                <td>password</td>
+                <td>Shift checklist status updates, remark entry, account settings</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. 4-Tier Architecture Breakdown</h2>
+    <ul>
+        <li><strong>Tier 1 — Presentation Layer (UI):</strong> Blade Templates, Livewire 3 real-time polling, Tailwind CSS v4 design system, responsive mobile drawer navigation, and animated SRE splash screen loader.</li>
+        <li><strong>Tier 2 — Application / HTTP Layer:</strong> Security middleware stack (Auth, Role Enforcement, Trusted Proxies, CSRF protection), Form Request validation, and Controllers.</li>
+        <li><strong>Tier 3 — Business & Service Layer:</strong> Action classes (`CreateActivityAction`, `UpdateActivityStatusAction`), `AuditService`, `ReportingService`, and Notification mailables (`WelcomeNotification`, `AdminPasswordResetNotification`).</li>
+        <li><strong>Tier 4 — Persistence & Data Layer:</strong> Eloquent ORM Models with soft-deletes, polymorphic audit morphs, and Render Free PostgreSQL database connection.</li>
+    </ul>
+
+    <h2>4. System Endpoints & Feature Matrix</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Endpoint</th>
+                <th>HTTP Method</th>
+                <th>Role Guard</th>
+                <th>Description / Features</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/login</code></td>
+                <td>GET / POST</td>
+                <td>Guest</td>
+                <td>Branded security portal with tokenized forgot password link</td>
+            </tr>
+            <tr>
+                <td><code>/daily</code></td>
+                <td>GET</td>
+                <td>Authenticated</td>
+                <td>Real-time shift board checklist with Livewire reactivity</td>
+            </tr>
+            <tr>
+                <td><code>/reports</code></td>
+                <td>GET</td>
+                <td>Lead / Admin</td>
+                <td>Query engine, Chart.js visualisations, CSV export & PDF print view</td>
+            </tr>
+            <tr>
+                <td><code>/monitoring</code></td>
+                <td>GET</td>
+                <td>Lead / Admin</td>
+                <td>Live SRE audit log stream, stale check alerts & completion charts</td>
+            </tr>
+            <tr>
+                <td><code>/settings</code></td>
+                <td>GET / PUT</td>
+                <td>Authenticated</td>
+                <td>Profile details form, password updates, and privilege access card</td>
+            </tr>
+            <tr>
+                <td><code>/admin/users</code></td>
+                <td>GET / POST / DELETE</td>
+                <td>Admin</td>
+                <td>Team member CRUD, welcome emails & password reset dispatch</td>
+            </tr>
+            <tr>
+                <td><code>/health</code></td>
+                <td>GET</td>
+                <td>Public</td>
+                <td>JSON health check API (Status 200, DB latency check, system timestamp)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>5. Quality Assurance & Verification</h2>
+    <ul>
+        <li><strong>Automated Tests:</strong> 14 Pest feature & unit tests passing with 39 assertions.</li>
+        <li><strong>Code Standards:</strong> PSR-12 strictly enforced using Laravel Pint.</li>
+        <li><strong>Security:</strong> Force HTTPS scheme enabled, trusted reverse proxy headers (`X-Forwarded-Proto`), CSRF token protection, and bcrypt password hashing.</li>
+    </ul>
+
+    <div class="footer">
+        © 2026 Npontu Technologies — Project Review & Verification Document
+    </div>
+
+</body>
+</html>
