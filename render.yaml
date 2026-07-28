@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: npontu-support-tracker
+    env: php
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: touch /var/data/database.sqlite && php artisan migrate --force && heroku-php-apache2 public/
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /var/data/database.sqlite
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: cookie
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1
