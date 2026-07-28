@@ -301,14 +301,52 @@ prefix /admin  (role:admin,lead)
 
 ---
 
+## `app/Notifications/`
+
+### `WelcomeNotification.php`
+**What it does**: Sent to newly registered users when created by an Admin. Contains login instructions, temporary password credentials, and a direct link to the sign-in portal.
+
+### `AdminPasswordResetNotification.php`
+**What it does**: Sent when an Admin triggers a password reset for a team member. Generates a secure, 60-minute tokenized reset URL so users reset their own passwords without admins seeing their credentials.
+
+---
+
+## `app/Http/Controllers/`
+
+### `MonitoringController.php`
+**What it does**: Powers the SRE Monitoring Dashboard (`/monitoring`). Provides live system health metrics, stale activity alerts, a 7-day completion trend chart, category progress indicators, top contributor rankings, and a paginated audit stream with JSON diff viewer.
+
+---
+
+## Deployment & Containerization
+
+### `Dockerfile`
+**What it does**: Multi-stage Docker container build. Stage 1 compiles Tailwind CSS assets using Node. Stage 2 packages PHP 8.2 with Apache, enables `mod_rewrite`, sets `DocumentRoot` to `public/`, configures `ServerName localhost`, and installs `pdo_pgsql` for Render PostgreSQL integration.
+
+### `docker-entrypoint.sh`
+**What it does**: Container boot script. Automatically generates `APP_KEY` if missing, sets file permissions on `storage/` and `bootstrap/cache/`, clears/caches configuration at runtime (picking up Render environment variables dynamically), runs `php artisan migrate --force`, and seeds default idempotent data before launching Apache in the foreground.
+
+---
+
+## Live Deployment URL & Endpoints
+
+- **Live URL**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)
+- **Shift Board**: `GET /daily`
+- **SRE Monitoring**: `GET /monitoring` (Admin/Lead)
+- **Account Settings**: `GET /settings`
+- **PDF Print View**: `GET /reports?from=...&to=...&print=true`
+- **Health Check API**: `GET /health`
+
+**Interview Q: Why SQLite for production on Render (free tier)?**
+> Free-tier Render services do not include a managed database. A persistent disk with SQLite is the simplest zero-cost production-grade persistence option for a small internal tool. At scale, the DB_CONNECTION would switch to MySQL and a managed database service would be provisioned.
+
+---
+
 ## `render.yaml` + `build.sh`
 **What they do**: Render.com deployment configuration.
 
 - `render.yaml` — Blueprint declaring a web service with a 1 GB persistent disk at `/var/data` (SQLite file)
 - `build.sh` — Build phase: `composer install --no-dev`, `npm run build`, cache config/routes/views
-
-**Interview Q: Why SQLite for production on Render (free tier)?**
-> Free-tier Render services do not include a managed database. A persistent disk with SQLite is the simplest zero-cost production-grade persistence option for a small internal tool. At scale, the DB_CONNECTION would switch to MySQL and a managed database service would be provisioned.
 
 ---
 

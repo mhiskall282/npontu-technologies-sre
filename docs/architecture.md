@@ -78,56 +78,57 @@ erDiagram
 
 ---
 
-## 2. Application Layer Architecture
+## 2. 4-Tier Application Architecture
 
-The layered architecture enforces separation of concerns. Each box represents a distinct responsibility boundary.
+The system is engineered using a enterprise **4-Tier Architecture** pattern to isolate UI presentation, HTTP control flow, core business execution, and database persistence.
 
 ```mermaid
 flowchart TB
-    subgraph Browser["🌐 Browser / Client"]
-        UI["Blade Views\n(Livewire + Tailwind CSS)"]
+    subgraph Tier1["Tier 1: Presentation Layer (UI)"]
+        UI["Blade Templates + Livewire 3\nTailwind CSS v4 + CDN Fallback\nAnimated SRE Splash Screen"]
     end
 
-    subgraph HTTP["HTTP Layer"]
-        MW["Middleware Stack\n(auth, EnsureRole, SecureHeaders, CSRF)"]
-        FR["Form Requests\n(Validation + authorize())"]
-        CTRL["Controllers\n(HTTP glue only)"]
-        LW["Livewire Components\n(Reactive UI)"]
+    subgraph Tier2["Tier 2: Application / HTTP Control Layer"]
+        MW["Middleware Stack\n(auth, EnsureRole, SecureHeaders, VerifyCsrfToken)"]
+        FR["Form Requests\n(Validation + Policy Authorization)"]
+        CTRL["Controllers & Livewire Components\n(Monitoring, Report, Settings, Admin, DailyActivityBoard)"]
     end
 
-    subgraph Business["Business Logic Layer"]
-        ACT["Action Classes\napp/Actions/"]
-        SVC["Services\napp/Services/"]
+    subgraph Tier3["Tier 3: Business Logic & Domain Service Layer"]
+        ACT["Action Classes\n(CreateActivityAction, UpdateActivityStatusAction, etc.)"]
+        SVC["Domain Services\n(AuditService, ReportingService)"]
+        NOTIF["Notification Services\n(WelcomeNotification, AdminPasswordResetNotification, ActivityReportMail)"]
     end
 
-    subgraph Domain["Domain / Data Layer"]
-        MDL["Eloquent Models\n(Activity, ActivityLog, AuditLog, User)"]
-        PLY["Policies\n(Authorization)"]
+    subgraph Tier4["Tier 4: Data Access & Persistence Layer"]
+        MDL["Eloquent ORM Models & Policies\n(User, Activity, ActivityLog, AuditLog, UserPolicy, ActivityPolicy)"]
+        DB[(Render Free PostgreSQL / SQLite Database)]
     end
 
-    subgraph DB["💾 Database (SQLite / MySQL)"]
-        T1[(users)]
-        T2[(activities)]
-        T3[(activity_logs)]
-        T4[(audit_logs)]
-    end
-
-    UI -->|HTTP request| MW
+    UI -->|HTTPS User Interaction| MW
     MW --> FR
     FR --> CTRL
-    FR --> LW
     CTRL --> ACT
-    LW --> ACT
+    CTRL --> NOTIF
     ACT --> SVC
     ACT --> MDL
     SVC --> MDL
-    MDL --> PLY
-    MDL --> T1 & T2 & T3 & T4
+    MDL --> DB
 
-    style Browser fill:#f0fdf4,stroke:#bbf7d0
-    style DB fill:#fefce8,stroke:#fef08a
-    style Business fill:#eff6ff,stroke:#bfdbfe
+    style Tier1 fill:#f0fdf4,stroke:#1B6B3A,stroke-width:2px
+    style Tier2 fill:#eff6ff,stroke:#2563eb,stroke-width:2px
+    style Tier3 fill:#fef3c7,stroke:#d97706,stroke-width:2px
+    style Tier4 fill:#f3e8ff,stroke:#9333ea,stroke-width:2px
 ```
+
+### 4-Tier Breakdown & Key Responsibilities
+
+| Tier | Component | Responsibility |
+|---|---|---|
+| **Tier 1: Presentation** | Blade, Livewire, Tailwind | Renders rich responsive dashboards, splash screens, real-time polling UI, and PDF report layouts. |
+| **Tier 2: Application / HTTP** | Middleware, FormRequests, Controllers | Guards routes (RBAC), validates incoming payloads, handles session auth, and delegates requests. |
+| **Tier 3: Business & Services** | Actions, Services, Mail/Notifications | Contains single-responsibility business logic, audit trail recording, reporting algorithms, and automated email dispatches. |
+| **Tier 4: Data Persistence** | Eloquent Models, Policies, PostgreSQL | Handles ORM relationships, soft-delete scopes, polymorphic morphs, schema migrations, and database queries. |
 
 ---
 
