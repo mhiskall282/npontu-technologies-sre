@@ -25,6 +25,7 @@ class ReportController extends Controller
         $logs = null;
         $chartData = null;
         $activities = Activity::orderBy('title')->get(['id', 'title']);
+        $users = User::orderBy('name')->get(['id', 'name', 'email', 'role']);
 
         $validated = $request->validated();
 
@@ -102,7 +103,7 @@ class ReportController extends Controller
             ];
         }
 
-        return view('reports.index', compact('logs', 'activities', 'chartData'));
+        return view('reports.index', compact('logs', 'activities', 'users', 'chartData'));
     }
 
     public function email(ReportRequest $request): RedirectResponse

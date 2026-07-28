@@ -22,7 +22,9 @@ class ActivityReportMail extends Mailable
     public function __construct(
         public Collection $logs,
         public string $from,
-        public string $to
+        public string $to,
+        public string $subjectStr,
+        public ?string $customMessage = null
     ) {}
 
     /**
@@ -31,7 +33,7 @@ class ActivityReportMail extends Mailable
     public function getEnvelope(): Envelope
     {
         return new Envelope(
-            subject: 'Npontu Support Activity Report ('.$this->from.' to '.$this->to.')',
+            subject: $this->subjectStr,
         );
     }
 

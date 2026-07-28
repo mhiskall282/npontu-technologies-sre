@@ -97,7 +97,12 @@
         </div>
         <div class="content">
             <div class="summary">
-                <p>Hello Team,</p>
+                <p>Hello,</p>
+                @if($customMessage)
+                    <p style="white-space: pre-wrap; margin-bottom: 20px; font-style: italic; color: #475569;">
+                        "{!! nl2br(e($customMessage)) !!}"
+                    </p>
+                @endif
                 <p>Please find the compiled support activity log report for the period <strong>{{ $from }}</strong> to <strong>{{ $to }}</strong>.</p>
                 <p>A total of <strong>{{ $logs->count() }}</strong> status change entries were recorded during this period.</p>
             </div>

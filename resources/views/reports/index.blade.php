@@ -50,23 +50,16 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Export Excel
             </a>
-            <button type="button" onclick="window.print()"
-                    class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
+            <a href="{{ route('reports.index', array_merge(request()->query(), ['print' => 'true'])) }}" target="_blank"
+               class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Print PDF
+            </a>
+            <button type="button" onclick="openEmailModal()"
+                    class="px-5 py-2 bg-[#F5C518] hover:bg-[#E0B310] text-[#0f1a14] text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Email Report
             </button>
-            <form action="{{ route('reports.email') }}" method="POST" class="inline">
-                @csrf
-                <input type="hidden" name="from" value="{{ request('from') }}">
-                <input type="hidden" name="to" value="{{ request('to') }}">
-                <input type="hidden" name="status" value="{{ request('status') }}">
-                <input type="hidden" name="activity_id" value="{{ request('activity_id') }}">
-                <button type="submit"
-                        class="px-5 py-2 bg-[#F5C518] hover:bg-[#E0B310] text-[#0f1a14] text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Email Report
-                </button>
-            </form>
             <a href="{{ route('reports.index') }}" class="text-sm text-gray-500 hover:text-gray-700 transition-colors ml-2">Clear</a>
             @endif
         </div>
@@ -171,8 +164,12 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden print-full-width">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between no-print">
             <p class="text-sm text-gray-600">
-                Showing <span class="font-semibold">{{ $logs->firstItem() }}–{{ $logs->lastItem() }}</span>
-                of <span class="font-semibold">{{ $logs->total() }}</span> entries
+                @if($logs instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+                    Showing <span class="font-semibold">{{ $logs->firstItem() ?? 0 }}–{{ $logs->lastItem() ?? 0 }}</span>
+                    of <span class="font-semibold">{{ $logs->total() }}</span> entries
+                @else
+                    Showing all <span class="font-semibold">{{ $logs->count() }}</span> entries
+                @endif
             </p>
         </div>
         <table class="min-w-full divide-y divide-gray-100 text-sm">
@@ -207,9 +204,11 @@
                 @endforeach
             </tbody>
         </table>
+        @if($logs instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
         <div class="px-6 py-4 border-t border-gray-100 no-print">
             {{ $logs->links() }}
         </div>
+        @endif
     </div>
     @endif
 @else
@@ -219,5 +218,98 @@
     </svg>
     <p class="text-sm font-medium">Select a date range and run a report to see activity history.</p>
 </div>
+@endif
+
+{{-- Email Customization Modal --}}
+<div id="emailModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-40 flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 w-full max-w-lg overflow-hidden transition-all transform">
+        <div class="px-6 py-4 bg-[#1B6B3A] text-white flex justify-between items-center">
+            <h3 class="font-bold text-lg">Send Report via Email</h3>
+            <button type="button" onclick="closeEmailModal()" class="text-white hover:text-green-200 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <form action="{{ route('reports.email') }}" method="POST" class="p-6 space-y-4">
+            @csrf
+            {{-- Hidden filter parameters --}}
+            <input type="hidden" name="from" value="{{ request('from') }}">
+            <input type="hidden" name="to" value="{{ request('to') }}">
+            <input type="hidden" name="status" value="{{ request('status') }}">
+            <input type="hidden" name="activity_id" value="{{ request('activity_id') }}">
+
+            {{-- Recipients Selector --}}
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Recipients</label>
+                <div class="border border-gray-200 rounded-lg p-3 max-h-36 overflow-y-auto space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer">
+                        <input type="checkbox" id="selectAllEmails" checked onchange="toggleAllEmails(this)"
+                               class="rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]">
+                        Select All
+                    </label>
+                    <hr class="border-gray-100">
+                    @foreach($users as $user)
+                    <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                        <input type="checkbox" name="recipients[]" value="{{ $user->email }}" checked
+                               class="recipient-checkbox rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]">
+                        <span>{{ $user->name }} <span class="text-xs text-gray-400">({{ $user->email }})</span></span>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Subject --}}
+            <div>
+                <label for="email_subject" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Subject</label>
+                <input type="text" id="email_subject" name="subject" required
+                       value="Support Activity Report ({{ request('from') }} to {{ request('to') }})"
+                       class="block w-full rounded-lg border-gray-300 shadow-sm text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A] px-3 py-2">
+            </div>
+
+            {{-- Custom Message --}}
+            <div>
+                <label for="email_message" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Custom Message (Optional)</label>
+                <textarea id="email_message" name="message" rows="3" placeholder="Enter notes or updates to include at the top of the email..."
+                          class="block w-full rounded-lg border-gray-300 shadow-sm text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A] px-3 py-2"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <button type="button" onclick="closeEmailModal()"
+                        class="px-4 py-2 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-[#1B6B3A] hover:bg-[#2A8F52] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm">
+                    Send Email
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEmailModal() {
+        document.getElementById('emailModal').classList.remove('hidden');
+    }
+
+    function closeEmailModal() {
+        document.getElementById('emailModal').classList.add('hidden');
+    }
+
+    function toggleAllEmails(master) {
+        const checkboxes = document.querySelectorAll('.recipient-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = master.checked;
+        });
+    }
+</script>
+
+@if(request('print') === 'true')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            window.print();
+        }, 800);
+    });
+</script>
 @endif
 @endsection
