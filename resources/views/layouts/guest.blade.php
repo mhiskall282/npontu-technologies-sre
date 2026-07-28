@@ -7,6 +7,7 @@
     <title>{{ config('app.name', 'Support Tracker') }} — Sign In</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full font-sans antialiased bg-[#0F1A14]">
@@ -29,13 +30,13 @@
         </div>
     </div>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('load', () => {
             const splash = document.getElementById('guest-splash-screen');
             if (splash) {
                 setTimeout(() => {
                     splash.style.opacity = '0';
-                    setTimeout(() => splash.remove(), 500);
-                }, 200);
+                    setTimeout(() => splash.remove(), 600);
+                }, 7000);
             }
         });
     </script>
