@@ -45,6 +45,65 @@
         @endcan
     </div>
 
+    {{-- 7-Day Completion Trend --}}
+    @if(isset($trendData))
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h2 class="text-base font-semibold text-[#1B6B3A] mb-4">7-Day Completion Trend</h2>
+        <div class="h-48">
+            <canvas id="activityTrendChart"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('activityTrendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($trendData['labels']) !!},
+                    datasets: [{
+                        label: 'Completion Status',
+                        data: {!! json_encode($trendData['values']) !!},
+                        backgroundColor: function(context) {
+                            const val = context.raw;
+                            return val === 100 ? '#1B6B3A' : '#E63946';
+                        },
+                        borderWidth: 0,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value === 100 ? 'Done' : (value === 0 ? 'Pending' : '');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.raw === 100 ? 'Completed' : 'Pending/Not Run';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    @endif
+
     {{-- Recent log entries --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-base font-semibold text-[#1B6B3A] mb-4">Recent Update History</h2>

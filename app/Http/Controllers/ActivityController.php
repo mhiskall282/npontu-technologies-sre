@@ -10,6 +10,7 @@ use App\Actions\Activities\UpdateActivityAction;
 use App\Http\Requests\StoreActivityRequest;
 use App\Http\Requests\UpdateActivityRequest;
 use App\Models\Activity;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -49,7 +50,30 @@ class ActivityController extends Controller
 
         $activity->load(['creator', 'logs' => fn ($q) => $q->orderByDesc('id')->limit(20)]);
 
-        return view('activities.show', compact('activity'));
+        // Calculate last 7 days status trend
+        $last7Days = collect(range(6, 0))->map(fn ($days) => today()->subDays($days)->format('Y-m-d'));
+        $recentLogs = $activity->logs()
+            ->whereBetween('date', [today()->subDays(6)->format('Y-m-d'), today()->format('Y-m-d')])
+            ->get();
+
+        $chartLabels = [];
+        $chartValues = [];
+
+        foreach ($last7Days as $dateStr) {
+            $formattedLabel = Carbon::parse($dateStr)->format('D, d M');
+            $chartLabels[] = $formattedLabel;
+
+            $dayLogs = $recentLogs->filter(fn ($l) => $l->date->format('Y-m-d') === $dateStr);
+            $latest = $dayLogs->sortByDesc('id')->first();
+            $chartValues[] = $latest?->status === 'done' ? 100 : 0;
+        }
+
+        $trendData = [
+            'labels' => $chartLabels,
+            'values' => $chartValues,
+        ];
+
+        return view('activities.show', compact('activity', 'trendData'));
     }
 
     public function edit(Activity $activity): View

@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 
     // Reporting
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/reports/email', [ReportController::class, 'email'])->name('reports.email');
 
     // Health check — beyond spec; included for SRE alignment (uptime monitoring)
     Route::get('/health', function () {

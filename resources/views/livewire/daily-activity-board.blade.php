@@ -36,6 +36,24 @@
         </div>
     </div>
 
+    @php
+        $totalCount = $pending->count() + $done->count();
+        $doneCount = $done->count();
+        $completionRate = $totalCount > 0 ? round(($doneCount / $totalCount) * 100) : 0;
+    @endphp
+    @if($totalCount > 0)
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-6 border border-gray-100">
+        <div class="flex items-center justify-between text-xs font-semibold text-gray-700 mb-2">
+            <span class="uppercase tracking-wider">Completion Progress</span>
+            <span class="text-[#1B6B3A] font-bold">{{ $completionRate }}% ({{ $doneCount }} of {{ $totalCount }} completed)</span>
+        </div>
+        <div class="w-full bg-gray-100 rounded-full h-3.5 overflow-hidden">
+            <div class="bg-gradient-to-r from-[#1B6B3A] to-[#2A8F52] h-full rounded-full transition-all duration-500 ease-out"
+                 style="width: {{ $completionRate }}%"></div>
+        </div>
+    </div>
+    @endif
+
     @if($pending->isEmpty() && $done->isEmpty())
         <div class="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-100">
             <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

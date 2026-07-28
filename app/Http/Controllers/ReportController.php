@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ReportRequest;
+use App\Mail\ActivityReportMail;
 use App\Models\Activity;
+use App\Models\User;
 use App\Services\ReportingService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -99,5 +103,32 @@ class ReportController extends Controller
         }
 
         return view('reports.index', compact('logs', 'activities', 'chartData'));
+    }
+
+    public function email(ReportRequest $request): RedirectResponse
+    {
+        $this->authorize('viewAny', Activity::class);
+        $validated = $request->validated();
+
+        if (isset($validated['from']) && isset($validated['to'])) {
+            $exportLogs = $this->reportingService->exportQuery(
+                from: $validated['from'],
+                to: $validated['to'],
+                status: $validated['status'] ?? null,
+                activityId: isset($validated['activity_id']) ? (int) $validated['activity_id'] : null,
+            );
+
+            $emails = User::pluck('email')->toArray();
+
+            if (! empty($emails)) {
+                Mail::to($emails)->send(
+                    new ActivityReportMail($exportLogs, $validated['from'], $validated['to'])
+                );
+            }
+
+            return redirect()->back()->with('success', 'Activity report successfully emailed to '.count($emails).' team members.');
+        }
+
+        return redirect()->back()->with('error', 'Please query a date range before sending the report.');
     }
 }
