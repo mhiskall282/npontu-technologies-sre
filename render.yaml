@@ -20,6 +20,8 @@ services:
         fromDatabase:
           name: npontu-db
           property: connectionString
+    customDomains:
+      - npontu-tracker.johnokyere.xyz
 
   # ── 2. Database Service (Render Free PostgreSQL) ─────────────────────────
 databases:
