@@ -98,9 +98,19 @@
                     @endif
                 </div>
 
-                {{-- User Menu --}}
-                <div class="flex items-center gap-3">
-                    <div class="hidden md:block text-right">
+                {{-- Mobile Hamburger Toggle --}}
+                <div class="flex items-center gap-2 md:hidden">
+                    <a href="{{ route('settings.edit') }}" class="p-1.5 text-green-200 hover:text-white rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </a>
+                    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" type="button" class="p-2 text-green-100 hover:bg-[#12492A] rounded-lg focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                </div>
+
+                {{-- User Menu (Desktop) --}}
+                <div class="hidden md:flex items-center gap-3">
+                    <div class="text-right">
                         <p class="text-sm font-semibold leading-none">{{ auth()->user()->name }}</p>
                         <p class="text-xs text-green-300 mt-0.5 capitalize">{{ auth()->user()->role }}</p>
                     </div>
@@ -120,7 +130,42 @@
 
             </div>
         </div>
+
+        {{-- Mobile Dropdown Drawer --}}
+        <div id="mobile-menu" class="hidden md:hidden border-t border-green-700 bg-[#12492A] px-4 py-3 space-y-2">
+            <div class="pb-2 mb-2 border-b border-green-600 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-bold text-white">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-green-300 capitalize">{{ auth()->user()->role }}</p>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg">Sign Out</button>
+                </form>
+            </div>
+            <a href="{{ route('activities.daily') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Today's Board</a>
+            <a href="{{ route('activities.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Activities</a>
+            <a href="{{ route('reports.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Reports</a>
+            @if(auth()->user()->canManageActivities())
+            <a href="{{ route('admin.activities.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Admin Management</a>
+            <a href="{{ route('monitoring.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">SRE Monitoring</a>
+            @endif
+            <a href="{{ route('settings.edit') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-green-200 hover:bg-[#1B6B3A]">Account Settings</a>
+        </div>
     </nav>
+
+    {{-- ── Back Button Bar (User-First Navigation) ────────────────────────── --}}
+    @if(!request()->routeIs('activities.daily'))
+    <div class="bg-white border-b border-gray-200 no-print py-2 px-4 sm:px-6 lg:px-8 shadow-xs">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="window.history.back()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg transition-colors shadow-2xs cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back
+            </button>
+            <span class="text-xs text-gray-400 font-medium">Support Activity Tracker</span>
+        </div>
+    </div>
+    @endif
 
     {{-- ── Flash messages ──────────────────────────────────────── --}}
     @if(session('success') || session('error'))

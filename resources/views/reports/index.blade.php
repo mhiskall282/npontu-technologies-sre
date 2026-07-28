@@ -39,28 +39,28 @@
                 @endforeach
             </select>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
             <button type="submit"
-                    class="px-5 py-2 bg-[#1B6B3A] hover:bg-[#2A8F52] text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm">
+                    class="w-full sm:w-auto px-5 py-2 bg-[#1B6B3A] hover:bg-[#2A8F52] text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm text-center">
                 Run Report
             </button>
             @if(request()->hasAny(['from','to','status','activity_id']))
             <a href="{{ route('reports.index', array_merge(request()->query(), ['export' => 'csv'])) }}"
-               class="px-5 py-2 bg-[#12492A] hover:bg-[#1B6B3A] text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
+               class="w-full sm:w-auto px-5 py-2 bg-[#12492A] hover:bg-[#1B6B3A] text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center justify-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Export Excel
             </a>
             <a href="{{ route('reports.index', array_merge(request()->query(), ['print' => 'true'])) }}" target="_blank"
-               class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
+               class="w-full sm:w-auto px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center justify-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Print PDF
             </a>
             <button type="button" onclick="openEmailModal()"
-                    class="px-5 py-2 bg-[#F5C518] hover:bg-[#E0B310] text-[#0f1a14] text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
+                    class="w-full sm:w-auto px-5 py-2 bg-[#F5C518] hover:bg-[#E0B310] text-[#0f1a14] text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center justify-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 Email Report
             </button>
-            <a href="{{ route('reports.index') }}" class="text-sm text-gray-500 hover:text-gray-700 transition-colors ml-2">Clear</a>
+            <a href="{{ route('reports.index') }}" class="w-full sm:w-auto text-center px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">Clear</a>
             @endif
         </div>
     </form>
