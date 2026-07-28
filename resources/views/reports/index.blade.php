@@ -8,7 +8,7 @@
 </div>
 
 {{-- Filter form --}}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6 no-print">
     <form action="{{ route('reports.index') }}" method="GET" class="flex flex-wrap items-end gap-4">
         <div>
             <label for="from" class="block text-xs font-medium text-gray-700 mb-1">From</label>
@@ -39,13 +39,25 @@
                 @endforeach
             </select>
         </div>
-        <button type="submit"
-                class="px-5 py-2 bg-[#1B6B3A] hover:bg-[#2A8F52] text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm">
-            Run Report
-        </button>
-        @if(request()->hasAny(['from','to','status','activity_id']))
-        <a href="{{ route('reports.index') }}" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">Clear</a>
-        @endif
+        <div class="flex flex-wrap items-center gap-2">
+            <button type="submit"
+                    class="px-5 py-2 bg-[#1B6B3A] hover:bg-[#2A8F52] text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm">
+                Run Report
+            </button>
+            @if(request()->hasAny(['from','to','status','activity_id']))
+            <a href="{{ route('reports.index', array_merge(request()->query(), ['export' => 'csv'])) }}"
+               class="px-5 py-2 bg-[#12492A] hover:bg-[#1B6B3A] text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Export Excel
+            </a>
+            <button type="button" onclick="window.print()"
+                    class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg transition-colors duration-150 shadow-sm flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Print PDF
+            </button>
+            <a href="{{ route('reports.index') }}" class="text-sm text-gray-500 hover:text-gray-700 transition-colors ml-2">Clear</a>
+            @endif
+        </div>
     </form>
 </div>
 
@@ -57,8 +69,95 @@
         <p class="text-sm mt-1">Try expanding the date range or clearing filters.</p>
     </div>
     @else
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+    
+    {{-- Charts Block --}}
+    @if(isset($chartData))
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="md:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h3 class="text-sm font-bold text-gray-800 mb-4">Status Distribution</h3>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+        <div class="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h3 class="text-sm font-bold text-gray-800 mb-4">Activity Logs Over Time</h3>
+            <div class="h-64">
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Status Chart
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($chartData['status']['labels']) !!},
+                    datasets: [{
+                        data: {!! json_encode($chartData['status']['values']) !!},
+                        backgroundColor: ['#1B6B3A', '#E63946'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Timeline Chart
+            const ctxTimeline = document.getElementById('timelineChart').getContext('2d');
+            new Chart(ctxTimeline, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($chartData['timeline']['labels']) !!},
+                    datasets: [{
+                        label: 'Log Entries',
+                        data: {!! json_encode($chartData['timeline']['values']) !!},
+                        backgroundColor: 'rgba(27, 107, 58, 0.85)',
+                        borderColor: '#1B6B3A',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    @endif
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden print-full-width">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between no-print">
             <p class="text-sm text-gray-600">
                 Showing <span class="font-semibold">{{ $logs->firstItem() }}–{{ $logs->lastItem() }}</span>
                 of <span class="font-semibold">{{ $logs->total() }}</span> entries
@@ -96,7 +195,7 @@
                 @endforeach
             </tbody>
         </table>
-        <div class="px-6 py-4 border-t border-gray-100">
+        <div class="px-6 py-4 border-t border-gray-100 no-print">
             {{ $logs->links() }}
         </div>
     </div>

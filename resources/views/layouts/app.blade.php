@@ -15,7 +15,7 @@
 <body class="h-full flex flex-col bg-[#F4F7F5] font-sans antialiased">
 
     {{-- ── Navigation ──────────────────────────────────────────── --}}
-    <nav class="bg-[#1B6B3A] text-white shadow-lg flex-shrink-0">
+    <nav class="bg-[#1B6B3A] text-white shadow-lg flex-shrink-0 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
 
@@ -98,7 +98,7 @@
     </main>
 
     {{-- ── Footer ──────────────────────────────────────────────── --}}
-    <footer class="bg-[#0F1A14] text-green-400 text-xs py-4 mt-auto flex-shrink-0">
+    <footer class="bg-[#0F1A14] text-green-400 text-xs py-4 mt-auto flex-shrink-0 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
             <span>&copy; {{ date('Y') }} Npontu Technologies. Internal use only.</span>
             <a href="{{ route('health') }}" class="hover:text-[#F5C518] transition-colors duration-150">

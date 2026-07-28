@@ -94,4 +94,26 @@ final class ReportingService
                 return $activity;
             });
     }
+
+    public function exportQuery(
+        string $from,
+        string $to,
+        ?string $status = null,
+        ?int $activityId = null,
+    ): Collection {
+        $query = ActivityLog::with(['activity', 'updater'])
+            ->whereBetween('date', [$from, $to])
+            ->orderBy('date', 'desc')
+            ->orderBy('id', 'desc');
+
+        if ($status !== null) {
+            $query->where('status', $status);
+        }
+
+        if ($activityId !== null) {
+            $query->where('activity_id', $activityId);
+        }
+
+        return $query->get();
+    }
 }
