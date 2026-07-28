@@ -57,6 +57,10 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin,lead')
         ->group(function () {
             Route::resource('users', Admin\UserController::class)->middleware('role:admin');
+            // Admin-initiated password reset (POST to avoid GET bookmarking)
+            Route::post('users/{user}/reset-password', [Admin\UserController::class, 'resetPassword'])
+                ->name('users.resetPassword')
+                ->middleware('role:admin');
             Route::resource('activities', Admin\ActivityController::class);
         });
 });

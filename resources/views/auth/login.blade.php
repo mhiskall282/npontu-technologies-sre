@@ -106,6 +106,10 @@
                                        class="rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]">
                                 Remember me
                             </label>
+                            <a href="{{ route('password.request') }}"
+                               class="text-sm text-[#1B6B3A] font-semibold hover:underline">
+                                Forgot password?
+                            </a>
                         </div>
 
                         <button type="submit"
