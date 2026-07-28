@@ -1,24 +1,29 @@
 services:
+  # ── 1. Web Service (Docker Runtime - Free Tier Compatible) ───────────────
   - type: web
     name: npontu-support-tracker
-    env: php
+    runtime: docker
     plan: free
-    buildCommand: ./build.sh
-    startCommand: touch /var/data/database.sqlite && php artisan migrate --force && heroku-php-apache2 public/
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
-      - key: DB_CONNECTION
-        value: sqlite
-      - key: DB_DATABASE
-        value: /var/data/database.sqlite
+        value: "false"
       - key: LOG_CHANNEL
         value: stderr
       - key: SESSION_DRIVER
         value: cookie
-    disk:
-      name: sqlite-data
-      mountPath: /var/data
-      sizeGB: 1
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: npontu-db
+          property: connectionString
+
+  # ── 2. Database Service (Render Free PostgreSQL) ─────────────────────────
+databases:
+  - name: npontu-db
+    databaseName: npontu_tracker
+    user: npontu_user
+    plan: free
