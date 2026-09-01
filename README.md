@@ -1,6 +1,8 @@
 # Support Activity Tracker — Npontu Technologies
 
 > **A Laravel 11 web application for operations support teams** to log daily shift activities, record status updates with immutable audit trails, and facilitate clean shift handovers.
+>
+> 
 
 🌐 **Production Deployment**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)
 
