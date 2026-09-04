@@ -48,14 +48,20 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy full application code first
+# Copy composer files first for optimal Docker layer caching
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies without dev dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-autoloader
+
+# Copy full application code
 COPY . .
 
 # Copy compiled assets from stage 1
 COPY --from=assets /app/public/build ./public/build
 
-# Install PHP dependencies
-RUN composer update fakerphp/faker --no-interaction --no-scripts && composer install --no-dev --optimize-autoloader --no-scripts
+# Dump optimized autoloader with application classes
+RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
 
 # Laravel storage and cache directories
 RUN mkdir -p storage/framework/{cache,sessions,views} \
