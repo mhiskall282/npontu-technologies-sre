@@ -33,4 +33,4 @@ databases:
   - name: npontu-db
     databaseName: npontu_tracker
     user: npontu_user
-    plan: starter
+    plan: 0.5c-1g
