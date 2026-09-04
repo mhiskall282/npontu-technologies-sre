@@ -12,49 +12,82 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * SRE Monitoring Dashboard
+ * SRE Monitoring Dashboard Controller
  *
- * Provides a real-time operational overview for Admin and Lead roles:
- *   - System health metrics (DB connectivity, uptime, user counts)
- *   - Live audit log stream (recent mutations with actor and event details)
- *   - Activity completion trends by day and category
- *   - Alert surface for stale/pending activities
- *   - Per-user contribution breakdown
+ * Provides a real-time operational overview for Admin and Team Lead roles:
+ *   - Operational snapshot (total users, active checks, today's completion)
+ *   - Security audit log stream (paginated mutation trail with actor bio and diffs)
+ *   - 7-day activity completion trends (aggregated via composite index)
+ *   - Category breakdown (volume and completion rate per check category)
+ *   - Shift operator leaderboard (top active operators by log volume)
+ *   - Stale activity alert surface (identifies unfinished checks from previous shifts)
+ *   - Audit event type distribution (breakdown of created, updated, status_changed events)
+ *
+ * PERFORMANCE DESIGN:
+ * All queries explicitly leverage composite indexes (date, status) and (date, activity_id).
+ * Aggregate queries are used instead of per-day foreach loops to minimize round-trips.
  */
 class MonitoringController extends Controller
 {
+    /**
+     * Render the unified SRE operational and compliance dashboard.
+     *
+     * @param  Request  $request  Incoming HTTP request
+     * @return View Rendered monitoring dashboard view
+     */
     public function index(Request $request): View
     {
+        // Enforce authorization: only users with viewAny permission on Activity can access monitoring
         $this->authorize('viewAny', Activity::class);
 
-        // ── System Snapshot ─────────────────────────────────────────────
+        $todayStr = today()->toDateString();
+        $thirtyDaysAgo = now()->subDays(30)->toDateString();
+        $sevenDaysAgo = now()->subDays(6)->toDateString();
+
+        // ── 1. System Snapshot ───────────────────────────────────────────
+        // Fast scalar counts summarizing current system state
         $totalUsers = User::count();
         $totalActivities = Activity::count();
-        $todayLogs = ActivityLog::whereDate('date', today())->count();
-        $pendingToday = ActivityLog::whereDate('date', today())->where('status', 'pending')->count();
-        $doneToday = ActivityLog::whereDate('date', today())->where('status', 'done')->count();
 
-        // ── Audit Log Stream (paginated, newest first) ───────────────────
+        // Single indexed count query for today's overall and status-filtered logs
+        $todayLogs = ActivityLog::where('date', $todayStr)->count();
+        $pendingToday = ActivityLog::where('date', $todayStr)->where('status', 'pending')->count();
+        $doneToday = ActivityLog::where('date', $todayStr)->where('status', 'done')->count();
+
+        // ── 2. Security Audit Log Stream ─────────────────────────────────
+        // Paginated stream of security audit mutations (most recent first)
         $auditLogs = AuditLog::latest('created_at')->paginate(20);
 
-        // ── 7-Day Activity Completion Trend ──────────────────────────────
+        // ── 3. 7-Day Activity Completion Trend ───────────────────────────
+        // Optimized: Single aggregate query grouped by (date, status) replacing 14 separate round-trips
         $trendDays = collect(range(6, 0))->map(fn ($d) => now()->subDays($d)->toDateString());
+
+        $trendLogs = ActivityLog::whereBetween('date', [$sevenDaysAgo, $todayStr])
+            ->selectRaw('date, status, COUNT(*) as aggregate_count')
+            ->groupBy('date', 'status')
+            ->get()
+            ->groupBy('date');
+
         $doneTrend = [];
         $pendTrend = [];
+
         foreach ($trendDays as $day) {
-            $doneTrend[] = ActivityLog::whereDate('date', $day)->where('status', 'done')->count();
-            $pendTrend[] = ActivityLog::whereDate('date', $day)->where('status', 'pending')->count();
+            $dayGroup = $trendLogs->get($day, collect());
+            $doneTrend[] = (int) ($dayGroup->firstWhere('status', 'done')?->aggregate_count ?? 0);
+            $pendTrend[] = (int) ($dayGroup->firstWhere('status', 'pending')?->aggregate_count ?? 0);
         }
+
         $trendChart = [
             'labels' => $trendDays->map(fn ($d) => date('D d/m', strtotime($d)))->values()->toArray(),
             'done' => $doneTrend,
             'pending' => $pendTrend,
         ];
 
-        // ── Category Breakdown (last 30 days) ───────────────────────────
+        // ── 4. Category Breakdown (Last 30 Days) ─────────────────────────
+        // Evaluates check volume and completion rates across operational domains (e.g. Infrastructure, Database, Application)
         $categoryBreakdown = Activity::withCount([
-            'logs as total_logs' => fn ($q) => $q->whereDate('date', '>=', now()->subDays(30)),
-            'logs as done_count' => fn ($q) => $q->where('status', 'done')->whereDate('date', '>=', now()->subDays(30)),
+            'logs as total_logs' => fn ($q) => $q->where('date', '>=', $thirtyDaysAgo),
+            'logs as done_count' => fn ($q) => $q->where('status', 'done')->where('date', '>=', $thirtyDaysAgo),
         ])->get()->groupBy('category')->map(function ($group) {
             return [
                 'total' => $group->sum('total_logs'),
@@ -62,38 +95,49 @@ class MonitoringController extends Controller
             ];
         });
 
-        // ── Top Contributors (last 7 days by log count) ─────────────────
+        // ── 5. Top Shift Contributors (Last 7 Days) ─────────────────────
+        // Ranks operators by volume of recorded status checks for team performance reviews
         $topContributors = ActivityLog::selectRaw('actor_name, actor_role, COUNT(*) as log_count')
-            ->whereDate('date', '>=', now()->subDays(7))
+            ->where('date', '>=', $sevenDaysAgo)
             ->groupBy('actor_name', 'actor_role')
             ->orderByDesc('log_count')
             ->limit(5)
             ->get();
 
-        // ── Stale Pending Alerts (pending for more than 1 day) ──────────
+        // ── 6. Stale Pending Alerts ──────────────────────────────────────
+        // Identifies activities left incomplete from earlier calendar days to prevent handover blindspots
         $staleAlerts = ActivityLog::with('activity')
-            ->whereDate('date', '<', today())
+            ->where('date', '<', $todayStr)
             ->where('status', 'pending')
-            ->whereIn('id', function ($q) {
+            ->whereIn('id', function ($q) use ($todayStr) {
                 $q->selectRaw('MAX(id)')
                     ->from('activity_logs')
-                    ->whereDate('date', '<', today())
+                    ->where('date', '<', $todayStr)
                     ->groupBy('activity_id', 'date');
             })
             ->latest()
             ->limit(10)
             ->get();
 
-        // ── Event Type Breakdown ─────────────────────────────────────────
+        // ── 7. Audit Event Type Distribution ─────────────────────────────
+        // Breakdown of operational mutations (create, update, status_changed, delete) for compliance reporting
         $eventBreakdown = AuditLog::selectRaw('event, COUNT(*) as count')
             ->groupBy('event')
             ->orderByDesc('count')
             ->get();
 
         return view('monitoring.index', compact(
-            'totalUsers', 'totalActivities', 'todayLogs', 'pendingToday', 'doneToday',
-            'auditLogs', 'trendChart', 'categoryBreakdown',
-            'topContributors', 'staleAlerts', 'eventBreakdown'
+            'totalUsers',
+            'totalActivities',
+            'todayLogs',
+            'pendingToday',
+            'doneToday',
+            'auditLogs',
+            'trendChart',
+            'categoryBreakdown',
+            'topContributors',
+            'staleAlerts',
+            'eventBreakdown'
         ));
     }
 }
