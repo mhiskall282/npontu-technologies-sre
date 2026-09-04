@@ -76,7 +76,7 @@ class Activity extends Model
     public function latestLogForDate(string $date): ?ActivityLog
     {
         return $this->logs()
-            ->whereDate('date', $date)
+            ->where('date', $date)
             ->latest('id')
             ->first();
     }

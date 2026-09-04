@@ -76,7 +76,7 @@ final class ReportingService
     public function dailySummary(string $date): Collection
     {
         return Activity::with(['logs' => function ($query) use ($date) {
-            $query->whereDate('date', $date)
+            $query->where('date', $date)
                 ->orderBy('id', 'asc');
         }])
             ->active()

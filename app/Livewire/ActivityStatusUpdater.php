@@ -52,10 +52,14 @@ class ActivityStatusUpdater extends Component
         $this->showForm = false;
         $this->remark = '';
 
-        // Tell the parent board to refresh
-        $this->dispatch('status-updated');
+        $statusLabel = ucfirst($this->status);
+        $message = "Status for '{$this->activity->title}' marked as {$statusLabel}.";
 
-        session()->flash('success', "Status updated to {$this->status}.");
+        // Tell the parent board to refresh immediately
+        $this->dispatch('status-updated', message: $message);
+        $this->dispatch('statusUpdated', message: $message);
+
+        session()->flash('success', $message);
     }
 
     public function render(): View

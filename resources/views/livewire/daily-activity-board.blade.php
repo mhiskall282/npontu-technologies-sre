@@ -6,6 +6,13 @@
             <p class="text-sm text-gray-500 mt-0.5">Shift handover view — {{ \Carbon\Carbon::parse($date)->format('l, d F Y') }}</p>
         </div>
         <div class="flex items-center gap-2">
+            <span wire:loading.flex wire:target="refreshBoard,date,search,category" class="items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-[#1B6B3A]">
+                <svg class="animate-spin h-3 w-3 text-[#1B6B3A]" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Syncing...
+            </span>
             <label for="board-date" class="text-sm font-medium text-gray-700">Date:</label>
             <input type="date"
                    id="board-date"
@@ -20,6 +27,18 @@
         </div>
     </div>
 
+    {{-- ── Flash messages ──────────────────────────────────────── --}}
+    @if(session('success'))
+    <div class="mb-6 transition-all duration-300">
+        <x-alert type="success" :message="session('success')" />
+    </div>
+    @endif
+    @if(session('error'))
+    <div class="mb-6 transition-all duration-300">
+        <x-alert type="error" :message="session('error')" />
+    </div>
+    @endif
+
     {{-- ── Role-based Welcome & Console ────────────────────────── --}}
     <div class="grid grid-cols-1 gap-6 mb-6">
         @if(auth()->user()->isAdmin())
@@ -30,10 +49,10 @@
                 <p class="text-green-100 text-sm mt-1">Manage system configurations, user access, and oversee SRE shift operations.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('admin.activities.index') }}" class="px-4 py-2 bg-white text-[#1B6B3A] hover:bg-green-50 text-sm font-bold rounded-lg transition-colors">
+                <a href="{{ route('admin.activities.index') }}" class="px-4 py-2 bg-white text-[#1B6B3A] hover:bg-green-50 text-sm font-bold rounded-lg transition-colors shadow-sm">
                     Manage Activities
                 </a>
-                <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-[#F5C518] text-gray-900 hover:bg-[#E0B310] text-sm font-bold rounded-lg transition-colors">
+                <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-[#F5C518] text-gray-900 hover:bg-[#E0B310] text-sm font-bold rounded-lg transition-colors shadow-sm">
                     Manage Users
                 </a>
             </div>
@@ -46,10 +65,10 @@
                 <p class="text-green-100 text-sm mt-1">Review shift handovers, manage tasks, and generate performance reports.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('admin.activities.index') }}" class="px-4 py-2 bg-white text-[#1B6B3A] hover:bg-green-50 text-sm font-bold rounded-lg transition-colors">
+                <a href="{{ route('admin.activities.index') }}" class="px-4 py-2 bg-white text-[#1B6B3A] hover:bg-green-50 text-sm font-bold rounded-lg transition-colors shadow-sm">
                     Create/Edit Checks
                 </a>
-                <a href="{{ route('reports.index') }}" class="px-4 py-2 bg-[#F5C518] text-gray-900 hover:bg-[#E0B310] text-sm font-bold rounded-lg transition-colors">
+                <a href="{{ route('reports.index') }}" class="px-4 py-2 bg-[#F5C518] text-gray-900 hover:bg-[#E0B310] text-sm font-bold rounded-lg transition-colors shadow-sm">
                     System Reports
                 </a>
             </div>
@@ -72,29 +91,27 @@
     {{-- ── Stats bar ──────────────────────────────────────────── --}}
     <div class="grid grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100 text-center">
-            <p class="text-3xl font-bold text-gray-900">{{ $pending->count() + $done->count() }}</p>
+            <p class="text-3xl font-bold text-gray-900">{{ $totalActivitiesCount }}</p>
             <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Total Activities</p>
         </div>
         <div class="bg-amber-50 rounded-lg shadow-sm p-4 border border-[#F5C518] border-opacity-50 text-center">
-            <p class="text-3xl font-bold text-[#E63946]">{{ $pending->count() }}</p>
+            <p class="text-3xl font-bold text-[#E63946]">{{ $totalPendingCount }}</p>
             <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Pending</p>
         </div>
         <div class="bg-green-50 rounded-lg shadow-sm p-4 border border-[#1B6B3A] border-opacity-30 text-center">
-            <p class="text-3xl font-bold text-[#1B6B3A]">{{ $done->count() }}</p>
+            <p class="text-3xl font-bold text-[#1B6B3A]">{{ $totalDoneCount }}</p>
             <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Done</p>
         </div>
     </div>
 
     @php
-        $totalCount = $pending->count() + $done->count();
-        $doneCount = $done->count();
-        $completionRate = $totalCount > 0 ? round(($doneCount / $totalCount) * 100) : 0;
+        $completionRate = $totalActivitiesCount > 0 ? round(($totalDoneCount / $totalActivitiesCount) * 100) : 0;
     @endphp
-    @if($totalCount > 0)
+    @if($totalActivitiesCount > 0)
     <div class="bg-white rounded-xl shadow-sm p-5 mb-6 border border-gray-100">
         <div class="flex items-center justify-between text-xs font-semibold text-gray-700 mb-2">
             <span class="uppercase tracking-wider">Completion Progress</span>
-            <span class="text-[#1B6B3A] font-bold">{{ $completionRate }}% ({{ $doneCount }} of {{ $totalCount }} completed)</span>
+            <span class="text-[#1B6B3A] font-bold">{{ $completionRate }}% ({{ $totalDoneCount }} of {{ $totalActivitiesCount }} completed)</span>
         </div>
         <div class="w-full bg-gray-100 rounded-full h-3.5 overflow-hidden">
             <div class="bg-gradient-to-r from-[#1B6B3A] to-[#2A8F52] h-full rounded-full transition-all duration-500 ease-out"
@@ -103,13 +120,65 @@
     </div>
     @endif
 
+    {{-- ── Search & Filter Controls ────────────────────────────── --}}
+    @if($totalActivitiesCount > 0)
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <input type="text"
+                   wire:model.live.debounce.250ms="search"
+                   placeholder="Filter checks by title, description or category..."
+                   class="w-full pl-9 pr-8 py-2 text-xs md:text-sm rounded-lg border border-gray-200 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A] placeholder-gray-400">
+            @if($search !== '')
+            <button wire:click="$set('search', '')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            @endif
+        </div>
+
+        @if($categories->isNotEmpty())
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
+            <button type="button"
+                    wire:click="$set('category', '')"
+                    class="px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap {{ $category === '' ? 'bg-[#1B6B3A] text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                All Categories ({{ $totalActivitiesCount }})
+            </button>
+            @foreach($categories as $cat)
+            <button type="button"
+                    wire:click="$set('category', '{{ $cat }}')"
+                    class="px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap {{ $category === $cat ? 'bg-[#1B6B3A] text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                {{ $cat }}
+            </button>
+            @endforeach
+            @if($search !== '' || $category !== '')
+            <button type="button"
+                    wire:click="clearFilters"
+                    class="px-2 py-1.5 text-xs text-red-600 hover:text-red-700 font-semibold whitespace-nowrap">
+                Reset
+            </button>
+            @endif
+        </div>
+        @endif
+    </div>
+    @endif
+
     @if($pending->isEmpty() && $done->isEmpty())
         <div class="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-100">
             <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            <p class="text-gray-500 font-medium">No activities found for this date.</p>
-            <p class="text-gray-400 text-sm mt-1">Activities created in Admin will appear here.</p>
+            @if($search !== '' || $category !== '')
+                <p class="text-gray-700 font-medium">No activities match your filters.</p>
+                <p class="text-gray-400 text-sm mt-1">Try broadening your search term or category selection.</p>
+                <button wire:click="clearFilters" class="mt-4 px-4 py-1.5 text-xs font-semibold text-[#1B6B3A] border border-[#1B6B3A] rounded-lg hover:bg-green-50 transition-colors">
+                    Clear Filters
+                </button>
+            @else
+                <p class="text-gray-500 font-medium">No activities found for this date.</p>
+                <p class="text-gray-400 text-sm mt-1">Activities created in Admin will appear here.</p>
+            @endif
         </div>
     @else
 
@@ -138,12 +207,12 @@
                             <div class="flex items-center gap-2 flex-wrap">
                                 <h3 class="font-semibold text-gray-900 truncate">{{ $activity->title }}</h3>
                                 @if($activity->category)
-                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{{ $activity->category }}</span>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">{{ $activity->category }}</span>
                                 @endif
                                 <x-status-badge status="pending" />
                             </div>
                             @if($activity->description)
-                            <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ $activity->description }}</p>
+                            <p class="text-sm text-gray-600 mt-1 leading-relaxed">{{ $activity->description }}</p>
                             @endif
                         </div>
                         <div class="flex-shrink-0">
@@ -151,7 +220,7 @@
                                 'activity'      => $activity,
                                 'date'          => $date,
                                 'currentStatus' => 'pending',
-                            ], key("updater-pending-{$activity->id}"))
+                            ], key("updater-pending-{$activity->id}-{$date}"))
                         </div>
                     </div>
 
@@ -173,7 +242,7 @@
     </section>
     @endif
 
-    {{-- ── DONE SECTION ────────────────────────────────────────── --}}
+    {{-- ── DONE SECTION (COMPLETED) ─────────────────────────────── --}}
     @if($done->isNotEmpty())
     <section>
         <div class="flex items-center gap-3 mb-4">
@@ -187,38 +256,76 @@
             <div class="flex-1 h-px bg-green-200"></div>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-3">
             @foreach($done as $activity)
-            <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden opacity-80 hover:opacity-100 transition-opacity duration-150"
-                 wire:key="done-{{ $activity->id }}">
+            <div class="bg-white rounded-lg shadow-sm border-l-4 border-[#1B6B3A] border-r border-t border-b border-gray-100 overflow-hidden"
+                 wire:key="done-{{ $activity->id }}"
+                 x-data="{ showHistory: false }">
                 <div class="p-4">
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <h3 class="font-medium text-gray-700 truncate">{{ $activity->title }}</h3>
+                                <h3 class="font-semibold text-gray-900 truncate">{{ $activity->title }}</h3>
                                 @if($activity->category)
-                                <span class="text-xs bg-white text-gray-500 border border-gray-200 px-2 py-0.5 rounded-full">{{ $activity->category }}</span>
+                                <span class="text-xs bg-green-50 text-[#1B6B3A] border border-green-200 px-2 py-0.5 rounded-full font-medium">{{ $activity->category }}</span>
                                 @endif
                                 <x-status-badge status="done" />
                             </div>
+
+                            @if($activity->description)
+                            <p class="text-xs text-gray-500 mt-1 leading-relaxed">{{ $activity->description }}</p>
+                            @endif
+
                             @if($activity->latest_log && $activity->latest_log->actor_name)
-                            <p class="text-xs text-gray-400 mt-1">
-                                Completed by <span class="font-medium text-gray-500">{{ $activity->latest_log->actor_name }}</span>
-                                at {{ $activity->latest_log->created_at->format('H:i') }}
-                                @if($activity->latest_log->remark)
-                                — "{{ Str::limit($activity->latest_log->remark, 80) }}"
-                                @endif
-                            </p>
+                            <div class="mt-2.5 flex items-start gap-2 text-xs text-gray-600 bg-gray-50 rounded-md p-2 border border-gray-100">
+                                <svg class="w-4 h-4 text-[#1B6B3A] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <p>
+                                        Completed by <span class="font-semibold text-gray-900">{{ $activity->latest_log->actor_name }}</span>
+                                        <span class="text-gray-400">({{ $activity->latest_log->actor_role }}{{ $activity->latest_log->actor_designation ? ' · ' . $activity->latest_log->actor_designation : '' }})</span>
+                                        at <span class="font-mono text-gray-700 font-medium">{{ $activity->latest_log->created_at->format('H:i') }}</span>
+                                    </p>
+                                    @if($activity->latest_log->remark)
+                                    <p class="text-gray-700 mt-1 italic leading-relaxed">
+                                        "{{ $activity->latest_log->remark }}"
+                                    </p>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($activity->day_logs->count() > 1)
+                            <button type="button"
+                                    @click="showHistory = !showHistory"
+                                    class="mt-2 text-xs text-[#1B6B3A] hover:underline font-medium flex items-center gap-1">
+                                <span x-text="showHistory ? 'Hide earlier updates' : 'View all {{ $activity->day_logs->count() }} updates today'"></span>
+                                <svg class="w-3.5 h-3.5 transition-transform" :class="showHistory ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
                             @endif
                         </div>
+
                         <div class="flex-shrink-0">
                             @livewire('activity-status-updater', [
                                 'activity'      => $activity,
                                 'date'          => $date,
                                 'currentStatus' => 'done',
-                            ], key("updater-done-{$activity->id}"))
+                            ], key("updater-done-{$activity->id}-{$date}"))
                         </div>
                     </div>
+
+                    {{-- Collapsible timeline of all updates today if multiple --}}
+                    @if($activity->day_logs->isNotEmpty())
+                    <div x-show="showHistory" x-cloak class="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Full Update History Today</p>
+                        @foreach($activity->day_logs as $log)
+                            <x-activity-timeline-item :log="$log" />
+                        @endforeach
+                    </div>
+                    @endif
                 </div>
             </div>
             @endforeach
