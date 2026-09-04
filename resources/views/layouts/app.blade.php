@@ -74,6 +74,7 @@
 
                 {{-- Primary Nav --}}
                 <div class="hidden md:flex items-center gap-1">
+                    @auth
                     <a href="{{ route('activities.daily') }}"
                        class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150
                               {{ request()->routeIs('activities.daily') ? 'bg-[#12492A] text-white' : 'text-green-100 hover:text-white hover:bg-[#12492A]' }}">
@@ -120,13 +121,22 @@
                         Monitoring
                     </a>
                     @endif
+                    @else
+                    <a href="{{ route('health') }}"
+                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150
+                              {{ request()->routeIs('health') ? 'bg-[#12492A] text-white' : 'text-green-100 hover:text-white hover:bg-[#12492A]' }}">
+                        System Health
+                    </a>
+                    @endauth
                 </div>
 
                 {{-- Mobile Hamburger Toggle --}}
                 <div class="flex items-center gap-2 md:hidden">
+                    @auth
                     <a href="{{ route('settings.edit') }}" class="p-1.5 text-green-200 hover:text-white rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </a>
+                    @endauth
                     <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" type="button" class="p-2 text-green-100 hover:bg-[#12492A] rounded-lg focus:outline-none">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
@@ -134,6 +144,7 @@
 
                 {{-- User Menu (Desktop) --}}
                 <div class="hidden md:flex items-center gap-3">
+                    @auth
                     <div class="text-right">
                         <p class="text-sm font-semibold leading-none">{{ auth()->user()->name }}</p>
                         <p class="text-xs text-green-300 mt-0.5 capitalize">{{ auth()->user()->role }}</p>
@@ -150,6 +161,12 @@
                             Sign Out
                         </button>
                     </form>
+                    @else
+                    <a href="{{ route('login') }}"
+                       class="px-4 py-2 text-xs font-bold bg-[#F5C518] hover:bg-amber-400 text-gray-900 rounded-lg transition-colors shadow-sm">
+                        Sign In
+                    </a>
+                    @endauth
                 </div>
 
             </div>
@@ -157,6 +174,7 @@
 
         {{-- Mobile Dropdown Drawer --}}
         <div id="mobile-menu" class="hidden md:hidden border-t border-green-700 bg-[#12492A] px-4 py-3 space-y-2">
+            @auth
             <div class="pb-2 mb-2 border-b border-green-600 flex items-center justify-between">
                 <div>
                     <p class="text-sm font-bold text-white">{{ auth()->user()->name }}</p>
@@ -191,6 +209,10 @@
             <a href="{{ route('monitoring.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">SRE Monitoring</a>
             @endif
             <a href="{{ route('settings.edit') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-green-200 hover:bg-[#1B6B3A]">Account Settings</a>
+            @else
+            <a href="{{ route('health') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">System Health Dashboard</a>
+            <a href="{{ route('login') }}" class="block px-3 py-2 text-center bg-[#F5C518] hover:bg-amber-400 text-gray-900 font-bold rounded-lg transition-colors">Sign In</a>
+            @endauth
         </div>
     </nav>
 
@@ -222,7 +244,9 @@
     {{-- ── Main content ─────────────────────────────────────────── --}}
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
         @yield('content')
-        {{ $slot ?? '' }}
+        @if(isset($slot) && is_string($slot))
+            {{ $slot }}
+        @endif
     </main>
 
     {{-- ── Footer ──────────────────────────────────────────────── --}}

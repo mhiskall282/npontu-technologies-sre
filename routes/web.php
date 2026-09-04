@@ -5,12 +5,12 @@ declare(strict_types=1);
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Livewire\DailyActivityBoard;
 use App\Livewire\OperationalChat;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public routes (guest only) ────────────────────────────────────────────
@@ -18,14 +18,9 @@ Route::middleware('guest')->group(function () {
     // Auth routes injected by Breeze
 });
 
-// ─── Public health check (uptime monitoring & deployment verification) ─────
-Route::get('/health', function () {
-    return response()->json([
-        'status' => 'ok',
-        'timestamp' => now()->toIso8601String(),
-        'db' => DB::select('SELECT 1') ? 'ok' : 'error',
-    ]);
-})->name('health');
+// ─── Public health check & SRE Status Dashboard ─────────────────────────────
+Route::get('/health', [HealthController::class, 'index'])->name('health');
+Route::get('/health/telemetry', [HealthController::class, 'telemetry'])->name('health.telemetry');
 
 // ─── Authenticated routes ───────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
