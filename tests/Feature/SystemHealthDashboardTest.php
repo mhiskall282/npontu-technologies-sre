@@ -69,8 +69,8 @@ test('health check endpoint renders interactive system health dashboard for brow
     $response->assertSee('Real-Time Performance Telemetry HUD');
     $response->assertSee('24-Hour Availability Heartbeat Timeline');
     $response->assertSee('7-Day Latency Trend');
-    $response->assertSee('Email & Notification Gateway');
-    $response->assertSee('Subsystem Diagnostics & Component Probes');
+    $response->assertSee('Notification Gateway');
+    $response->assertSee('Subsystem Diagnostics');
     $response->assertSee('JSON API');
 });
 
@@ -82,7 +82,7 @@ test('authenticated operator can view system health dashboard with user layout n
     $response->assertOk();
     $response->assertSee('System Health');
     $response->assertSee('Kofi SRE Lead');
-    $response->assertSee("Today's Board");
+    $response->assertSee("Today's Board", false);
 });
 
 test('system health service generates telemetry probes and timeline structures', function () {

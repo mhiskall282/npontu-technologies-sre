@@ -391,11 +391,31 @@ prefix /admin  (role:admin,lead)
 ### `MonitoringController.php`
 **What it does**: Powers the SRE Monitoring Dashboard (`/monitoring`). Provides live system health metrics, stale activity alerts, a 7-day completion trend chart, category progress indicators, top contributor rankings, and a paginated audit stream with JSON diff viewer.
 
+### `HealthController.php` (Real-Time System Health & Software Status)
+**What it does**: Serves the unified System Health & Performance Monitoring suite (`/health` and `/health/telemetry`):
+1. Automated Uptime Probes: returns JSON status (`{ "status": "ok", "db": "ok", "timestamp": "..." }`) for Render, Pingdom, Docker, and curl probes.
+2. Interactive SRE Health Dashboard: displays real-time telemetry HUD, 8 core subsystems matrix, email gateway metrics, 24-hour availability heartbeat timeline, and 7-day latency trend plots.
+3. Live Streaming Telemetry: asynchronous polling endpoint streaming real-time DB latency, cache speed, memory usage, and operational check counts every 3 seconds.
+
 ### `ReportController.php` (Enhanced Multi-Domain Reporting)
 **What it does**: Orchestrates three specialized SRE operational compliance reporting suites:
 1. `index`: Activity check history across date ranges with CSV and print-friendly export.
 2. `handovers`: Formal SRE shift handover audit reports with acceptance compliance KPIs, lead filters, and CSV export.
 3. `timelines`: SRE operator work timelines and active duty hours analytics, deriving duty duration from activity logs and handover signatures with CSV export.
+
+---
+
+## `app/Services/`
+
+### `SystemHealthService.php`
+**What it does**: Core telemetry and diagnostics service probing 8 software subsystems: Primary Database, Email & Notification Gateway (SMTP), PHP Runtime & Compute, Storage Mount, Session & Cache Engine, Real-time Comms, Shift Handover Custody, and Security Audit Trail. Calculates query latency benchmarks in milliseconds, memory utilization, rolling SLA availability, and hourly operations throughput.
+
+---
+
+## `resources/views/health/`
+
+### `index.blade.php`
+**What it does**: High-density SRE System Health & Status console featuring hero status banner ("ALL 8 CORE SERVICES OPERATIONAL"), real-time streaming telemetry HUD, live latency line plot, 24-hour availability heartbeat bar, component health matrix, and live email/notification pipeline metrics.
 
 ---
 
