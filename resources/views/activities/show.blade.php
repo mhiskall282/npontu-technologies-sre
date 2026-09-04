@@ -16,6 +16,35 @@
             <div><dt class="font-medium text-gray-500">Category</dt><dd class="mt-1">{{ $activity->category ?? '—' }}</dd></div>
             <div><dt class="font-medium text-gray-500">Recurrence</dt><dd class="mt-1 capitalize">{{ $activity->recurrence }}</dd></div>
             <div>
+                <dt class="font-medium text-gray-500">Priority Tier</dt>
+                <dd class="mt-1">
+                    @if($activity->priority === 'critical')
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-black bg-red-600 text-white uppercase tracking-wider">
+                        P1 — Critical
+                    </span>
+                    @elseif($activity->priority === 'high')
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-500 text-white uppercase tracking-wider">
+                        P2 — High
+                    </span>
+                    @elseif($activity->priority === 'low')
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                        P4 — Low
+                    </span>
+                    @else
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        P3 — Medium
+                    </span>
+                    @endif
+                    @if($activity->is_pinned)
+                    <span class="ml-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">📌 Pinned</span>
+                    @endif
+                </dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-500">SLA Target Checkoff</dt>
+                <dd class="mt-1 font-mono text-sm text-purple-800 font-semibold">{{ $activity->sla_time ? $activity->sla_time . ' GMT' : 'Standard shift window' }}</dd>
+            </div>
+            <div>
                 <dt class="font-medium text-gray-500">Assigned Engineer</dt>
                 <dd class="mt-1">
                     @if($activity->assignee)

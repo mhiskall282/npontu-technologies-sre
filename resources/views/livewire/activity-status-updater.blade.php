@@ -34,6 +34,41 @@
                 @enderror
             </div>
 
+            {{-- SRE Incident Escalation Toggle (FR-3 Enterprise Extension) --}}
+            <div x-data="{ openEscalation: @entangle('isEscalated') || '{{ $incidentTicket }}' !== '' }" class="border-t border-gray-100 pt-2">
+                <button type="button"
+                        x-on:click="openEscalation = !openEscalation"
+                        class="text-[11px] font-medium text-gray-500 hover:text-red-600 flex items-center justify-between w-full">
+                    <span class="flex items-center gap-1">
+                        <span class="text-red-500">🚨</span>
+                        <span>Incident / Escalation</span>
+                        @if($isEscalated || $incidentTicket)
+                            <span class="px-1.5 py-0.2 text-[9px] bg-red-100 text-red-700 font-bold rounded">Active</span>
+                        @endif
+                    </span>
+                    <svg class="w-3 h-3 transition-transform text-gray-400" :class="{ 'rotate-180': openEscalation }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                <div x-show="openEscalation" x-cloak class="mt-2 space-y-2 bg-red-50/50 p-2 rounded-md border border-red-100">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox"
+                               wire:model="isEscalated"
+                               class="rounded border-red-300 text-[#E63946] focus:ring-[#E63946] h-3.5 w-3.5">
+                        <span class="text-[11px] font-semibold text-red-800">Flag as Escalated Check</span>
+                    </label>
+
+                    <div>
+                        <input type="text"
+                               wire:model="incidentTicket"
+                               placeholder="Ticket ID (e.g. INC-4091, PAY-882)"
+                               class="w-full text-xs border border-red-200 rounded p-1.5 bg-white text-gray-800 placeholder-gray-400 focus:ring-1 focus:ring-[#E63946] focus:border-[#E63946]">
+                        @error('incidentTicket')
+                            <p class="text-[10px] text-[#E63946] mt-0.5">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
             <div class="flex gap-2 pt-0.5">
                 <button type="button"
                         wire:click="save"

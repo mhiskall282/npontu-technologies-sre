@@ -27,6 +27,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon $date
  * @property string $status ('pending' | 'done')
  * @property string|null $remark
+ * @property string|null $incident_ticket
+ * @property bool $is_escalated
  * @property int|null $updated_by
  * @property string $actor_name
  * @property string|null $actor_role
@@ -49,6 +51,8 @@ class ActivityLog extends Model
         'date',
         'status',
         'remark',
+        'incident_ticket',
+        'is_escalated',
         'updated_by',
         'actor_name',
         'actor_role',
@@ -65,6 +69,7 @@ class ActivityLog extends Model
     {
         return [
             'date' => 'date:Y-m-d',
+            'is_escalated' => 'boolean',
         ];
     }
 

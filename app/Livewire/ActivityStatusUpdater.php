@@ -42,6 +42,16 @@ class ActivityStatusUpdater extends Component
     public string $remark = '';
 
     /**
+     * Optional related incident ticket ID (e.g. 'INC-1042').
+     */
+    public string $incidentTicket = '';
+
+    /**
+     * Flag indicating this check is an active operational escalation.
+     */
+    public bool $isEscalated = false;
+
+    /**
      * Controls visibility of the inline update form popover.
      */
     public bool $showForm = false;
@@ -58,6 +68,13 @@ class ActivityStatusUpdater extends Component
         $this->activity = $activity;
         $this->date = $date;
         $this->status = $currentStatus;
+
+        // Pre-populate if today's latest log already had an incident ticket or escalation
+        $latestLog = $activity->latestLogForDate($date);
+        if ($latestLog) {
+            $this->incidentTicket = (string) ($latestLog->incident_ticket ?? '');
+            $this->isEscalated = (bool) $latestLog->is_escalated;
+        }
     }
 
     /**
@@ -89,6 +106,8 @@ class ActivityStatusUpdater extends Component
         $this->validate([
             'status' => ['required', 'in:pending,done'],
             'remark' => ['nullable', 'string', 'max:1000'],
+            'incidentTicket' => ['nullable', 'string', 'max:50'],
+            'isEscalated' => ['boolean'],
         ]);
 
         // Execute domain action: appends a new ActivityLog event row and writes AuditLog
@@ -97,6 +116,8 @@ class ActivityStatusUpdater extends Component
             status: $this->status,
             remark: $this->remark ?: null,
             date: $this->date,
+            incidentTicket: $this->incidentTicket ? trim($this->incidentTicket) : null,
+            isEscalated: $this->isEscalated,
         );
 
         // Collapse form and reset transient input
@@ -104,7 +125,8 @@ class ActivityStatusUpdater extends Component
         $this->remark = '';
 
         $statusLabel = ucfirst($this->status);
-        $message = "Status for '{$this->activity->title}' marked as {$statusLabel}.";
+        $escalatedNotice = $this->isEscalated ? ' [Escalated]' : '';
+        $message = "Status for '{$this->activity->title}' marked as {$statusLabel}{$escalatedNotice}.";
 
         // Dispatch events to notify parent DailyActivityBoard for real-time reactivity
         $this->dispatch('status-updated', message: $message);

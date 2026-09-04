@@ -18,6 +18,8 @@ class UpdateActivityStatusRequest extends FormRequest
         return [
             'status' => ['required', 'in:pending,done'],
             'remark' => ['nullable', 'string', 'max:1000'],
+            'incident_ticket' => ['nullable', 'string', 'max:50'],
+            'is_escalated' => ['sometimes', 'boolean'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
         ];
     }

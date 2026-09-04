@@ -16,11 +16,14 @@ erDiagram
     users ||--o{ activities : "assigned_to"
     users ||--o{ activity_logs : "logs_status"
     users ||--o{ audit_logs : "performs_actions"
+    users ||--o{ shift_handovers : "outgoing_lead"
+    users ||--o{ shift_handovers : "incoming_lead"
 
     activities ||--o{ activity_logs : "has_many_logs"
 
     audit_logs }o--o| activities : "polymorphic_subject"
     audit_logs }o--o| users : "polymorphic_subject"
+    audit_logs }o--o| shift_handovers : "polymorphic_subject"
 
     users {
         bigint id PK
@@ -41,6 +44,9 @@ erDiagram
         text description
         string category
         string recurrence
+        string priority "low|medium|high|critical"
+        string sla_time "nullable"
+        boolean is_pinned
         boolean is_active
         bigint created_by FK
         bigint assigned_to FK "nullable"
@@ -55,12 +61,29 @@ erDiagram
         date date
         string status
         text remark
+        string incident_ticket "nullable"
+        boolean is_escalated
         bigint updated_by FK
         string actor_name
         string actor_role
         string actor_designation
         string actor_ip
         timestamp created_at
+    }
+
+    shift_handovers {
+        bigint id PK
+        date date
+        string shift "morning|afternoon|night"
+        bigint outgoing_lead_id FK
+        bigint incoming_lead_id FK "nullable"
+        text summary
+        text incidents "nullable"
+        integer pending_tasks_count
+        integer completed_tasks_count
+        timestamp signed_at
+        timestamp created_at
+        timestamp updated_at
     }
 
     audit_logs {
@@ -419,6 +442,66 @@ flowchart TD
 
 ---
 
+---
+
+## 10. SRE Operational Continuity & Shift Handover Architecture
+
+Formalizes shift transitions across 24/7 SRE teams (Morning, Afternoon, Night) with SLA tracking, incident ticket linkage, and supervisor batch delegation.
+
+```mermaid
+flowchart TD
+    subgraph ShiftExecution["Active Shift Operations"]
+        OPS["Operators on Shift"]
+        CHECK["Check Completion / Status Toggle"]
+        ESC["Incident Flagging (INC-xxxx)"]
+        SLA["SLA Verification (Target GMT)"]
+    end
+
+    subgraph BatchDelegation["Supervisor Reassignment"]
+        LEAD["Shift Lead / Admin"]
+        MULTI["Multi-Check Selection (Selected: N)"]
+        BULK["bulkAssign(targetUserId)"]
+    end
+
+    subgraph HandoverSignOff["Formal Shift Transfer Protocol"]
+        DRAFT["Draft Handover Briefing (Shift, Incoming Lead)"]
+        STATS["Auto-Snapshot (Pending vs Done Tasks)"]
+        INC_NOTES["Escalation / Discrepancy Log"]
+        SIGN["Digital Sign-Off (signed_at timestamp)"]
+    end
+
+    subgraph ShiftStore["System of Record & Observability"]
+        SH[("shift_handovers Table")]
+        AL[("activity_logs (incident_ticket, is_escalated)")]
+        AUD[("audit_logs Compliance Trail")]
+        BOARD["Next Shift Dashboard (Handover Banner)"]
+    end
+
+    OPS --> CHECK
+    CHECK --> ESC
+    CHECK --> SLA
+    ESC --> AL
+
+    LEAD --> MULTI
+    MULTI --> BULK
+    BULK --> AUD
+
+    LEAD --> DRAFT
+    DRAFT --> STATS
+    DRAFT --> INC_NOTES
+    DRAFT --> SIGN
+    SIGN --> SH
+    SIGN --> AUD
+    SH --> BOARD
+
+    style ShiftExecution fill:#f0fdf4,stroke:#1B6B3A,stroke-width:2px
+    style BatchDelegation fill:#eff6ff,stroke:#2563eb,stroke-width:2px
+    style HandoverSignOff fill:#fef3c7,stroke:#d97706,stroke-width:2px
+    style ShiftStore fill:#faf5ff,stroke:#9333ea,stroke-width:2px
+```
+
+---
+
 ## Architecture Decisions Log
 
 | # | Decision | Chosen | Rejected | Rationale |
@@ -432,3 +515,6 @@ flowchart TD
 | 7 | Monitoring access | Admin + Lead only | All users | Audit trails contain sensitive IP and change data |
 | 8 | Database (production) | Render PostgreSQL | SQLite / MySQL | High durability, relational integrity, connection pooling on Render |
 | 9 | Task Delegation | Optional Nullable FK (`users.id`) | Separate Team/Assignment Pivot | Preserves shift pool elasticity (null = shift pool) while giving 1-click personal accountability without relational overhead |
+| 10 | Incident Escalation | Denormalized on `activity_logs` | External Ticketing Webhook Only | Connects shift checkoff discrepancies directly to incident ticket references (e.g., `INC-1042`) without blocking offline operations |
+| 11 | Digital Shift Handover | Dedicated `shift_handovers` table | Unstructured remarks or chat apps | Enforces formal briefing sign-off between outgoing and incoming shift leads with statistical non-repudiation |
+

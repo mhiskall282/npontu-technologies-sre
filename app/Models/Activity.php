@@ -24,6 +24,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $description
  * @property string|null $category
  * @property string $recurrence
+ * @property string $priority
+ * @property string|null $sla_time
+ * @property bool $is_pinned
  * @property bool $is_active
  * @property int|null $created_by
  * @property int|null $assigned_to
@@ -45,6 +48,9 @@ class Activity extends Model
         'description',
         'category',
         'recurrence',
+        'priority',
+        'sla_time',
+        'is_pinned',
         'is_active',
         'created_by',
         'assigned_to',
@@ -59,6 +65,7 @@ class Activity extends Model
     {
         return [
             'is_active' => 'boolean',
+            'is_pinned' => 'boolean',
             'assigned_to' => 'integer',
         ];
     }
@@ -150,6 +157,27 @@ class Activity extends Model
     public function scopeUnassigned(Builder $query): void
     {
         $query->whereNull('assigned_to');
+    }
+
+    /**
+     * Scope query to only include pinned high-priority checks.
+     *
+     * @param  Builder<Activity>  $query
+     */
+    public function scopePinned(Builder $query): void
+    {
+        $query->where('is_pinned', true);
+    }
+
+    /**
+     * Scope query to filter by priority tier.
+     *
+     * @param  Builder<Activity>  $query
+     * @param  string  $priority  'low'|'medium'|'high'|'critical'
+     */
+    public function scopePriority(Builder $query, string $priority): void
+    {
+        $query->where('priority', $priority);
     }
 
     // ──────────────────────────────────────────

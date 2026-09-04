@@ -46,6 +46,8 @@ final class UpdateActivityStatusAction
      * @param  string  $status  New status ('pending' or 'done')
      * @param  string|null  $remark  Optional operator handover note or discrepancy remark
      * @param  string  $date  Shift calendar date (Y-m-d)
+     * @param  string|null  $incidentTicket  Optional related incident ticket reference (e.g., 'INC-1042')
+     * @param  bool  $isEscalated  Flag indicating this check is an active operational escalation
      * @return ActivityLog Newly created immutable event record
      */
     public function execute(
@@ -53,6 +55,8 @@ final class UpdateActivityStatusAction
         string $status,
         ?string $remark,
         string $date,
+        ?string $incidentTicket = null,
+        bool $isEscalated = false,
     ): ActivityLog {
         /** @var User $actor */
         $actor = Auth::user();
@@ -66,6 +70,8 @@ final class UpdateActivityStatusAction
             'date' => $date,
             'status' => $status,
             'remark' => $remark,
+            'incident_ticket' => $incidentTicket,
+            'is_escalated' => $isEscalated,
             'updated_by' => $actor->id,
             'actor_name' => $actor->name,               // Snapshot derived server-side
             'actor_role' => $actor->role,               // Snapshot derived server-side
@@ -78,7 +84,13 @@ final class UpdateActivityStatusAction
             subject: $activity,
             event: 'status_changed',
             oldValues: ['status' => $oldStatus, 'date' => $date],
-            newValues: ['status' => $status, 'remark' => $remark, 'date' => $date],
+            newValues: [
+                'status' => $status,
+                'remark' => $remark,
+                'incident_ticket' => $incidentTicket,
+                'is_escalated' => $isEscalated,
+                'date' => $date,
+            ],
         );
 
         // ── 3. Structured Application Log for SIEM / Telemetry ────────────
@@ -87,6 +99,8 @@ final class UpdateActivityStatusAction
             'date' => $date,
             'old_status' => $oldStatus,
             'new_status' => $status,
+            'incident_ticket' => $incidentTicket,
+            'is_escalated' => $isEscalated,
             'actor_id' => $actor->id,
             'actor_ip' => Request::ip(),
         ]);

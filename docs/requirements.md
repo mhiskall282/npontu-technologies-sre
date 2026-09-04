@@ -45,6 +45,7 @@ Administrators and Team Leads must be able to **optionally assign operational ch
 - **Optional Delegation**: When creating or editing an activity, supervisors can select a designated assignee from active team members.
 - **Personal Queue**: On the Daily Activity Board, engineers can filter by "Assigned to Me" to immediately view their dedicated tasks, while seeing clear visual badges ("Assigned to You", Engineer name & role).
 - **Inline Board Reassignment**: Team Leads and Admins can reassign checks directly from the Daily Activity Board dropdown without leaving the operational screen.
+- **Bulk Reassignment**: Supervisors can select multiple pending checks via checkboxes and delegate them to a team member (or return to pool) with 1 click.
 - **Audit Logging**: Any assignment or reassignment captures before/after values in the immutable security audit log.
 
 **Acceptance criteria:**
@@ -52,7 +53,44 @@ Administrators and Team Leads must be able to **optionally assign operational ch
 - [x] Form requests validate assignee existence in `users`.
 - [x] Daily Activity Board provides "Assigned to Me", "Shift Pool (Unassigned)", and per-engineer filtering.
 - [x] Non-supervisors cannot reassign tasks; supervisors can reassign inline.
+- [x] Supervisors can bulk select and delegate checks.
 - [x] Audit trail captures all assignment mutations.
+
+---
+
+### FR-1.2 — SRE Operational Priority, SLA Targets, and Pinned Checks (Enterprise Extension)
+
+Critical operational checks (e.g. Core Payment Gateway Heartbeats, Database Replication Health) require elevated operational urgency and clear completion targets.
+
+**Capabilities:**
+- **Priority Tiers**: Each activity defines a priority tier (`critical` [P1], `high` [P2], `medium` [P3], `low` [P4]).
+- **SLA Target Times**: Specific target checkoff time (e.g. `08:30 GMT`) displayed as a badge on the board.
+- **Pinned Checks**: Important checks can be pinned (`is_pinned = true`) to float directly to the top of the daily shift checklist.
+- **Intelligent Shift Ordering**: Daily shift board sorts pending tasks with pinned first, followed by priority descending (Critical -> High -> Medium -> Low), then title.
+
+**Acceptance criteria:**
+- [x] `priority`, `sla_time`, `is_pinned` columns with indices on `activities`.
+- [x] Form requests validate priority and SLA formats.
+- [x] Daily board orders pinned and high-priority checks at the top.
+- [x] Visual badges for P1/P2/P3/P4 and SLA time windows.
+
+---
+
+### FR-4.1 — Formal SRE Shift Handover Management & Incident Escalation (Enterprise Extension)
+
+Enforces operational continuity across 24/7 SRE shifts (Morning, Afternoon, Night) with digital briefing sign-offs and incident ticket references.
+
+**Capabilities:**
+- **Shift Handover Briefings (`shift_handovers`)**: Outgoing shift leads compose formal briefings, tag incoming shift leads, summarize operational status, and record blocker notes.
+- **Operational Metrics Snapshot**: Automatically freezes and records the exact pending vs completed task counts at the moment of handover sign-off.
+- **Incident Escalation in Checkoffs**: Operators can toggle "Flag Incident Escalation" and attach a tracking ticket ID (e.g., `INC-1042`) during checkoff updates.
+- **Live Board Alerting**: P1/P2 counter, active incident alerts, and latest shift handover briefing banner rendered live on the Daily Activity Board.
+
+**Acceptance criteria:**
+- [x] Dedicated `shift_handovers` table with outgoing/incoming lead foreign keys, shift enum, summary, incidents, metrics snapshot, and timestamp.
+- [x] `incident_ticket` and `is_escalated` fields in `activity_logs`.
+- [x] Digital sign-off action with compliance audit trail logging.
+- [x] Daily board surfaces active incident alerts and handover briefing banner.
 
 ---
 

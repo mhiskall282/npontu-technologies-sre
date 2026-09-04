@@ -84,6 +84,8 @@ final class ReportingService
             },
         ])
             ->active()
+            ->orderByDesc('is_pinned')
+            ->orderByRaw("CASE priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
             ->orderBy('title')
             ->get()
             ->map(function (Activity $activity) {

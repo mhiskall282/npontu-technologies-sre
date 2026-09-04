@@ -64,11 +64,44 @@
                 @error('assigned_to')<p class="mt-1 text-xs text-[#E63946]">{{ $message }}</p>@enderror
             </div>
 
-            <div class="flex items-center gap-3">
-                <input type="checkbox" id="is_active" name="is_active" value="1"
-                       class="rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]"
-                       {{ old('is_active', $activity->is_active) ? 'checked' : '' }}>
-                <label for="is_active" class="text-sm text-gray-700">Active</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority Tier</label>
+                    <select id="priority" name="priority"
+                            class="block w-full rounded-lg border-gray-300 shadow-sm text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                        <option value="low" {{ old('priority', $activity->priority) === 'low' ? 'selected' : '' }}>P4 — Low Priority</option>
+                        <option value="medium" {{ old('priority', $activity->priority) === 'medium' ? 'selected' : '' }}>P3 — Medium Priority (Standard)</option>
+                        <option value="high" {{ old('priority', $activity->priority) === 'high' ? 'selected' : '' }}>P2 — High Priority</option>
+                        <option value="critical" {{ old('priority', $activity->priority) === 'critical' ? 'selected' : '' }}>P1 — Critical (Urgent SRE Check)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="sla_time" class="block text-sm font-medium text-gray-700 mb-1">
+                        SLA Target Checkoff Time <span class="text-xs text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    <input type="text" id="sla_time" name="sla_time" value="{{ old('sla_time', $activity->sla_time) }}"
+                           placeholder="e.g. 09:00 or 14:30 GMT"
+                           class="block w-full rounded-lg border-gray-300 shadow-sm text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="is_pinned" name="is_pinned" value="1"
+                           class="rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+                           {{ old('is_pinned', $activity->is_pinned) ? 'checked' : '' }}>
+                    <label for="is_pinned" class="text-sm font-medium text-gray-700 flex items-center gap-1">
+                        <span>📌</span> Pin to Top of Shift Board
+                    </label>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="is_active" name="is_active" value="1"
+                           class="rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]"
+                           {{ old('is_active', $activity->is_active) ? 'checked' : '' }}>
+                    <label for="is_active" class="text-sm text-gray-700">Active</label>
+                </div>
             </div>
 
             <div class="flex gap-3 pt-2">

@@ -37,9 +37,22 @@
             @foreach($activities as $activity)
             <tr class="hover:bg-[#F4F7F5] transition-colors duration-100">
                 <td class="px-6 py-4">
-                    <a href="{{ route('activities.show', $activity) }}" class="font-medium text-[#1B6B3A] hover:underline">
-                        {{ $activity->title }}
-                    </a>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        @if($activity->is_pinned)
+                        <span class="text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded">📌 Pinned</span>
+                        @endif
+                        @if($activity->priority === 'critical')
+                        <span class="text-[10px] font-extrabold bg-red-600 text-white px-1.5 py-0.5 rounded uppercase">P1</span>
+                        @elseif($activity->priority === 'high')
+                        <span class="text-[10px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded uppercase">P2</span>
+                        @endif
+                        @if($activity->sla_time)
+                        <span class="text-[10px] font-mono text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">{{ $activity->sla_time }}</span>
+                        @endif
+                        <a href="{{ route('activities.show', $activity) }}" class="font-medium text-[#1B6B3A] hover:underline">
+                            {{ $activity->title }}
+                        </a>
+                    </div>
                     @if($activity->description)
                     <p class="text-xs text-gray-400 mt-0.5 truncate max-w-xs">{{ $activity->description }}</p>
                     @endif

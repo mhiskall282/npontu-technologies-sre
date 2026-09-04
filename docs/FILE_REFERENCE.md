@@ -77,18 +77,38 @@ HAVING id = MAX(id)
 
 ---
 
-## `app/Actions/Activities/`
+### `ShiftHandover.php`
+**What it does**: Represents formal SRE shift transition briefings (Morning, Afternoon, Night) between outgoing and incoming shift leads.
+**Key properties**:
+- `date`: Calendar date of the shift
+- `shift`: Enum (`morning`, `afternoon`, `night`)
+- `outgoing_lead_id`: FK to users (who drafted and signed the briefing)
+- `incoming_lead_id`: FK to users (receiving shift lead)
+- `summary`: High-level operational narrative and gateway health
+- `incidents`: Open blocker tickets or discrepancy notes
+- `pending_tasks_count` / `completed_tasks_count`: Statistical snapshot captured at moment of sign-off
+- `signed_at`: Timestamp of digital handover completion
+
+**Interview Q: Why capture pending and completed tasks count as snapshot columns in `shift_handovers`?**
+> A shift handover is a historical legal/compliance snapshot of the system state at the exact moment shift responsibility transferred. If counts were computed dynamically in the future, subsequent checkoffs or deletions would retroactively alter past shift metrics. Storing a frozen snapshot guarantees non-repudiation during post-incident reviews (PIRs).
+
+---
+
+## `app/Actions/`
 
 All Action classes follow the **Single Responsibility Principle**: one class, one operation.
 
-### `CreateActivityAction.php`
+### `Activities/CreateActivityAction.php`
 **What it does**: Validates the business rules for creating an activity and persists the record. Called by `Admin\ActivityController@store`.
 
-### `UpdateActivityStatusAction.php`
-**What it does**: The most critical Action. Appends a new `ActivityLog` row and writes an `AuditLog` entry. Called by the `ActivityStatusUpdater` Livewire component.
+### `Activities/UpdateActivityStatusAction.php`
+**What it does**: The most critical Action. Appends a new `ActivityLog` row (with optional incident ticket and escalation flag) and writes an `AuditLog` entry. Called by the `ActivityStatusUpdater` Livewire component.
+
+### `Handovers/CreateShiftHandoverAction.php`
+**What it does**: Persists formal shift handover briefings, sets the `signed_at` timestamp, and emits an immutable compliance `AuditLog` entry. Called by `DailyActivityBoard@saveHandover`.
 
 **Interview Q: Why put this logic in an Action class instead of the controller?**
-> Controllers should only handle HTTP concerns: validate the input, call the business logic, return a response. The action class is independently testable without HTTP — see `ActivityStatusFlowTest` which tests the action outcome directly via the Livewire component.
+> Controllers should only handle HTTP concerns: validate the input, call the business logic, return a response. The action class is independently testable without HTTP — see `ActivityStatusFlowTest` and `SreEnterpriseFeaturesTest` which test action outcomes directly.
 
 ---
 
