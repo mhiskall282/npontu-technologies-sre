@@ -28,7 +28,6 @@ final class DeleteActivityAction
      * Execute soft-deletion and audit recording.
      *
      * @param  Activity  $activity  Activity instance to retire
-     * @return void
      */
     public function execute(Activity $activity): void
     {

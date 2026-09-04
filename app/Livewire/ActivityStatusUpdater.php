@@ -52,7 +52,6 @@ class ActivityStatusUpdater extends Component
      * @param  Activity  $activity  Activity instance
      * @param  string  $date  Calendar date (Y-m-d)
      * @param  string  $currentStatus  Current status derived for this date
-     * @return void
      */
     public function mount(Activity $activity, string $date, string $currentStatus): void
     {
@@ -63,8 +62,6 @@ class ActivityStatusUpdater extends Component
 
     /**
      * Toggle the visibility state of the update popover form.
-     *
-     * @return void
      */
     public function toggleForm(): void
     {
@@ -82,7 +79,6 @@ class ActivityStatusUpdater extends Component
      *   5. Flash Notification: Sets a success message for UI feedback.
      *
      * @param  UpdateActivityStatusAction  $action  Domain action executing append-only update
-     * @return void
      */
     public function save(UpdateActivityStatusAction $action): void
     {

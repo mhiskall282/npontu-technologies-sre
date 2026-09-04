@@ -163,7 +163,7 @@ class ReportController extends Controller
             activityId: isset($validated['activity_id']) ? (int) $validated['activity_id'] : null,
         );
 
-        $filename = 'support_activity_report_' . today()->format('Y-m-d') . '.csv';
+        $filename = 'support_activity_report_'.today()->format('Y-m-d').'.csv';
 
         $headers = [
             'Content-type' => 'text/csv',
@@ -241,7 +241,7 @@ class ReportController extends Controller
                 );
             }
 
-            return redirect()->back()->with('success', 'Report emailed to ' . count($recipients) . ' recipient(s) successfully.');
+            return redirect()->back()->with('success', 'Report emailed to '.count($recipients).' recipient(s) successfully.');
         }
 
         return redirect()->back()->with('error', 'Please apply a date range before sending the report.');

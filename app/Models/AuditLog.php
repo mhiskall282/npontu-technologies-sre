@@ -7,20 +7,39 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
- * Immutable audit trail entry.
+ * AuditLog — Immutable Security & Compliance Audit Trail
  *
- * NEVER update or delete rows here. This table is write-once.
- * It is DISTINCT from activity_logs: activity_logs tracks domain state
- * changes (status + remark for the handover view); audit_logs tracks ALL
- * user-initiated mutations for security and compliance purposes.
+ * ARCHITECTURAL DESIGN & SIEM READINESS:
+ * This table records all user-initiated mutations across the application (creates, updates,
+ * status changes, deletions) with before/after diffs, actor bio snapshots, and IP addresses.
  *
- * Split rationale: activity_logs is a domain concept the UI reads;
- * audit_logs is an ops/security concern that may be shipped to a SIEM.
+ * IMMUTABILITY GUARANTEE:
+ * - Write-once: $timestamps = false with no updated_at column.
+ * - Created timestamp is stamped at generation and cannot be modified.
+ * - Morphable subject relation (`subject_type`, `subject_id`) allows tracking any entity.
+ *
+ * @property int $id
+ * @property int|null $actor_id
+ * @property string $actor_name
+ * @property string|null $actor_role
+ * @property string|null $actor_ip
+ * @property string $subject_type
+ * @property int $subject_id
+ * @property string $event ('created' | 'updated' | 'status_changed' | 'deleted' | 'password_reset_requested')
+ * @property array|null $old_values
+ * @property array|null $new_values
+ * @property Carbon $created_at
  */
 class AuditLog extends Model
 {
+    /**
+     * Mass assignable attributes.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'actor_id',
         'actor_name',
@@ -33,6 +52,11 @@ class AuditLog extends Model
         'new_values',
     ];
 
+    /**
+     * Attribute type casting.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -42,9 +66,16 @@ class AuditLog extends Model
         ];
     }
 
-    // Audit logs have no updated_at — they are immutable
+    /**
+     * Audit logs are immutable records: disable standard updated_at maintenance.
+     *
+     * @var bool
+     */
     public $timestamps = false;
 
+    /**
+     * Model bootstrap hook to assign created_at on initial insertion.
+     */
     protected static function booted(): void
     {
         static::creating(function (AuditLog $log) {
@@ -52,11 +83,21 @@ class AuditLog extends Model
         });
     }
 
+    /**
+     * Polymorphic relation to the model mutated (e.g. Activity, User).
+     *
+     * @return MorphTo<Model, $this>
+     */
     public function subject(): MorphTo
     {
         return $this->morphTo('subject', 'subject_type', 'subject_id');
     }
 
+    /**
+     * User account associated with the mutation event.
+     *
+     * @return BelongsTo<User, $this>
+     */
     public function actor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'actor_id');

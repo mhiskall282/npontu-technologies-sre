@@ -46,8 +46,6 @@ class DailyActivityBoard extends Component
 
     /**
      * Initialize the component state with today's date.
-     *
-     * @return void
      */
     public function mount(): void
     {
@@ -57,8 +55,6 @@ class DailyActivityBoard extends Component
     /**
      * Hook triggered when the date property changes.
      * Livewire re-renders the component automatically with the selected date's snapshot.
-     *
-     * @return void
      */
     public function updatedDate(): void
     {
@@ -72,7 +68,6 @@ class DailyActivityBoard extends Component
      * Re-renders the board immediately and flashes a user confirmation toast.
      *
      * @param  string|null  $message  Optional confirmation notification to flash to the operator
-     * @return void
      */
     #[On('status-updated')]
     #[On('statusUpdated')]
@@ -85,8 +80,6 @@ class DailyActivityBoard extends Component
 
     /**
      * Reset both search and category filters back to the full activity catalog.
-     *
-     * @return void
      */
     public function clearFilters(): void
     {

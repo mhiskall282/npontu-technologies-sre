@@ -11,22 +11,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
- * AuditService — write-only audit trail.
+ * AuditService — Immutable Compliance Audit Trail
  *
- * SEPARATION OF CONCERNS NOTE:
- * - activity_logs = domain state changes (used for shift handover, business reporting)
- * - audit_logs    = security/compliance log of all mutations (who changed what, with IP + diff)
+ * ARCHITECTURAL DESIGN & SEPARATION OF CONCERNS:
+ * - `activity_logs`: Domain state store used for shift handover views and daily reporting.
+ * - `audit_logs`: Security and compliance audit trail tracking all mutations (who changed what, IP, diff).
  *
- * These are intentionally separate tables. The audit log would be shipped to a SIEM
- * at scale; the activity_logs table is a first-class business entity.
- *
- * BIO CAPTURE NOTE:
- * All actor fields (name, role, IP) are captured from server-side auth session and
- * Request::ip() — never from client-submitted data. This prevents bio spoofing by
- * a malicious actor injecting a different user's name in the request body.
+ * BIO CAPTURE & INTEGRITY:
+ * All actor fields (name, role, designation, and IP address) are captured strictly from
+ * server-side auth session and Request::ip() — never accepted from client-submitted data.
+ * This prevents bio spoofing by malicious actors.
  */
 final class AuditService
 {
+    /**
+     * Record an immutable audit log entry for a domain model mutation.
+     *
+     * @param  Model  $subject  The Eloquent model subject of the mutation (e.g. Activity, User)
+     * @param  string  $event  The mutation event type ('created', 'updated', 'status_changed', 'deleted')
+     * @param  array|null  $oldValues  Attribute snapshot before the mutation
+     * @param  array|null  $newValues  Attribute snapshot after the mutation
+     * @return AuditLog The newly persisted immutable audit log record
+     */
     public function log(
         Model $subject,
         string $event,
