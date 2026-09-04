@@ -18,6 +18,15 @@ Route::middleware('guest')->group(function () {
     // Auth routes injected by Breeze
 });
 
+// ─── Public health check (uptime monitoring & deployment verification) ─────
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toIso8601String(),
+        'db' => DB::select('SELECT 1') ? 'ok' : 'error',
+    ]);
+})->name('health');
+
 // ─── Authenticated routes ───────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
 
@@ -40,15 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
-
-    // Health check — beyond spec; included for SRE alignment (uptime monitoring)
-    Route::get('/health', function () {
-        return response()->json([
-            'status' => 'ok',
-            'timestamp' => now()->toIso8601String(),
-            'db' => DB::select('SELECT 1') ? 'ok' : 'error',
-        ]);
-    })->name('health');
 
     // SRE Monitoring (admin + lead)
     Route::get('/monitoring', [MonitoringController::class, 'index'])
