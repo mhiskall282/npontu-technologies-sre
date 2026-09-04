@@ -49,7 +49,7 @@ final class ReportingService
         ?int $activityId = null,
         int $perPage = 15,
     ): LengthAwarePaginator {
-        $query = ActivityLog::with(['activity', 'updater'])
+        $query = ActivityLog::with(['activity.assignee', 'updater'])
             ->whereBetween('date', [$from, $to])
             ->orderBy('date', 'desc')
             ->orderBy('id', 'desc');
@@ -76,10 +76,13 @@ final class ReportingService
      */
     public function dailySummary(string $date): Collection
     {
-        return Activity::with(['logs' => function ($query) use ($date) {
-            $query->where('date', $date)
-                ->orderBy('id', 'asc');
-        }])
+        return Activity::with([
+            'assignee',
+            'logs' => function ($query) use ($date) {
+                $query->where('date', $date)
+                    ->orderBy('id', 'asc');
+            },
+        ])
             ->active()
             ->orderBy('title')
             ->get()

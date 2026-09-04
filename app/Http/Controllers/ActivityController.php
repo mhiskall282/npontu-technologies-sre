@@ -10,6 +10,7 @@ use App\Actions\Activities\UpdateActivityAction;
 use App\Http\Requests\StoreActivityRequest;
 use App\Http\Requests\UpdateActivityRequest;
 use App\Models\Activity;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -18,10 +19,10 @@ use Illuminate\View\View;
  * ActivityController — Operational Check Definition Management
  *
  * Implements FR-1 (Activity Configuration) and FR-2 (Activity List/Detail):
- *   - index(): Paginated list of operational check definitions with creator eager-loaded
- *   - create() / store(): Provision a new recurring check definition
- *   - show(): Detailed activity inspection, 7-day completion health trend, and audit logs
- *   - edit() / update(): Modify activity title, description, recurrence, or status
+ *   - index(): Paginated list of operational check definitions with creator and assignee eager-loaded
+ *   - create() / store(): Provision a new recurring check definition (with optional team member assignment)
+ *   - show(): Detailed activity inspection, 7-day completion health trend, assignee, and audit logs
+ *   - edit() / update(): Modify activity title, description, recurrence, assignee, or status
  *   - destroy(): Soft-delete activity while preserving historical audit and reporting logs
  *
  * ARCHITECTURAL DESIGN:
@@ -35,7 +36,7 @@ class ActivityController extends Controller
     /**
      * Display a paginated catalog of all defined operational activities.
      *
-     * Eager-loads the 'creator' relation to prevent N+1 queries.
+     * Eager-loads the 'creator' and 'assignee' relations to prevent N+1 queries.
      *
      * @return View Activity index view
      */
@@ -44,7 +45,7 @@ class ActivityController extends Controller
         // Enforce policy: verify authenticated user can view the activities catalog
         $this->authorize('viewAny', Activity::class);
 
-        $activities = Activity::with('creator')
+        $activities = Activity::with(['creator', 'assignee'])
             ->orderByDesc('created_at')
             ->paginate(20);
 
@@ -61,7 +62,9 @@ class ActivityController extends Controller
         // Enforce policy: verify user has permission to provision new activities (Admin/Lead)
         $this->authorize('create', Activity::class);
 
-        return view('activities.create');
+        $users = User::orderBy('name')->get();
+
+        return view('activities.create', compact('users'));
     }
 
     /**
@@ -97,8 +100,8 @@ class ActivityController extends Controller
         // Enforce policy: verify user is authorized to view this specific activity
         $this->authorize('view', $activity);
 
-        // Eager-load creator and recent 20 logs for the activity timeline
-        $activity->load(['creator', 'logs' => fn ($q) => $q->orderByDesc('id')->limit(20)]);
+        // Eager-load creator, assignee, and recent 20 logs for the activity timeline
+        $activity->load(['creator', 'assignee', 'logs' => fn ($q) => $q->orderByDesc('id')->limit(20)]);
 
         // ── 7-Day Completion Trend Calculation ───────────────────────────
         $startDate = today()->subDays(6)->format('Y-m-d');
@@ -144,7 +147,9 @@ class ActivityController extends Controller
         // Enforce policy: verify user is authorized to update activity metadata
         $this->authorize('update', $activity);
 
-        return view('activities.edit', compact('activity'));
+        $users = User::orderBy('name')->get();
+
+        return view('activities.edit', compact('activity', 'users'));
     }
 
     /**

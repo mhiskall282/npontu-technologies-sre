@@ -15,6 +15,20 @@
         <dl class="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
             <div><dt class="font-medium text-gray-500">Category</dt><dd class="mt-1">{{ $activity->category ?? '—' }}</dd></div>
             <div><dt class="font-medium text-gray-500">Recurrence</dt><dd class="mt-1 capitalize">{{ $activity->recurrence }}</dd></div>
+            <div>
+                <dt class="font-medium text-gray-500">Assigned Engineer</dt>
+                <dd class="mt-1">
+                    @if($activity->assignee)
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-[#1B6B3A]">
+                        <span class="w-2 h-2 rounded-full bg-[#1B6B3A]"></span>
+                        {{ $activity->assignee->name }}
+                        <span class="text-xs text-gray-500 font-normal">({{ ucfirst($activity->assignee->role) }})</span>
+                    </span>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Unassigned (Shift Pool)</span>
+                    @endif
+                </dd>
+            </div>
             <div><dt class="font-medium text-gray-500">Created by</dt><dd class="mt-1">{{ $activity->creator?->name ?? '—' }}</dd></div>
             <div><dt class="font-medium text-gray-500">Created</dt><dd class="mt-1 font-mono text-xs">{{ $activity->created_at->format('d M Y H:i') }}</dd></div>
             @if($activity->description)

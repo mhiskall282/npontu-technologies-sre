@@ -28,6 +28,7 @@
                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Recurrence</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Assignee</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created by</th>
                 <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
             </tr>
@@ -52,6 +53,16 @@
                     <span class="text-xs bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full font-medium">Active</span>
                     @else
                     <span class="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full font-medium">Inactive</span>
+                    @endif
+                </td>
+                <td class="px-6 py-4">
+                    @if($activity->assignee)
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-[#1B6B3A] border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#1B6B3A]"></span>
+                        {{ $activity->assignee->name }}
+                    </span>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Shift Pool</span>
                     @endif
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-500">{{ $activity->creator?->name ?? '—' }}</td>

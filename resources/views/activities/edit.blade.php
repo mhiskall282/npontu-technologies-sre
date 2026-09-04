@@ -46,6 +46,24 @@
                 </div>
             </div>
 
+            <div>
+                <label for="assigned_to" class="block text-sm font-medium text-gray-700 mb-1">
+                    Assign to Team Member <span class="text-xs text-gray-400 font-normal">(Optional — defaults to general shift pool)</span>
+                </label>
+                <select id="assigned_to" name="assigned_to"
+                        class="block w-full rounded-lg border-gray-300 shadow-sm text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                    <option value="">— Unassigned (Available to whole shift) —</option>
+                    @if(isset($users))
+                        @foreach($users as $u)
+                        <option value="{{ $u->id }}" {{ old('assigned_to', $activity->assigned_to) == $u->id ? 'selected' : '' }}>
+                            {{ $u->name }} ({{ ucfirst($u->role) }}{{ $u->designation ? ' — ' . $u->designation : '' }})
+                        </option>
+                        @endforeach
+                    @endif
+                </select>
+                @error('assigned_to')<p class="mt-1 text-xs text-[#E63946]">{{ $message }}</p>@enderror
+            </div>
+
             <div class="flex items-center gap-3">
                 <input type="checkbox" id="is_active" name="is_active" value="1"
                        class="rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]"

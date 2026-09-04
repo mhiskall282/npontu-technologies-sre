@@ -32,10 +32,12 @@ canManageActivities(): bool  // true for admin + lead
 
 **Key relationships**:
 - `hasMany(ActivityLog::class)` — all status events across all dates
+- `belongsTo(User::class, 'created_by')` — user who created the definition
+- `belongsTo(User::class, 'assigned_to')` — assigned engineer (optional delegation)
 - `latestLog()` — scoped relationship for today's most-recent event (used for current status)
 
-**Interview Q: Why is `date` cast to `'date:Y-m-d'`?**
-> SQLite stores dates as strings. Without an explicit date cast, comparisons like `whereBetween('date', ['2026-07-01', '2026-07-31'])` fail when the stored value has a time suffix (e.g. `2026-07-01 00:00:00`). The explicit format cast forces consistent `Y-m-d` string representation.
+**Interview Q: Why is `assigned_to` nullable?**
+> SRE operations frequently rely on a shared pool model where any active on-duty operator can fulfill a pending check. By making `assigned_to` nullable, tasks default to the general shift pool. When a supervisor delegates a check to a specific engineer, `assigned_to` is populated, enabling personal filtering ("Assigned to Me") and accountability without breaking pool elasticity.
 
 ---
 

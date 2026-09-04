@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property string $recurrence
  * @property bool $is_active
  * @property int|null $created_by
+ * @property int|null $assigned_to
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -46,6 +47,7 @@ class Activity extends Model
         'recurrence',
         'is_active',
         'created_by',
+        'assigned_to',
     ];
 
     /**
@@ -57,6 +59,7 @@ class Activity extends Model
     {
         return [
             'is_active' => 'boolean',
+            'assigned_to' => 'integer',
         ];
     }
 
@@ -72,6 +75,16 @@ class Activity extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * User/engineer to whom this operational check is assigned.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     /**
@@ -117,6 +130,26 @@ class Activity extends Model
     public function scopeDaily(Builder $query): void
     {
         $query->where('recurrence', 'daily');
+    }
+
+    /**
+     * Scope query to only include checks assigned to a specific user.
+     *
+     * @param  Builder<Activity>  $query
+     */
+    public function scopeAssignedTo(Builder $query, int $userId): void
+    {
+        $query->where('assigned_to', $userId);
+    }
+
+    /**
+     * Scope query to only include unassigned checks in the general shift pool.
+     *
+     * @param  Builder<Activity>  $query
+     */
+    public function scopeUnassigned(Builder $query): void
+    {
+        $query->whereNull('assigned_to');
     }
 
     // ──────────────────────────────────────────

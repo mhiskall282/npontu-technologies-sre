@@ -1,4 +1,4 @@
-﻿# Requirements — Support Activity Tracker
+# Requirements — Support Activity Tracker
 
 > **Status**: Canonical. Do not modify without explicit user instruction.
 > **Source**: Take-home assignment brief, Npontu Technologies SRE (NSS/Graduate) role.
@@ -31,9 +31,28 @@ Support team members must be able to **create new activity records**. An activit
 - Initial status (default: Pending)
 
 **Acceptance criteria:**
-- [ ] An authenticated user can create a new activity.
-- [ ] The activity is associated with the date it is logged for.
-- [ ] The creating user and timestamp are recorded.
+- [x] An authenticated user can create a new activity.
+- [x] The activity is associated with the date it is logged for.
+- [x] The creating user and timestamp are recorded.
+
+---
+
+### FR-1.1 — Team Task Assignment & Delegation (Enterprise Extension)
+
+Administrators and Team Leads must be able to **optionally assign operational checks** to specific support engineers or leave them unassigned in the general shift pool.
+
+**Capabilities:**
+- **Optional Delegation**: When creating or editing an activity, supervisors can select a designated assignee from active team members.
+- **Personal Queue**: On the Daily Activity Board, engineers can filter by "Assigned to Me" to immediately view their dedicated tasks, while seeing clear visual badges ("Assigned to You", Engineer name & role).
+- **Inline Board Reassignment**: Team Leads and Admins can reassign checks directly from the Daily Activity Board dropdown without leaving the operational screen.
+- **Audit Logging**: Any assignment or reassignment captures before/after values in the immutable security audit log.
+
+**Acceptance criteria:**
+- [x] `assigned_to` nullable foreign key to `users` with index on `activities`.
+- [x] Form requests validate assignee existence in `users`.
+- [x] Daily Activity Board provides "Assigned to Me", "Shift Pool (Unassigned)", and per-engineer filtering.
+- [x] Non-supervisors cannot reassign tasks; supervisors can reassign inline.
+- [x] Audit trail captures all assignment mutations.
 
 ---
 

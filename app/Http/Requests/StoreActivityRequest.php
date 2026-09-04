@@ -22,6 +22,7 @@ class StoreActivityRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:100'],
             'recurrence' => ['required', 'in:daily,adhoc'],
             'is_active' => ['sometimes', 'boolean'],
+            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 

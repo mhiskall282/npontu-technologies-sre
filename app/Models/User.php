@@ -146,4 +146,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuditLog::class, 'actor_id');
     }
+
+    /**
+     * Operational checks assigned to this user/engineer.
+     *
+     * @return HasMany<Activity, $this>
+     */
+    public function assignedActivities(): HasMany
+    {
+        return $this->hasMany(Activity::class, 'assigned_to');
+    }
 }

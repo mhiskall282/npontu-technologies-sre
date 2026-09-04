@@ -13,6 +13,7 @@ Relationships between the four main database tables. `activity_logs` is an appen
 ```mermaid
 erDiagram
     users ||--o{ activities : "creates"
+    users ||--o{ activities : "assigned_to"
     users ||--o{ activity_logs : "logs_status"
     users ||--o{ audit_logs : "performs_actions"
 
@@ -42,6 +43,7 @@ erDiagram
         string recurrence
         boolean is_active
         bigint created_by FK
+        bigint assigned_to FK "nullable"
         timestamp deleted_at
         timestamp created_at
         timestamp updated_at
@@ -376,6 +378,47 @@ flowchart LR
 
 ---
 
+---
+
+## 9. Task Assignment & Delegation Architecture
+
+Allows Team Leads and Administrators to optionally delegate operational checks to specific engineers while maintaining a general shift pool for unassigned tasks.
+
+```mermaid
+flowchart TD
+    subgraph Delegation["Supervisor Delegation (Admin / Lead)"]
+        ADMIN["Lead / Admin Console"]
+        INLINE["Daily Board Inline Dropdown<br/>(assignActivity action)"]
+        FORM["Create/Edit Activity Form<br/>(StoreActivityRequest / UpdateActivityRequest)"]
+    end
+
+    subgraph Data["Persistence & Compliance"]
+        ACT["Activity (assigned_to FK)"]
+        AUD["AuditLog (before/after diff)"]
+    end
+
+    subgraph OperatorView["Operator Experience (Daily Activity Board)"]
+        FILTER["Interactive Filters<br/>('Assigned to Me' | 'Shift Pool' | Engineer)"]
+        CARD["Personal Badge Highlight<br/>('Assigned to You' / Engineer Name)"]
+        UPDATE["Instant Status Update (Done/Pending)"]
+    end
+
+    ADMIN --> INLINE
+    ADMIN --> FORM
+    INLINE -->|Livewire Mutation| ACT
+    FORM -->|HTTP Mutation| ACT
+    ACT -->|Trigger| AUD
+    ACT --> FILTER
+    FILTER --> CARD
+    CARD --> UPDATE
+
+    style Delegation fill:#eff6ff,stroke:#2563eb,stroke-width:2px
+    style Data fill:#fef3c7,stroke:#d97706,stroke-width:2px
+    style OperatorView fill:#f0fdf4,stroke:#1B6B3A,stroke-width:2px
+```
+
+---
+
 ## Architecture Decisions Log
 
 | # | Decision | Chosen | Rejected | Rationale |
@@ -387,4 +430,5 @@ flowchart LR
 | 5 | Soft deletes | `SoftDeletes` on Activity + User | Hard delete | Historical logs must not break when records are removed |
 | 6 | Role system | String column + Policy | Spatie Permissions | YAGNI — 3 roles, fixed boundaries; no permission matrix needed |
 | 7 | Monitoring access | Admin + Lead only | All users | Audit trails contain sensitive IP and change data |
-| 8 | Database (production) | SQLite + Render disk | Managed MySQL | Zero additional cost on Render free tier; acceptable for small team |
+| 8 | Database (production) | Render PostgreSQL | SQLite / MySQL | High durability, relational integrity, connection pooling on Render |
+| 9 | Task Delegation | Optional Nullable FK (`users.id`) | Separate Team/Assignment Pivot | Preserves shift pool elasticity (null = shift pool) while giving 1-click personal accountability without relational overhead |

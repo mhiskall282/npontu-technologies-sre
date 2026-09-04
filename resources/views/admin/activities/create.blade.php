@@ -33,6 +33,21 @@
                     </select>
                 </div>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Assign to Team Member <span class="text-xs text-gray-400 font-normal">(Optional — defaults to shift pool)</span>
+                </label>
+                <select name="assigned_to" class="block w-full rounded-lg border border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                    <option value="">— Unassigned (Available to whole shift) —</option>
+                    @if(isset($users))
+                        @foreach($users as $u)
+                        <option value="{{ $u->id }}" {{ old('assigned_to') == $u->id ? 'selected' : '' }}>
+                            {{ $u->name }} ({{ ucfirst($u->role) }}{{ $u->designation ? ' — ' . $u->designation : '' }})
+                        </option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
             <div class="flex items-center gap-3">
                 <input type="checkbox" name="is_active" value="1" id="is_active" class="rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]" checked>
                 <label for="is_active" class="text-sm text-gray-700">Active</label>

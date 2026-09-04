@@ -89,18 +89,32 @@
     </div>
 
     {{-- ── Stats bar ──────────────────────────────────────────── --}}
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100 text-center">
             <p class="text-3xl font-bold text-gray-900">{{ $totalActivitiesCount }}</p>
             <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Total Activities</p>
         </div>
         <div class="bg-amber-50 rounded-lg shadow-sm p-4 border border-[#F5C518] border-opacity-50 text-center">
             <p class="text-3xl font-bold text-[#E63946]">{{ $totalPendingCount }}</p>
-            <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Pending</p>
+            <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Needs Attention</p>
         </div>
         <div class="bg-green-50 rounded-lg shadow-sm p-4 border border-[#1B6B3A] border-opacity-30 text-center">
             <p class="text-3xl font-bold text-[#1B6B3A]">{{ $totalDoneCount }}</p>
-            <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Done</p>
+            <p class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Completed</p>
+        </div>
+        <div wire:click="setAssigneeFilter('me')"
+             class="cursor-pointer rounded-lg shadow-sm p-4 border transition-all text-center {{ $assigneeFilter === 'me' ? 'bg-[#F5C518] border-[#E0B310] text-gray-900 ring-2 ring-[#F5C518]/50' : 'bg-white border-gray-100 hover:border-[#F5C518]' }}">
+            <div class="flex items-center justify-center gap-1.5">
+                <p class="text-3xl font-bold {{ $assigneeFilter === 'me' ? 'text-gray-900' : 'text-[#1B6B3A]' }}">{{ $myTasksCount }}</p>
+                @if($myPendingTasksCount > 0)
+                <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E63946] text-white animate-pulse">
+                    {{ $myPendingTasksCount }} pending
+                </span>
+                @endif
+            </div>
+            <p class="text-xs mt-1 uppercase tracking-wide font-medium {{ $assigneeFilter === 'me' ? 'text-gray-900 font-bold' : 'text-gray-500' }}">
+                My Tasks {{ $assigneeFilter === 'me' ? '✓ (Active)' : '' }}
+            </p>
         </div>
     </div>
 
@@ -122,45 +136,83 @@
 
     {{-- ── Search & Filter Controls ────────────────────────────── --}}
     @if($totalActivitiesCount > 0)
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div class="relative flex-1">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100 space-y-3">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <input type="text"
+                       wire:model.live.debounce.250ms="search"
+                       placeholder="Filter checks by title, description, category, or assigned engineer..."
+                       class="w-full pl-9 pr-8 py-2 text-xs md:text-sm rounded-lg border border-gray-200 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A] placeholder-gray-400">
+                @if($search !== '')
+                <button wire:click="$set('search', '')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                @endif
             </div>
-            <input type="text"
-                   wire:model.live.debounce.250ms="search"
-                   placeholder="Filter checks by title, description or category..."
-                   class="w-full pl-9 pr-8 py-2 text-xs md:text-sm rounded-lg border border-gray-200 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A] placeholder-gray-400">
-            @if($search !== '')
-            <button wire:click="$set('search', '')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-            @endif
+
+            {{-- Assignee Delegation Filters --}}
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs flex-wrap">
+                <span class="text-gray-400 font-medium mr-1 text-[11px] uppercase tracking-wider">Assignee:</span>
+                <button type="button"
+                        wire:click="setAssigneeFilter('')"
+                        class="px-2.5 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap {{ $assigneeFilter === '' ? 'bg-[#1B6B3A] text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                    All
+                </button>
+                <button type="button"
+                        wire:click="setAssigneeFilter('me')"
+                        class="px-2.5 py-1.5 rounded-lg font-semibold transition-colors whitespace-nowrap flex items-center gap-1 {{ $assigneeFilter === 'me' ? 'bg-[#F5C518] text-gray-900 shadow-xs font-bold' : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100' }}">
+                    <span>Assigned to Me</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $assigneeFilter === 'me' ? 'bg-gray-900 text-white' : 'bg-amber-200 text-amber-900' }}">{{ $myTasksCount }}</span>
+                </button>
+                <button type="button"
+                        wire:click="setAssigneeFilter('unassigned')"
+                        class="px-2.5 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap {{ $assigneeFilter === 'unassigned' ? 'bg-[#1B6B3A] text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                    Shift Pool ({{ $unassignedCount }})
+                </button>
+                @if(isset($teamMembers) && $teamMembers->isNotEmpty())
+                <select wire:model.live="assigneeFilter"
+                        class="px-2 py-1.5 text-xs rounded-lg border border-gray-200 bg-white text-gray-700 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                    <option value="">Specific Team Member...</option>
+                    @foreach($teamMembers as $tm)
+                    <option value="{{ $tm->id }}">{{ $tm->name }} ({{ ucfirst($tm->role) }})</option>
+                    @endforeach
+                </select>
+                @endif
+            </div>
         </div>
 
-        @if($categories->isNotEmpty())
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
-            <button type="button"
-                    wire:click="$set('category', '')"
-                    class="px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap {{ $category === '' ? 'bg-[#1B6B3A] text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                All Categories ({{ $totalActivitiesCount }})
-            </button>
-            @foreach($categories as $cat)
-            <button type="button"
-                    wire:click="$set('category', '{{ $cat }}')"
-                    class="px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap {{ $category === $cat ? 'bg-[#1B6B3A] text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                {{ $cat }}
-            </button>
-            @endforeach
-            @if($search !== '' || $category !== '')
+        {{-- Categories and Reset Bar --}}
+        <div class="flex items-center justify-between border-t border-gray-50 pt-2.5 flex-wrap gap-2 text-xs">
+            @if($categories->isNotEmpty())
+            <div class="flex items-center gap-1.5 overflow-x-auto flex-wrap">
+                <span class="text-gray-400 font-medium mr-1 text-[11px] uppercase tracking-wider">Category:</span>
+                <button type="button"
+                        wire:click="$set('category', '')"
+                        class="px-2 py-1 rounded-md font-medium transition-colors {{ $category === '' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                    All
+                </button>
+                @foreach($categories as $cat)
+                <button type="button"
+                        wire:click="$set('category', '{{ $cat }}')"
+                        class="px-2 py-1 rounded-md font-medium transition-colors {{ $category === $cat ? 'bg-[#1B6B3A] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                    {{ $cat }}
+                </button>
+                @endforeach
+            </div>
+            @endif
+
+            @if($search !== '' || $category !== '' || $assigneeFilter !== '')
             <button type="button"
                     wire:click="clearFilters"
-                    class="px-2 py-1.5 text-xs text-red-600 hover:text-red-700 font-semibold whitespace-nowrap">
-                Reset
+                    class="px-2.5 py-1 text-xs text-red-600 hover:text-red-700 font-semibold flex items-center gap-1 ml-auto">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Reset All Filters
             </button>
             @endif
         </div>
-        @endif
     </div>
     @endif
 
@@ -169,11 +221,11 @@
             <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            @if($search !== '' || $category !== '')
-                <p class="text-gray-700 font-medium">No activities match your filters.</p>
-                <p class="text-gray-400 text-sm mt-1">Try broadening your search term or category selection.</p>
+            @if($search !== '' || $category !== '' || $assigneeFilter !== '')
+                <p class="text-gray-700 font-medium">No operational checks match your current filters.</p>
+                <p class="text-gray-400 text-sm mt-1">Try resetting the assignee filter or broadening your search keywords.</p>
                 <button wire:click="clearFilters" class="mt-4 px-4 py-1.5 text-xs font-semibold text-[#1B6B3A] border border-[#1B6B3A] rounded-lg hover:bg-green-50 transition-colors">
-                    Clear Filters
+                    Clear All Filters
                 </button>
             @else
                 <p class="text-gray-500 font-medium">No activities found for this date.</p>
@@ -199,20 +251,55 @@
 
         <div class="space-y-3">
             @foreach($pending as $activity)
-            <div class="bg-white rounded-lg shadow-sm border-l-4 border-[#F5C518] overflow-hidden"
+            <div class="bg-white rounded-lg shadow-sm border-l-4 {{ $activity->assigned_to === auth()->id() ? 'border-[#F5C518] ring-2 ring-[#F5C518]/60 bg-amber-50/15' : 'border-[#F5C518]' }} overflow-hidden"
                  wire:key="pending-{{ $activity->id }}">
                 <div class="p-4">
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
+                            <div class="flex items-center gap-2 flex-wrap mb-1">
                                 <h3 class="font-semibold text-gray-900 truncate">{{ $activity->title }}</h3>
                                 @if($activity->category)
                                 <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">{{ $activity->category }}</span>
                                 @endif
                                 <x-status-badge status="pending" />
+
+                                {{-- Assignee Badging --}}
+                                @if($activity->assigned_to === auth()->id())
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#F5C518] text-gray-900 shadow-xs">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                                    Assigned to You
+                                </span>
+                                @elseif($activity->assignee)
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-[#1B6B3A] border border-emerald-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#1B6B3A]"></span>
+                                    {{ $activity->assignee->name }}
+                                    <span class="text-gray-400 text-[10px]">({{ ucfirst($activity->assignee->role) }})</span>
+                                </span>
+                                @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-500 italic">
+                                    Shift Pool (Unassigned)
+                                </span>
+                                @endif
                             </div>
+
                             @if($activity->description)
                             <p class="text-sm text-gray-600 mt-1 leading-relaxed">{{ $activity->description }}</p>
+                            @endif
+
+                            {{-- Supervisor Inline Quick-Assign Menu --}}
+                            @if(auth()->user()->canManageActivities() && isset($teamMembers))
+                            <div class="mt-3 pt-2 border-t border-gray-100 flex items-center gap-2 text-xs text-gray-500">
+                                <span class="font-medium text-gray-600">Assignee:</span>
+                                <select wire:change="assignActivity({{ $activity->id }}, $event.target.value ? parseInt($event.target.value) : null)"
+                                        class="py-1 px-2 text-xs rounded-md border-gray-200 bg-gray-50 text-gray-800 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A]">
+                                    <option value="" {{ empty($activity->assigned_to) ? 'selected' : '' }}>— Shift Pool (Unassigned) —</option>
+                                    @foreach($teamMembers as $tm)
+                                    <option value="{{ $tm->id }}" {{ $activity->assigned_to == $tm->id ? 'selected' : '' }}>
+                                        {{ $tm->name }} ({{ ucfirst($tm->role) }}{{ $tm->designation ? ' - ' . $tm->designation : '' }})
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             @endif
                         </div>
                         <div class="flex-shrink-0">
@@ -270,6 +357,18 @@
                                 <span class="text-xs bg-green-50 text-[#1B6B3A] border border-green-200 px-2 py-0.5 rounded-full font-medium">{{ $activity->category }}</span>
                                 @endif
                                 <x-status-badge status="done" />
+
+                                @if($activity->assigned_to === auth()->id())
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#F5C518] text-gray-900 shadow-xs">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                                    Assigned to You
+                                </span>
+                                @elseif($activity->assignee)
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-[#1B6B3A] border border-emerald-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#1B6B3A]"></span>
+                                    {{ $activity->assignee->name }}
+                                </span>
+                                @endif
                             </div>
 
                             @if($activity->description)

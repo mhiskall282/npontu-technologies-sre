@@ -50,6 +50,7 @@ final class CreateActivityAction
             'activity_id' => $activity->id,
             'title' => $activity->title,
             'actor_id' => Auth::id(),
+            'assigned_to' => $activity->assigned_to,
         ]);
 
         return $activity;

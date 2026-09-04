@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreActivityRequest;
 use App\Http\Requests\UpdateActivityRequest;
 use App\Models\Activity;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -18,9 +19,9 @@ use Illuminate\View\View;
  * Admin\ActivityController — Supervisor Console for Activity Administration
  *
  * Provides dedicated administrative routes for Leads and Admins to manage operational checks:
- *   - index(): Catalog including soft-deleted checks with creator relationship pre-loaded
- *   - create() / store(): Provision recurring operational checks
- *   - edit() / update(): Modify titles, categories, recurrence intervals, and active status
+ *   - index(): Catalog including soft-deleted checks with creator and assignee relationships pre-loaded
+ *   - create() / store(): Provision recurring operational checks with optional team assignment
+ *   - edit() / update(): Modify titles, categories, recurrence intervals, assignee, and active status
  *   - destroy(): Soft-delete checks and record security audit log
  *
  * ARCHITECTURAL DESIGN:
@@ -40,7 +41,7 @@ class ActivityController extends Controller
         $this->authorize('create', Activity::class);
 
         $activities = Activity::withTrashed()
-            ->with('creator')
+            ->with(['creator', 'assignee'])
             ->orderByDesc('created_at')
             ->paginate(20);
 
@@ -56,7 +57,9 @@ class ActivityController extends Controller
     {
         $this->authorize('create', Activity::class);
 
-        return view('admin.activities.create');
+        $users = User::orderBy('name')->get();
+
+        return view('admin.activities.create', compact('users'));
     }
 
     /**
@@ -85,7 +88,9 @@ class ActivityController extends Controller
     {
         $this->authorize('update', $activity);
 
-        return view('admin.activities.edit', compact('activity'));
+        $users = User::orderBy('name')->get();
+
+        return view('admin.activities.edit', compact('activity', 'users'));
     }
 
     /**
