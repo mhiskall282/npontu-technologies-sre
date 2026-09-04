@@ -10,34 +10,44 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full font-sans antialiased bg-[#0F1A14]">
-    {{-- Splash Screen Loader for Guest/Auth --}}
-    <div id="guest-splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0F1A14] transition-opacity duration-500">
+    {{-- Splash Screen Loader for Guest/Auth (Snappy 200ms transition) --}}
+    <div id="guest-splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0F1A14] transition-opacity duration-300 pointer-events-auto">
         <div class="flex flex-col items-center gap-4 text-center">
-            <div class="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 border border-white/20 shadow-2xl">
-                <svg class="w-10 h-10 text-[#F5C518] animate-bounce" viewBox="0 0 32 32" fill="currentColor">
+            <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/20 shadow-2xl">
+                <svg class="w-8 h-8 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
                     <polygon points="16,3 30,27 2,27"/>
                 </svg>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-white tracking-tight">Support Tracker</h1>
-                <p class="text-xs text-[#F5C518] font-mono tracking-widest uppercase mt-0.5">Npontu Technologies</p>
+                <h1 class="text-lg font-bold text-white tracking-tight">Support Tracker</h1>
+                <p class="text-[11px] text-[#F5C518] font-mono tracking-widest uppercase mt-0.5">Npontu Technologies</p>
             </div>
-            <div class="flex items-center gap-1.5 mt-2">
+            <div class="flex items-center gap-1.5 mt-1">
                 <div class="w-2 h-2 rounded-full bg-[#1B6B3A] animate-ping"></div>
                 <span class="text-xs text-gray-400 font-medium">Initializing Security Portal...</span>
             </div>
         </div>
     </div>
     <script>
-        window.addEventListener('load', () => {
-            const splash = document.getElementById('guest-splash-screen');
-            if (splash) {
-                setTimeout(() => {
+        (function() {
+            function dismissSplash() {
+                const splash = document.getElementById('guest-splash-screen');
+                if (splash && !splash.dataset.dismissed) {
+                    splash.dataset.dismissed = 'true';
+                    splash.style.pointerEvents = 'none';
                     splash.style.opacity = '0';
-                    setTimeout(() => splash.remove(), 600);
-                }, 7000);
+                    setTimeout(() => splash.remove(), 300);
+                }
             }
-        });
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(dismissSplash, 200);
+            } else {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(dismissSplash, 200));
+                window.addEventListener('load', () => setTimeout(dismissSplash, 100));
+            }
+            // Absolute fallback timeout
+            setTimeout(dismissSplash, 500);
+        })();
     </script>
     {{ $slot }}
 </body>
