@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,6 +23,10 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId), 'max:255'],
             'role' => ['required', 'in:agent,lead,admin'],
+            'grade' => ['required', 'string', 'in:'.implode(',', array_keys(User::GRADES))],
+            'department' => ['required', 'string', 'max:100'],
+            'privileges' => ['nullable', 'array'],
+            'privileges.*' => ['string', 'in:'.implode(',', array_keys(User::ALL_PRIVILEGES))],
             'designation' => ['nullable', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:30'],
         ];

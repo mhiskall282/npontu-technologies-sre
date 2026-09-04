@@ -89,6 +89,17 @@
                               {{ request()->routeIs('reports.*') ? 'bg-[#12492A] text-white' : 'text-green-100 hover:text-white hover:bg-[#12492A]' }}">
                         Reports
                     </a>
+                    <a href="{{ route('messages.index') }}"
+                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 flex items-center gap-1.5
+                              {{ request()->routeIs('messages.*') ? 'bg-[#12492A] text-white' : 'text-green-100 hover:text-white hover:bg-[#12492A]' }}">
+                        <span>Ops Comms</span>
+                        @php $unreadComms = auth()->user()->unreadMessagesCount(); @endphp
+                        @if($unreadComms > 0)
+                            <span class="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-[#E63946] text-white animate-pulse">
+                                {{ $unreadComms }}
+                            </span>
+                        @endif
+                    </a>
                     @if(auth()->user()->canManageActivities())
                     <a href="{{ route('admin.activities.index') }}"
                        class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150
@@ -155,6 +166,14 @@
             <a href="{{ route('activities.daily') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Today's Board</a>
             <a href="{{ route('activities.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Activities</a>
             <a href="{{ route('reports.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Reports</a>
+            <a href="{{ route('messages.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A] flex items-center justify-between">
+                <span>Ops Comms</span>
+                @if(auth()->user()->unreadMessagesCount() > 0)
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#E63946] text-white">
+                        {{ auth()->user()->unreadMessagesCount() }}
+                    </span>
+                @endif
+            </a>
             @if(auth()->user()->canManageActivities())
             <a href="{{ route('admin.activities.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Admin Management</a>
             <a href="{{ route('monitoring.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">SRE Monitoring</a>

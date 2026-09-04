@@ -9,6 +9,7 @@ use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Livewire\DailyActivityBoard;
+use App\Livewire\OperationalChat;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,9 @@ Route::middleware('auth')->group(function () {
 
     // Daily handover view (Livewire component)
     Route::get('/daily', DailyActivityBoard::class)->name('activities.daily');
+
+    // SRE Operational Messaging & Channels (Livewire component)
+    Route::get('/messages', OperationalChat::class)->name('messages.index');
 
     // Activity CRUD (read = any auth; create/update/delete = lead/admin via Policy)
     Route::resource('activities', ActivityController::class);

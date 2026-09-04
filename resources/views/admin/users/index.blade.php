@@ -45,9 +45,9 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Member</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Designation</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Phone</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role & Grade</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Department</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Privileges</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Joined</th>
                     <th class="relative px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -63,18 +63,38 @@
                             <div>
                                 <p class="font-semibold text-gray-900">{{ $member->name }}</p>
                                 <p class="text-xs text-gray-400">{{ $member->email }}</p>
+                                @if($member->designation)
+                                <p class="text-[11px] text-gray-500">{{ $member->designation }}</p>
+                                @endif
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="capitalize text-xs px-2.5 py-1 rounded-full font-semibold
-                            {{ $member->role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                               ($member->role === 'lead'  ? 'bg-blue-100 text-blue-700'   : 'bg-gray-100 text-gray-600') }}">
-                            {{ $member->role }}
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="capitalize text-xs px-2.5 py-0.5 rounded-full font-semibold
+                                {{ $member->role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                                   ($member->role === 'lead'  ? 'bg-blue-100 text-blue-700'   : 'bg-gray-100 text-gray-600') }}">
+                                {{ $member->role }}
+                            </span>
+                            <span class="text-xs font-black px-2 py-0.5 rounded bg-[#F5C518] text-gray-900 shadow-2xs">
+                                {{ $member->grade ?? 'L2' }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium">
+                            {{ $member->department ?? 'Core Operations' }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-gray-500">{{ $member->designation ?? '—' }}</td>
-                    <td class="px-6 py-4 text-gray-500 text-xs font-mono">{{ $member->phone ?? '—' }}</td>
+                    <td class="px-6 py-4">
+                        @php
+                            $privCount = $member->isAdmin() ? count(App\Models\User::ALL_PRIVILEGES) : ($member->privileges ? count($member->privileges) : ($member->isLead() ? 8 : 2));
+                        @endphp
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-[#1B6B3A] border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#1B6B3A]"></span>
+                            {{ $privCount }} active
+                        </span>
+                    </td>
                     <td class="px-6 py-4 text-gray-400 text-xs">{{ $member->created_at->format('d M Y') }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center justify-end gap-2 flex-wrap">

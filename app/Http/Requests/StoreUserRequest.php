@@ -22,6 +22,10 @@ class StoreUserRequest extends FormRequest
             'email' => ['required', 'email', 'unique:users,email', 'max:255'],
             'password' => ['required', Password::defaults(), 'confirmed'],
             'role' => ['required', 'in:agent,lead,admin'],
+            'grade' => ['required', 'string', 'in:'.implode(',', array_keys(User::GRADES))],
+            'department' => ['required', 'string', 'max:100'],
+            'privileges' => ['nullable', 'array'],
+            'privileges.*' => ['string', 'in:'.implode(',', array_keys(User::ALL_PRIVILEGES))],
             'designation' => ['nullable', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:30'],
         ];

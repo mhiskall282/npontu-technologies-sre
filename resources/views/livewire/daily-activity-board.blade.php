@@ -21,7 +21,7 @@
                 Syncing...
             </span>
 
-            @if(auth()->user()->canManageActivities())
+            @if(auth()->user()->canSignHandovers())
             <button type="button"
                     wire:click="openHandoverModal"
                     class="px-3.5 py-1.5 text-xs font-bold bg-[#1B6B3A] text-white rounded-lg hover:bg-[#15532D] transition-colors shadow-sm flex items-center gap-1.5">
@@ -55,53 +55,100 @@
 
     {{-- ── SRE Shift Handover Briefing Banner ──────────────────── --}}
     @if($shiftHandovers->isNotEmpty())
-    <div class="mb-6 bg-white rounded-xl shadow-sm border border-emerald-200 overflow-hidden">
-        <div class="bg-gradient-to-r from-[#12492A] to-[#1B6B3A] p-4 text-white flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-                <span class="p-2 rounded-lg bg-white/10 text-[#F5C518]">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                </span>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-sm font-bold tracking-wide uppercase">Operational Shift Handover Briefing</h2>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-[#F5C518] text-gray-900">
-                            {{ ucfirst($shiftHandovers->first()->shift) }} Shift
-                        </span>
+    <div class="mb-6 space-y-4">
+        @foreach($shiftHandovers as $handover)
+        <div class="bg-white rounded-xl shadow-sm border {{ $handover->isAccepted() ? 'border-emerald-300 ring-1 ring-emerald-200' : 'border-amber-300 ring-1 ring-amber-200' }} overflow-hidden">
+            <div class="bg-gradient-to-r {{ $handover->isAccepted() ? 'from-[#12492A] to-[#1B6B3A]' : 'from-slate-900 to-[#1B6B3A]' }} p-4 text-white flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="p-2 rounded-lg bg-white/10 text-[#F5C518]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </span>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 class="text-sm font-bold tracking-wide uppercase">Operational Shift Handover Briefing</h2>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-[#F5C518] text-gray-900">
+                                {{ ucfirst($handover->shift) }} Shift
+                            </span>
+                            @if($handover->isAccepted())
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-400 text-gray-950 flex items-center gap-1 shadow-xs">
+                                    <svg class="w-3 h-3 text-gray-950" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    Accepted & Signed-On
+                                </span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-400 text-amber-950 flex items-center gap-1 animate-pulse">
+                                    <span>⏳</span> Awaiting Incoming Acceptance
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs text-emerald-100 mt-0.5">
+                            Signed off by <span class="font-semibold text-white">{{ $handover->outgoingLead?->name }}</span>
+                            @if($handover->incomingLead)
+                                → Designated incoming lead: <span class="font-semibold text-white">{{ $handover->incomingLead?->name }}</span>
+                            @endif
+                            at {{ $handover->signed_at?->format('H:i \G\M\T') }}
+                        </p>
                     </div>
-                    <p class="text-xs text-emerald-100 mt-0.5">
-                        Signed off by <span class="font-semibold text-white">{{ $shiftHandovers->first()->outgoingLead?->name }}</span>
-                        @if($shiftHandovers->first()->incomingLead)
-                            → Handed over to <span class="font-semibold text-white">{{ $shiftHandovers->first()->incomingLead?->name }}</span>
-                        @endif
-                        at {{ $shiftHandovers->first()->signed_at?->format('H:i \G\M\T') }}
-                    </p>
+                </div>
+                <div class="flex items-center gap-2 text-xs font-mono flex-wrap">
+                    <span class="px-2.5 py-1 rounded bg-white/10 border border-white/20">
+                        Pending: <strong class="text-amber-300">{{ $handover->pending_tasks_count }}</strong>
+                    </span>
+                    <span class="px-2.5 py-1 rounded bg-white/10 border border-white/20">
+                        Done: <strong class="text-emerald-300">{{ $handover->completed_tasks_count }}</strong>
+                    </span>
+
+                    @if(! $handover->isAccepted() && auth()->user()->canAcceptHandovers())
+                    <button type="button"
+                            wire:click="openAcceptModal({{ $handover->id }})"
+                            class="px-3 py-1 bg-[#F5C518] hover:bg-[#E0B310] text-gray-900 font-sans font-extrabold text-xs rounded-lg transition-colors shadow-sm flex items-center gap-1.5 ml-2">
+                        <span>🤝</span>
+                        <span>Sign-On & Accept Shift</span>
+                    </button>
+                    @endif
                 </div>
             </div>
-            <div class="flex items-center gap-2 text-xs font-mono">
-                <span class="px-2.5 py-1 rounded bg-white/10 border border-white/20">
-                    Pending at sign-off: <strong class="text-amber-300">{{ $shiftHandovers->first()->pending_tasks_count }}</strong>
-                </span>
-                <span class="px-2.5 py-1 rounded bg-white/10 border border-white/20">
-                    Done: <strong class="text-emerald-300">{{ $shiftHandovers->first()->completed_tasks_count }}</strong>
-                </span>
+
+            <div class="p-4 bg-emerald-50/20 text-gray-800 space-y-3">
+                <div>
+                    <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Handover Summary / Operational Notes</h3>
+                    <p class="text-sm text-gray-800 mt-1 whitespace-pre-line leading-relaxed">{{ $handover->summary }}</p>
+                </div>
+
+                @if($handover->incidents)
+                <div class="pt-2 border-t border-emerald-100">
+                    <h3 class="text-[11px] font-bold text-red-700 uppercase tracking-wider flex items-center gap-1">
+                        <span>🚨</span> Open Incidents & Discrepancies Noted
+                    </h3>
+                    <p class="text-xs text-red-900 mt-1 whitespace-pre-line font-medium leading-relaxed bg-red-50 p-2.5 rounded-lg border border-red-200">
+                        {{ $handover->incidents }}
+                    </p>
+                </div>
+                @endif
+
+                @if($handover->isAccepted())
+                <div class="pt-2 border-t border-emerald-100 bg-emerald-50/60 -mx-4 -mb-4 p-4 rounded-b-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-[#1B6B3A] text-white flex items-center justify-center text-xs">✓</span>
+                        <div>
+                            <p class="text-xs font-bold text-emerald-950">
+                                Formally accepted by {{ $handover->acceptedBy?->name ?? 'Incoming Lead' }}
+                                <span class="text-emerald-700 font-normal">({{ $handover->accepted_at?->format('d M Y, H:i \G\M\T') }})</span>
+                            </p>
+                            @if($handover->acceptance_remarks)
+                            <p class="text-xs text-emerald-900 italic mt-0.5 font-sans">
+                                "{{ $handover->acceptance_remarks }}"
+                            </p>
+                            @endif
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-mono text-emerald-700 uppercase tracking-wider bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">
+                        Responsibility Active
+                    </span>
+                </div>
+                @endif
             </div>
         </div>
-        <div class="p-4 bg-emerald-50/30 text-gray-800 space-y-3">
-            <div>
-                <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Handover Summary / Operational Notes</h3>
-                <p class="text-sm text-gray-800 mt-1 whitespace-pre-line leading-relaxed">{{ $shiftHandovers->first()->summary }}</p>
-            </div>
-            @if($shiftHandovers->first()->incidents)
-            <div class="pt-2 border-t border-emerald-100">
-                <h3 class="text-[11px] font-bold text-red-700 uppercase tracking-wider flex items-center gap-1">
-                    <span>🚨</span> Open Incidents & Discrepancies Noted
-                </h3>
-                <p class="text-xs text-red-900 mt-1 whitespace-pre-line font-medium leading-relaxed bg-red-50 p-2.5 rounded-lg border border-red-200">
-                    {{ $shiftHandovers->first()->incidents }}
-                </p>
-            </div>
-            @endif
-        </div>
+        @endforeach
     </div>
     @endif
 
@@ -733,6 +780,98 @@
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         <span>Sign & Log Shift Handover</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
+    {{-- ── Shift Handover Acceptance / Sign-On Modal ───────────── --}}
+    @if($showAcceptModal && $acceptingHandover)
+    <div class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 text-left border border-emerald-100 animate-scale-in"
+             x-data x-trap="true">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="p-2 rounded-lg bg-emerald-50 text-[#1B6B3A]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900">Accept & Sign-On SRE Shift Handover</h3>
+                        <p class="text-xs text-gray-500">Formal transfer of operational responsibility for incoming shift</p>
+                    </div>
+                </div>
+                <button type="button" wire:click="closeAcceptModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="mb-4 bg-gray-50 p-3.5 rounded-xl border border-gray-200 text-xs space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-gray-700 uppercase tracking-wider">{{ ucfirst($acceptingHandover->shift) }} Shift — {{ $acceptingHandover->date->format('l, d M Y') }}</span>
+                    <span class="font-mono text-gray-500">Signed at {{ $acceptingHandover->signed_at?->format('H:i \G\M\T') }}</span>
+                </div>
+                <div class="text-gray-600">
+                    <strong>Outgoing Lead:</strong> {{ $acceptingHandover->outgoingLead?->name }}
+                    @if($acceptingHandover->incomingLead)
+                    | <strong>Designated Incoming:</strong> {{ $acceptingHandover->incomingLead?->name }}
+                    @endif
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-gray-200 text-gray-700">
+                    <p class="font-semibold text-gray-900 text-[11px] uppercase mb-1">Outgoing Summary:</p>
+                    <p class="whitespace-pre-line text-xs">{{ $acceptingHandover->summary }}</p>
+                </div>
+                @if($acceptingHandover->incidents)
+                <div class="bg-red-50 p-2.5 rounded-lg border border-red-200 text-red-900">
+                    <p class="font-bold text-red-800 text-[11px] uppercase mb-1">Open Incidents Noted:</p>
+                    <p class="whitespace-pre-line text-xs">{{ $acceptingHandover->incidents }}</p>
+                </div>
+                @endif
+                <div class="flex items-center gap-3 pt-1 text-gray-600">
+                    <span>Pending at Handover: <strong class="text-amber-600">{{ $acceptingHandover->pending_tasks_count }}</strong></span>
+                    <span>Completed: <strong class="text-emerald-600">{{ $acceptingHandover->completed_tasks_count }}</strong></span>
+                </div>
+            </div>
+
+            <form wire:submit="confirmAcceptHandover" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">
+                        Sign-On Remarks & Incoming Verification (Optional)
+                    </label>
+                    <textarea wire:model="acceptanceRemarks"
+                              rows="3"
+                              placeholder="Confirm queue status, personnel on duty, monitoring alerts verified, immediate priorities..."
+                              class="w-full text-xs rounded-lg border-gray-300 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A]"></textarea>
+                    @error('acceptanceRemarks') <p class="text-xs text-red-600 mt-0.5">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="bg-emerald-50/50 p-3 rounded-lg border border-emerald-200">
+                    <label class="flex items-start gap-2.5 cursor-pointer">
+                        <input type="checkbox"
+                               wire:model="confirmResponsibility"
+                               class="mt-0.5 rounded border-gray-300 text-[#1B6B3A] focus:ring-[#1B6B3A]">
+                        <span class="text-xs font-medium text-emerald-950 leading-snug">
+                            I, <strong>{{ auth()->user()->name }}</strong>, formally accept operational handover of this shift, acknowledge open incidents, and assume duty responsibilities.
+                        </span>
+                    </label>
+                    @error('confirmResponsibility') <p class="text-xs text-red-600 mt-1 ml-6">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+                    <button type="button"
+                            wire:click="closeAcceptModal"
+                            class="px-4 py-2 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 text-xs font-bold bg-[#1B6B3A] text-white rounded-lg hover:bg-[#15532D] transition-colors shadow-sm flex items-center gap-1.5">
+                        <svg wire:loading class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Confirm & Sign-On to Shift</span>
                     </button>
                 </div>
             </form>

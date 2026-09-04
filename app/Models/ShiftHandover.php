@@ -49,6 +49,9 @@ class ShiftHandover extends Model
         'pending_tasks_count',
         'completed_tasks_count',
         'signed_at',
+        'accepted_at',
+        'accepted_by_id',
+        'acceptance_remarks',
     ];
 
     /**
@@ -61,6 +64,7 @@ class ShiftHandover extends Model
         return [
             'date' => 'date:Y-m-d',
             'signed_at' => 'datetime',
+            'accepted_at' => 'datetime',
             'pending_tasks_count' => 'integer',
             'completed_tasks_count' => 'integer',
         ];
@@ -77,13 +81,31 @@ class ShiftHandover extends Model
     }
 
     /**
-     * Incoming Lead receiving operational responsibility.
+     * Incoming Lead designated to receive operational responsibility.
      *
      * @return BelongsTo<User, $this>
      */
     public function incomingLead(): BelongsTo
     {
         return $this->belongsTo(User::class, 'incoming_lead_id');
+    }
+
+    /**
+     * Lead or supervisor who acknowledged and accepted (signed on) the handover.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function acceptedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'accepted_by_id');
+    }
+
+    /**
+     * Check if this handover has been formally accepted by the incoming shift lead.
+     */
+    public function isAccepted(): bool
+    {
+        return $this->accepted_at !== null;
     }
 
     /**

@@ -18,6 +18,13 @@ erDiagram
     users ||--o{ audit_logs : "performs_actions"
     users ||--o{ shift_handovers : "outgoing_lead"
     users ||--o{ shift_handovers : "incoming_lead"
+    users ||--o{ shift_handovers : "accepted_by"
+    users ||--o{ conversations : "creates"
+    users ||--o{ conversation_participants : "participates"
+    users ||--o{ messages : "authors"
+
+    conversations ||--o{ conversation_participants : "enrolls"
+    conversations ||--o{ messages : "contains"
 
     activities ||--o{ activity_logs : "has_many_logs"
 
@@ -31,6 +38,9 @@ erDiagram
         string email
         string password
         string role
+        string grade "L1-L5 SRE grade"
+        string department "Ops division"
+        json privileges "Granular permissions array"
         string designation
         string phone
         timestamp deleted_at
@@ -82,6 +92,38 @@ erDiagram
         integer pending_tasks_count
         integer completed_tasks_count
         timestamp signed_at
+        timestamp accepted_at "nullable"
+        bigint accepted_by_id FK "nullable"
+        text acceptance_remarks "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    conversations {
+        bigint id PK
+        string type "direct|team|group"
+        string title "nullable"
+        string description "nullable"
+        boolean is_private
+        bigint created_by FK "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    conversation_participants {
+        bigint id PK
+        bigint conversation_id FK
+        bigint user_id FK
+        timestamp last_read_at "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    messages {
+        bigint id PK
+        bigint conversation_id FK
+        bigint sender_id FK
+        text body
         timestamp created_at
         timestamp updated_at
     }
@@ -463,18 +505,20 @@ flowchart TD
         BULK["bulkAssign(targetUserId)"]
     end
 
-    subgraph HandoverSignOff["Formal Shift Transfer Protocol"]
+    subgraph HandoverSignOff["Formal Shift Transfer Protocol (Two-Way Handshake)"]
         DRAFT["Draft Handover Briefing (Shift, Incoming Lead)"]
         STATS["Auto-Snapshot (Pending vs Done Tasks)"]
         INC_NOTES["Escalation / Discrepancy Log"]
-        SIGN["Digital Sign-Off (signed_at timestamp)"]
+        SIGN["Digital Sign-Off by Outgoing Lead (signed_at)"]
+        ACCEPT["Formal Sign-On / Acceptance by Incoming Lead (accepted_at, remarks)"]
     end
 
     subgraph ShiftStore["System of Record & Observability"]
-        SH[("shift_handovers Table")]
+        SH[("shift_handovers Table (accepted_at, accepted_by_id)")]
         AL[("activity_logs (incident_ticket, is_escalated)")]
-        AUD[("audit_logs Compliance Trail")]
-        BOARD["Next Shift Dashboard (Handover Banner)"]
+        AUD[("audit_logs Compliance Trail (handover_accepted)")]
+        BOARD["Next Shift Dashboard (Handover Banner + Live Status Chip)"]
+        COMMS[("conversations & messages Pipeline")]
     end
 
     OPS --> CHECK
@@ -494,10 +538,51 @@ flowchart TD
     SIGN --> AUD
     SH --> BOARD
 
+    BOARD --> ACCEPT
+    ACCEPT --> SH
+    ACCEPT --> AUD
+
     style ShiftExecution fill:#f0fdf4,stroke:#1B6B3A,stroke-width:2px
     style BatchDelegation fill:#eff6ff,stroke:#2563eb,stroke-width:2px
     style HandoverSignOff fill:#fef3c7,stroke:#d97706,stroke-width:2px
     style ShiftStore fill:#faf5ff,stroke:#9333ea,stroke-width:2px
+```
+
+---
+
+## 8. SRE Operational Communications Architecture
+
+```mermaid
+flowchart LR
+    subgraph Client["Browser Interface (Livewire 3)"]
+        SIDEBAR["Channel Drawer (Team, War Rooms, DMs)"]
+        CHAT["Message Stream (wire:poll.4000ms)"]
+        MODAL["New Chat / Group Creator Modal"]
+    end
+
+    subgraph Server["Backend Pipeline & Access Control"]
+        AUTH["Gate / Privilege Enforcement (create_channels)"]
+        ROUTER["OperationalChat Livewire Component"]
+        READ_TRACKER["Unread / Read Receipt Engine"]
+    end
+
+    subgraph Storage["Persistent Relational Layer"]
+        CONV[("conversations (direct, team, group)")]
+        PART[("conversation_participants (last_read_at)")]
+        MSG[("messages (body, sender_id, created_at)")]
+    end
+
+    SIDEBAR -->|Select Channel| ROUTER
+    CHAT -->|Send Message| ROUTER
+    MODAL -->|Create Room / Direct| AUTH
+    AUTH --> ROUTER
+
+    ROUTER --> CONV
+    ROUTER --> PART
+    ROUTER --> MSG
+
+    READ_TRACKER --> PART
+    ROUTER --> READ_TRACKER
 ```
 
 ---
@@ -517,4 +602,8 @@ flowchart TD
 | 9 | Task Delegation | Optional Nullable FK (`users.id`) | Separate Team/Assignment Pivot | Preserves shift pool elasticity (null = shift pool) while giving 1-click personal accountability without relational overhead |
 | 10 | Incident Escalation | Denormalized on `activity_logs` | External Ticketing Webhook Only | Connects shift checkoff discrepancies directly to incident ticket references (e.g., `INC-1042`) without blocking offline operations |
 | 11 | Digital Shift Handover | Dedicated `shift_handovers` table | Unstructured remarks or chat apps | Enforces formal briefing sign-off between outgoing and incoming shift leads with statistical non-repudiation |
+| 12 | Two-Way Handover Handshake | Sign-off + Sign-on Acceptance | Outgoing sign-off only | Eliminates ambiguity in operational custody: incoming lead explicitly acknowledges blockers, verifies systems, and assumes shift duty |
+| 13 | Operational Messaging Pipeline | First-party Relational Comms + Livewire polling | Third-party Slack/Discord webhook dependency | Self-contained, zero-cost, compliant within SRE security boundary; supports 1-on-1 direct chat, team shift channels, and private incident war rooms |
+| 14 | SRE User Grades & Granular Privileges | 5-tier Grades (L1-L5) + Checkbox Privileges JSON | Rigid single-role inheritance | Allows fine-grained operational permissions (e.g. task reassignment, channel creation) across varying engineer seniority without bloating full admin access |
+
 

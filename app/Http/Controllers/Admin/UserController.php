@@ -64,7 +64,11 @@ class UserController extends Controller
         // Enforce policy: verify user has permission to provision accounts
         $this->authorize('create', User::class);
 
-        return view('admin.users.create');
+        $grades = User::GRADES;
+        $departments = User::DEPARTMENTS;
+        $allPrivileges = User::ALL_PRIVILEGES;
+
+        return view('admin.users.create', compact('grades', 'departments', 'allPrivileges'));
     }
 
     /**
@@ -128,7 +132,11 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        return view('admin.users.edit', compact('user'));
+        $grades = User::GRADES;
+        $departments = User::DEPARTMENTS;
+        $allPrivileges = User::ALL_PRIVILEGES;
+
+        return view('admin.users.edit', compact('user', 'grades', 'departments', 'allPrivileges'));
     }
 
     /**
@@ -144,7 +152,7 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        $old = $user->only(['name', 'email', 'role', 'designation', 'phone']);
+        $old = $user->only(['name', 'email', 'role', 'grade', 'department', 'designation', 'phone', 'privileges']);
         $user->update($request->validated());
 
         $this->auditService->log(

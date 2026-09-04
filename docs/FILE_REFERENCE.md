@@ -8,19 +8,30 @@
 ## `app/Models/`
 
 ### `User.php`
-**What it does**: The authenticated user entity. Extends Laravel's `Authenticatable`, uses `SoftDeletes` (deleted users keep their activity log references intact), and declares three role helper methods.
+**What it does**: The authenticated user entity. Extends Laravel's `Authenticatable`, uses `SoftDeletes` (deleted users keep their activity log references intact), and declares role and granular privilege helper methods.
 
 **Key properties**:
-- `$fillable`: `name`, `email`, `password`, `role`, `designation`, `phone`
+- `$fillable`: `name`, `email`, `password`, `role`, `grade`, `department`, `privileges`, `designation`, `phone`
 - `role`: one of `agent`, `lead`, `admin`
+- `grade`: SRE operational tier (`L1` Support Operator, `L2` Support Engineer, `L3` Senior SRE, `L4` Principal Lead, `L5` Director/Architect)
+- `department`: Operations division (e.g. `Cloud Infrastructure & SRE`, `Payment Gateway Operations`, `Database Operations & DBA`, `Security & Compliance`)
+- `privileges`: JSON array of granular permissions assigned by Admin (`manage_activities`, `assign_tasks`, `sign_handovers`, `accept_handovers`, `escalate_incidents`, `export_reports`, `manage_users`, `view_audit_logs`, `create_channels`).
 
-**Role helper methods** (used everywhere for conditional UI and authorization):
+**Role & Privilege helper methods**:
 ```php
 isAdmin(): bool
 isLead(): bool
 isAgent(): bool
-canManageActivities(): bool  // true for admin + lead
+hasPrivilege(string $privilege): bool
+canManageActivities(): bool
+canAssignTasks(): bool
+canSignHandovers(): bool
+canAcceptHandovers(): bool
+unreadMessagesCount(): int
 ```
+
+**Interview Q: Why combine fixed roles with granular privileges?**
+> A purely role-based system is too rigid when team members wear multiple hats (e.g., an L2 engineer acting as an incident commander). The hybrid model preserves fast role checks while allowing admins to grant specific elevated privileges (such as channel creation or task reassignment) without promoting the user to full admin.
 
 **Interview Q: Why soft-delete users instead of hard-delete?**
 > If a user is hard-deleted, their FK references in `activity_logs.updated_by` and `audit_logs.actor_id` would violate FK constraints (or cascade-delete the logs). Both columns use `nullOnDelete()`, meaning the FK becomes NULL on deletion. The `actor_name` field (denormalised snapshot) preserves the human-readable record even after the user account is gone.
@@ -88,9 +99,20 @@ HAVING id = MAX(id)
 - `incidents`: Open blocker tickets or discrepancy notes
 - `pending_tasks_count` / `completed_tasks_count`: Statistical snapshot captured at moment of sign-off
 - `signed_at`: Timestamp of digital handover completion
+- `accepted_at`: Timestamp when the incoming lead formally accepted operational responsibility
+- `accepted_by_id`: FK to users (the receiving lead who signed on)
+- `acceptance_remarks`: Verification notes and incoming shift commitments
 
-**Interview Q: Why capture pending and completed tasks count as snapshot columns in `shift_handovers`?**
-> A shift handover is a historical legal/compliance snapshot of the system state at the exact moment shift responsibility transferred. If counts were computed dynamically in the future, subsequent checkoffs or deletions would retroactively alter past shift metrics. Storing a frozen snapshot guarantees non-repudiation during post-incident reviews (PIRs).
+**Interview Q: What is the two-way handover handshake and why is it essential?**
+> In high-reliability SRE organizations, a handover is not merely an outgoing broadcast. It is a legally binding two-way handshake: the outgoing lead certifies that checks were performed and active incidents are documented (`sign-off`), and the incoming lead certifies that systems were verified and custody is assumed (`sign-on / accept`). This eliminates gaps in operational ownership.
+
+---
+
+### `Conversation.php` & `ConversationParticipant.php`
+**What they do**: Core models for SRE Operational Communications. Supports 1-on-1 direct messaging, public team shift channels (`#general-shift`), and private group war rooms. Tracks unread counts per user and maintains per-participant `last_read_at` timestamps.
+
+### `Message.php`
+**What it does**: Represents an operational chat message event linked to a conversation and sender.
 
 ---
 
@@ -107,8 +129,11 @@ All Action classes follow the **Single Responsibility Principle**: one class, on
 ### `Handovers/CreateShiftHandoverAction.php`
 **What it does**: Persists formal shift handover briefings, sets the `signed_at` timestamp, and emits an immutable compliance `AuditLog` entry. Called by `DailyActivityBoard@saveHandover`.
 
+### `Handovers/AcceptShiftHandoverAction.php`
+**What it does**: Executes incoming lead shift acceptance and sign-on, records incoming remarks, logs `handover_accepted` audit event, and completes the operational handover transfer.
+
 **Interview Q: Why put this logic in an Action class instead of the controller?**
-> Controllers should only handle HTTP concerns: validate the input, call the business logic, return a response. The action class is independently testable without HTTP — see `ActivityStatusFlowTest` and `SreEnterpriseFeaturesTest` which test action outcomes directly.
+> Controllers should only handle HTTP concerns: validate the input, call the business logic, return a response. The action class is independently testable without HTTP — see `ActivityStatusFlowTest`, `SreEnterpriseFeaturesTest`, and `OperationalCommunicationsAndPrivilegesTest` which test action outcomes directly.
 
 ---
 
@@ -129,6 +154,31 @@ All Action classes follow the **Single Responsibility Principle**: one class, on
 
 **Interview Q: How does the daily summary query avoid N+1?**
 > It uses a single query joining `activities` with the `activity_logs` subquery for the given date, then eager-loads the latest log entry. The `with('latestLog')` eager load prevents per-row queries inside the Livewire render loop.
+
+---
+
+## `app/Livewire/`
+
+### `DailyActivityBoard.php`
+**What it does**: Primary operational console for SRE teams. Handles:
+- Real-time checklist of operational checks split into "Needs Attention (Pending)" and "Completed (Done)".
+- Dynamic filters: search query, category selector, personal "Assigned to Me" queue, unassigned shift pool, and engineer assignment.
+- Team task assignment: single-check inline delegation and multi-check bulk delegation.
+- SRE Shift Handover Management: outgoing leads draft and sign briefings with snapshot metrics; incoming leads review and execute formal **Sign-On / Acceptance** with custom remarks.
+- Security audit timeline widget for supervisors and admins.
+- Event-driven reactivity and `wire:poll.30000ms` background synchronization.
+
+### `ActivityStatusUpdater.php`
+**What it does**: Inline checkoff component rendered inside each activity card on the board. Provides instant toggle between Pending and Done, opens a modal for entering remarks and optional incident ticket references, flags escalations, and dispatches `status-updated` events.
+
+### `OperationalChat.php`
+**What it does**: Enterprise real-time SRE communications hub. Features:
+- 1-on-1 direct private messaging between support operators and engineers.
+- Shared SRE Team shift channels (auto-provisions `#general-shift` with welcome broadcast).
+- Group operations rooms & incident war rooms (with public/private visibility toggles).
+- Unread message counter tracking and per-participant `last_read_at` updating.
+- Granular authorization enforcement (checks `create_channels` privilege).
+- Background polling via `wire:poll.4000ms` for live message stream updates.
 
 ---
 

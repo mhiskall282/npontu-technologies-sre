@@ -220,3 +220,33 @@ The following are explicitly **not** required unless noted as enhancements:
 | 2 | Can any user update any activity, or only the creator? | Any authenticated user can update any activity (shift handover context — the person updating may not be the one who created it). |
 | 3 | Is soft-delete required? | Yes, for activities — so historical reports are not broken by deletions. |
 | 4 | Should update history be per-day only, or all time? | All time — FR-4 filters to a day, FR-5 queries across date ranges. The underlying history is always preserved. |
+| 5 | How is custody transferred between shifts? | Two-Way Handover Handshake: Outgoing lead signs off briefing; incoming lead explicitly signs on and accepts responsibility with incoming verification remarks. |
+| 6 | How do operators coordinate during active shifts? | In-app Operational Communications Pipeline: 1-on-1 direct messaging, team shift channels, and private incident war rooms with live polling and unread badges. |
+| 7 | How are varying operator capabilities managed? | Hybrid Role + SRE Grade (L1-L5) + Granular Privileges Checkboxes (9 customizable permissions) configured per user by Admin. |
+
+---
+
+## Enterprise SRE Enhancements (Implemented)
+
+### FR-1.1: Team Task Delegation & Reassignment
+- Direct inline assignment of individual checks to specific team members or the shared shift pool.
+- Multi-check bulk delegation for Shift Leads with batch audit logging.
+- "Assigned to Me" queue discovery and unassigned pool filters.
+
+### FR-4.1: Two-Way Shift Handover Handshake
+- Outgoing lead drafts briefing (shift, summary, incidents, task counts) and signs off.
+- Incoming lead reviews briefing, inspects open blockers, enters sign-on remarks, and confirms transfer of operational responsibility.
+- State mutation emits `handover_accepted` compliance audit record.
+
+### FR-7: SRE Operational Communications & Messaging Pipeline
+- 1-on-1 Direct Chat among support operators and engineers.
+- Public Team Shift Channels (`#general-shift`) auto-provisioned with welcome broadcast.
+- Private Group Operations Rooms & Incident War Rooms.
+- Real-time polling (`wire:poll.4000ms`) and per-participant read receipt tracking (`last_read_at`).
+- Live unread notification badges in navigation header and mobile drawer.
+
+### FR-8: SRE Engineering Grades & Granular Privileges
+- 5-tier technical ladder: L1 Support Operator, L2 Support Engineer, L3 Senior SRE, L4 Principal Lead, L5 Director/Architect.
+- Department division categorization (Cloud Infrastructure, Payment Gateways, DBA, Compliance).
+- 9 Granular permission checkboxes with Alpine.js 1-click role presets in account creation and user editing forms.
+

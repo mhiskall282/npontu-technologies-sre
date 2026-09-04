@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Actions\Handovers\AcceptShiftHandoverAction;
 use App\Actions\Handovers\CreateShiftHandoverAction;
 use App\Models\Activity;
 use App\Models\AuditLog;
@@ -99,6 +100,18 @@ class DailyActivityBoard extends Component
 
     public string $handoverIncidents = '';
 
+    // ──────────────────────────────────────────
+    // Shift Handover Acceptance Modal State
+    // ──────────────────────────────────────────
+
+    public bool $showAcceptModal = false;
+
+    public ?int $acceptingHandoverId = null;
+
+    public string $acceptanceRemarks = '';
+
+    public bool $confirmResponsibility = false;
+
     /**
      * Initialize the component state with today's date.
      */
@@ -160,7 +173,7 @@ class DailyActivityBoard extends Component
      */
     public function assignActivity(int $activityId, ?int $userId = null, ?AuditService $auditService = null): void
     {
-        if (! auth()->user()->canManageActivities()) {
+        if (! auth()->user()->canAssignTasks()) {
             abort(403, 'Unauthorized to assign activities.');
         }
 
@@ -187,7 +200,7 @@ class DailyActivityBoard extends Component
      */
     public function bulkAssign(?int $userId = null, ?AuditService $auditService = null): void
     {
-        if (! auth()->user()->canManageActivities()) {
+        if (! auth()->user()->canAssignTasks()) {
             abort(403, 'Unauthorized to assign activities.');
         }
 
@@ -253,7 +266,7 @@ class DailyActivityBoard extends Component
      */
     public function saveHandover(CreateShiftHandoverAction $action, ReportingService $service): void
     {
-        if (! auth()->user()->canManageActivities()) {
+        if (! auth()->user()->canSignHandovers()) {
             abort(403, 'Unauthorized to create shift handovers.');
         }
 
@@ -283,6 +296,57 @@ class DailyActivityBoard extends Component
         $this->handoverIncidents = '';
 
         session()->flash('success', 'Shift handover report signed and logged successfully.');
+    }
+
+    /**
+     * Open the Shift Handover acceptance/sign-on modal.
+     */
+    public function openAcceptModal(int $handoverId): void
+    {
+        $handover = ShiftHandover::findOrFail($handoverId);
+        $this->acceptingHandoverId = $handover->id;
+        $this->acceptanceRemarks = '';
+        $this->confirmResponsibility = false;
+        $this->showAcceptModal = true;
+    }
+
+    /**
+     * Close the Shift Handover acceptance modal.
+     */
+    public function closeAcceptModal(): void
+    {
+        $this->showAcceptModal = false;
+        $this->acceptingHandoverId = null;
+        $this->acceptanceRemarks = '';
+        $this->confirmResponsibility = false;
+    }
+
+    /**
+     * Formally accept and sign on to incoming shift operational handover.
+     */
+    public function confirmAcceptHandover(AcceptShiftHandoverAction $action): void
+    {
+        if (! auth()->user()->canAcceptHandovers()) {
+            abort(403, 'Unauthorized to accept shift handovers.');
+        }
+
+        $this->validate([
+            'confirmResponsibility' => ['accepted'],
+            'acceptanceRemarks' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'confirmResponsibility.accepted' => 'Please confirm that you accept operational responsibility for this shift.',
+        ]);
+
+        if (! $this->acceptingHandoverId) {
+            return;
+        }
+
+        $handover = ShiftHandover::findOrFail($this->acceptingHandoverId);
+
+        $action->execute($handover, $this->acceptanceRemarks ?: null);
+
+        $this->closeAcceptModal();
+        session()->flash('success', "Operational shift handover #{$handover->id} accepted & signed-on successfully. Shift responsibility transferred.");
     }
 
     /**
@@ -365,9 +429,13 @@ class DailyActivityBoard extends Component
 
         // Load shift handovers for the current date
         $shiftHandovers = ShiftHandover::forDate($this->date)
-            ->with(['outgoingLead', 'incomingLead'])
+            ->with(['outgoingLead', 'incomingLead', 'acceptedBy'])
             ->latest('id')
             ->get();
+
+        $acceptingHandover = $this->acceptingHandoverId
+            ? ShiftHandover::with(['outgoingLead', 'incomingLead'])->find($this->acceptingHandoverId)
+            : null;
 
         return view('livewire.daily-activity-board', compact(
             'pending',
@@ -376,6 +444,7 @@ class DailyActivityBoard extends Component
             'categories',
             'teamMembers',
             'shiftHandovers',
+            'acceptingHandover',
             'totalActivitiesCount',
             'totalPendingCount',
             'totalDoneCount',
