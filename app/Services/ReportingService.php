@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Models\Activity;
 use App\Models\ActivityLog;
+use App\Models\ShiftHandover;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -193,5 +195,223 @@ final class ReportingService
                 'values' => $dateCounts->values()->map(fn ($c) => (int) $c)->toArray(),
             ],
         ];
+    }
+
+    /**
+     * Query formal shift handovers across a date range with optional filtering.
+     *
+     * @param  string  $from  Start date (Y-m-d)
+     * @param  string  $to  End date (Y-m-d)
+     * @param  string|null  $shift  Optional shift filter ('morning'|'afternoon'|'night')
+     * @param  int|null  $leadId  Optional lead user filter
+     * @param  string|null  $status  Optional acceptance status filter ('accepted'|'pending')
+     * @param  int  $perPage  Records per page
+     */
+    public function handoverReportQuery(
+        string $from,
+        string $to,
+        ?string $shift = null,
+        ?int $leadId = null,
+        ?string $status = null,
+        int $perPage = 15
+    ): LengthAwarePaginator {
+        $query = ShiftHandover::with(['outgoingLead', 'incomingLead', 'acceptedBy'])
+            ->whereBetween('date', [$from, $to])
+            ->orderBy('date', 'desc')
+            ->orderBy('id', 'desc');
+
+        if ($shift !== null && $shift !== '') {
+            $query->where('shift', $shift);
+        }
+
+        if ($leadId !== null) {
+            $query->where(function ($q) use ($leadId) {
+                $q->where('outgoing_lead_id', $leadId)
+                    ->orWhere('incoming_lead_id', $leadId)
+                    ->orWhere('accepted_by_id', $leadId);
+            });
+        }
+
+        if ($status === 'accepted') {
+            $query->whereNotNull('accepted_at');
+        } elseif ($status === 'pending') {
+            $query->whereNull('accepted_at');
+        }
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * Compute aggregated compliance KPIs for shift handovers across a date range.
+     *
+     * @param  string  $from  Start date (Y-m-d)
+     * @param  string  $to  End date (Y-m-d)
+     * @return array<string, mixed>
+     */
+    public function aggregateHandoverMetrics(string $from, string $to): array
+    {
+        $handovers = ShiftHandover::whereBetween('date', [$from, $to])->get();
+
+        $total = $handovers->count();
+        $accepted = $handovers->filter(fn ($h) => $h->isAccepted())->count();
+        $pending = $total - $accepted;
+        $acceptanceRate = $total > 0 ? round(($accepted / $total) * 100, 1) : 100.0;
+        $incidentsCount = $handovers->filter(fn ($h) => ! empty($h->incidents))->count();
+
+        return [
+            'total' => $total,
+            'accepted' => $accepted,
+            'pending' => $pending,
+            'acceptance_rate' => $acceptanceRate,
+            'incidents_count' => $incidentsCount,
+        ];
+    }
+
+    /**
+     * Compute operator shift activity timelines and active hours worked.
+     *
+     * Derives working intervals from append-only activity logs and shift handover signatures.
+     *
+     * @param  string  $from  Start date (Y-m-d)
+     * @param  string  $to  End date (Y-m-d)
+     * @param  int|null  $userId  Optional user filter
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function operatorWorkTimelinesQuery(string $from, string $to, ?int $userId = null): Collection
+    {
+        // Query activity logs within range
+        $logsQuery = ActivityLog::with('updater')
+            ->whereBetween('date', [$from, $to]);
+
+        if ($userId !== null) {
+            $logsQuery->where('updated_by', $userId);
+        }
+
+        $logs = $logsQuery->get();
+
+        // Group by [date, updated_by]
+        $grouped = [];
+
+        foreach ($logs as $log) {
+            if (! $log->updated_by) {
+                continue;
+            }
+
+            $key = "{$log->date->format('Y-m-d')}_{$log->updated_by}";
+
+            if (! isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'date' => $log->date->format('Y-m-d'),
+                    'user' => $log->updater,
+                    'user_id' => $log->updated_by,
+                    'timestamps' => [],
+                    'checks_done' => 0,
+                    'checks_pending' => 0,
+                    'escalations' => 0,
+                ];
+            }
+
+            $grouped[$key]['timestamps'][] = $log->created_at;
+
+            if ($log->status === 'done') {
+                $grouped[$key]['checks_done']++;
+            } else {
+                $grouped[$key]['checks_pending']++;
+            }
+
+            if ($log->is_escalated) {
+                $grouped[$key]['escalations']++;
+            }
+        }
+
+        // Include shift handovers
+        $handoversQuery = ShiftHandover::with(['outgoingLead', 'acceptedBy'])
+            ->whereBetween('date', [$from, $to]);
+
+        $handovers = $handoversQuery->get();
+
+        foreach ($handovers as $handover) {
+            $d = $handover->date->format('Y-m-d');
+
+            if ($handover->outgoing_lead_id) {
+                $uId = $handover->outgoing_lead_id;
+                if ($userId === null || $userId === $uId) {
+                    $k = "{$d}_{$uId}";
+                    if (! isset($grouped[$k])) {
+                        $grouped[$k] = [
+                            'date' => $d,
+                            'user' => $handover->outgoingLead,
+                            'user_id' => $uId,
+                            'timestamps' => [],
+                            'checks_done' => 0,
+                            'checks_pending' => 0,
+                            'escalations' => 0,
+                        ];
+                    }
+                    if ($handover->signed_at) {
+                        $grouped[$k]['timestamps'][] = $handover->signed_at;
+                    }
+                }
+            }
+
+            if ($handover->accepted_by_id) {
+                $uId = $handover->accepted_by_id;
+                if ($userId === null || $userId === $uId) {
+                    $k = "{$d}_{$uId}";
+                    if (! isset($grouped[$k])) {
+                        $grouped[$k] = [
+                            'date' => $d,
+                            'user' => $handover->acceptedBy,
+                            'user_id' => $uId,
+                            'timestamps' => [],
+                            'checks_done' => 0,
+                            'checks_pending' => 0,
+                            'escalations' => 0,
+                        ];
+                    }
+                    if ($handover->accepted_at) {
+                        $grouped[$k]['timestamps'][] = $handover->accepted_at;
+                    }
+                }
+            }
+        }
+
+        // Process hours and timeline summary for each record
+        $results = collect();
+
+        foreach ($grouped as $entry) {
+            if (empty($entry['timestamps']) || ! $entry['user']) {
+                continue;
+            }
+
+            usort($entry['timestamps'], fn ($a, $b) => $a <=> $b);
+
+            $firstAt = $entry['timestamps'][0];
+            $lastAt = end($entry['timestamps']);
+
+            // Calculate duration in minutes between first and last recorded operational action
+            $diffMinutes = (int) $firstAt->diffInMinutes($lastAt);
+
+            // Minimum baseline shift window: if an operator only made one quick check, estimate 0.5 hr
+            if ($diffMinutes < 30) {
+                $hoursWorked = 0.5;
+            } else {
+                $hoursWorked = round($diffMinutes / 60, 1);
+            }
+
+            $results->push([
+                'date' => $entry['date'],
+                'user' => $entry['user'],
+                'first_action_at' => $firstAt,
+                'last_action_at' => $lastAt,
+                'hours_worked' => $hoursWorked,
+                'checks_done' => $entry['checks_done'],
+                'checks_pending' => $entry['checks_pending'],
+                'total_actions' => count($entry['timestamps']),
+                'escalations' => $entry['escalations'],
+            ]);
+        }
+
+        return $results->sortByDesc('date')->values();
     }
 }

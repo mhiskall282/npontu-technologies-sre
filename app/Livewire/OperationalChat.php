@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Mail\MessageMentionMail;
 use App\Models\Conversation;
 use App\Models\ConversationParticipant;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -189,7 +191,7 @@ class OperationalChat extends Component
 
         $conversation = Conversation::forUser(Auth::id())->findOrFail($this->activeConversationId);
 
-        Message::create([
+        $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => Auth::id(),
             'body' => trim($this->messageText),
@@ -209,7 +211,75 @@ class OperationalChat extends Component
             ]
         );
 
+        // Dispatch email receipts for @mentions and @all broadcast
+        $this->dispatchMentionEmails($message, $conversation);
+
         $this->messageText = '';
+    }
+
+    /**
+     * Insert a @mention tag into the active message draft.
+     */
+    public function insertMention(string $mention): void
+    {
+        $this->messageText = trim($this->messageText.' '.$mention).' ';
+    }
+
+    /**
+     * Parse message text for @mentions and dispatch email notifications.
+     */
+    protected function dispatchMentionEmails(Message $message, Conversation $conversation): void
+    {
+        $body = $message->body;
+        $myId = (int) Auth::id();
+
+        // 1. Check for @all or @everyone broadcast
+        if (preg_match('/\B@(all|everyone)\b/i', $body)) {
+            // Get all participants in the conversation except sender
+            $recipients = $conversation->participants()->where('users.id', '!=', $myId)->get();
+
+            foreach ($recipients as $recipient) {
+                if ($recipient->email) {
+                    try {
+                        Mail::to($recipient->email)->send(new MessageMentionMail(
+                            chatMessage: $message,
+                            conversation: $conversation,
+                            recipient: $recipient,
+                            isBroadcast: true
+                        ));
+                    } catch (\Throwable $e) {
+                        logger()->warning("Failed to dispatch @all broadcast email to {$recipient->email}: {$e->getMessage()}");
+                    }
+                }
+            }
+
+            return;
+        }
+
+        // 2. Check for individual user mentions @Name
+        $colleagues = User::where('id', '!=', $myId)->get();
+        $notifiedUserIds = [];
+
+        foreach ($colleagues as $colleague) {
+            $firstName = explode(' ', $colleague->name)[0];
+            $pattern = '/\B@('.preg_quote($colleague->name, '/').'|'.preg_quote($firstName, '/').')\b/i';
+
+            if (preg_match($pattern, $body) && ! in_array($colleague->id, $notifiedUserIds, true)) {
+                $notifiedUserIds[] = $colleague->id;
+                if ($colleague->email) {
+                    try {
+                        Mail::to($colleague->email)->send(new MessageMentionMail(
+                            chatMessage: $message,
+                            conversation: $conversation,
+                            recipient: $colleague,
+                            isBroadcast: false
+                        ));
+                    } catch (\Throwable $e) {
+                        logger()->warning("Failed to dispatch @mention email to {$colleague->email}: {$e->getMessage()}");
+                    }
+                }
+            }
+        }
     }
 
     /**

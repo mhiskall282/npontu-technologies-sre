@@ -90,12 +90,16 @@
                         Reports
                     </a>
                     <a href="{{ route('messages.index') }}"
-                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 flex items-center gap-1.5
+                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 flex items-center gap-1.5 relative
                               {{ request()->routeIs('messages.*') ? 'bg-[#12492A] text-white' : 'text-green-100 hover:text-white hover:bg-[#12492A]' }}">
                         <span>Ops Comms</span>
                         @php $unreadComms = auth()->user()->unreadMessagesCount(); @endphp
                         @if($unreadComms > 0)
-                            <span class="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-[#E63946] text-white animate-pulse">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5C518] opacity-90"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-[#F5C518]"></span>
+                            </span>
+                            <span class="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-[#E63946] text-white shadow-md ring-1 ring-[#F5C518] animate-pulse">
                                 {{ $unreadComms }}
                             </span>
                         @endif
@@ -167,9 +171,17 @@
             <a href="{{ route('activities.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Activities</a>
             <a href="{{ route('reports.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A]">Reports</a>
             <a href="{{ route('messages.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-[#1B6B3A] flex items-center justify-between">
-                <span>Ops Comms</span>
+                <span class="flex items-center gap-2">
+                    <span>Ops Comms</span>
+                    @if(auth()->user()->unreadMessagesCount() > 0)
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5C518] opacity-90"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#F5C518]"></span>
+                        </span>
+                    @endif
+                </span>
                 @if(auth()->user()->unreadMessagesCount() > 0)
-                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#E63946] text-white">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[#E63946] text-white shadow ring-1 ring-[#F5C518]">
                         {{ auth()->user()->unreadMessagesCount() }}
                     </span>
                 @endif
@@ -224,5 +236,23 @@
     </footer>
 
     @livewireScripts
+
+    {{-- Browser tab title flasher for urgent unread SRE operational comms --}}
+    @auth
+    @php $unreadForTitle = auth()->user()->unreadMessagesCount(); @endphp
+    @if($unreadForTitle > 0)
+    <script>
+        (function() {
+            const originalDocTitle = document.title;
+            const alertDocTitle = '🔔 ({{ $unreadForTitle }}) New Comms Alert! — Support Tracker';
+            let toggleAlert = false;
+            setInterval(function() {
+                document.title = toggleAlert ? alertDocTitle : originalDocTitle;
+                toggleAlert = !toggleAlert;
+            }, 1200);
+        })();
+    </script>
+    @endif
+    @endauth
 </body>
 </html>

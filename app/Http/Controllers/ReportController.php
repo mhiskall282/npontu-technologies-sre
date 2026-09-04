@@ -10,6 +10,7 @@ use App\Models\Activity;
 use App\Models\User;
 use App\Services\ReportingService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -245,5 +246,185 @@ class ReportController extends Controller
         }
 
         return redirect()->back()->with('error', 'Please apply a date range before sending the report.');
+    }
+
+    /**
+     * SRE Shift Handover Reporting & Compliance Audit View.
+     */
+    public function handovers(Request $request): View|StreamedResponse
+    {
+        $this->authorize('viewAny', Activity::class);
+
+        $from = $request->query('from', today()->subDays(30)->format('Y-m-d'));
+        $to = $request->query('to', today()->format('Y-m-d'));
+        $shift = $request->query('shift');
+        $leadId = $request->query('lead_id') ? (int) $request->query('lead_id') : null;
+        $status = $request->query('status');
+
+        if ($request->query('export') === 'csv') {
+            return $this->streamHandoverCsv($from, $to, $shift, $leadId, $status);
+        }
+
+        $handovers = $this->reportingService->handoverReportQuery(
+            from: $from,
+            to: $to,
+            shift: $shift,
+            leadId: $leadId,
+            status: $status,
+            perPage: $request->query('print') === 'true' ? 1000 : 15
+        );
+
+        $metrics = $this->reportingService->aggregateHandoverMetrics($from, $to);
+        $leads = User::whereIn('role', ['admin', 'lead'])->orderBy('name')->get();
+
+        return view('reports.handovers', compact('handovers', 'metrics', 'leads', 'from', 'to', 'shift', 'leadId', 'status'));
+    }
+
+    /**
+     * Stream shift handovers CSV export.
+     */
+    private function streamHandoverCsv(string $from, string $to, ?string $shift, ?int $leadId, ?string $status): StreamedResponse
+    {
+        $filename = "npontu-shift-handovers-{$from}-to-{$to}.csv";
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $handovers = $this->reportingService->handoverReportQuery(
+            from: $from,
+            to: $to,
+            shift: $shift,
+            leadId: $leadId,
+            status: $status,
+            perPage: 5000
+        );
+
+        return response()->stream(function () use ($handovers) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, [
+                'Handover ID',
+                'Date',
+                'Shift',
+                'Outgoing Lead',
+                'Incoming Lead',
+                'Status',
+                'Signed At (GMT)',
+                'Accepted At (GMT)',
+                'Accepted By',
+                'Pending Tasks Count',
+                'Completed Tasks Count',
+                'Incidents Noted',
+                'Summary / Notes',
+                'Sign-On Acceptance Remarks',
+            ]);
+
+            foreach ($handovers as $h) {
+                fputcsv($file, [
+                    $h->id,
+                    $h->date->format('Y-m-d'),
+                    ucfirst($h->shift),
+                    $h->outgoingLead?->name ?? '—',
+                    $h->incomingLead?->name ?? '—',
+                    $h->isAccepted() ? 'Accepted' : 'Pending Acceptance',
+                    $h->signed_at?->format('Y-m-d H:i:s') ?? '—',
+                    $h->accepted_at?->format('Y-m-d H:i:s') ?? '—',
+                    $h->acceptedBy?->name ?? '—',
+                    $h->pending_tasks_count,
+                    $h->completed_tasks_count,
+                    $h->incidents ?? 'None',
+                    $h->summary,
+                    $h->acceptance_remarks ?? 'None',
+                ]);
+            }
+
+            fclose($file);
+        }, 200, $headers);
+    }
+
+    /**
+     * SRE Operator Work Timelines & Duty Hours Tracking View.
+     */
+    public function timelines(Request $request): View|StreamedResponse
+    {
+        $this->authorize('viewAny', Activity::class);
+
+        $from = $request->query('from', today()->subDays(14)->format('Y-m-d'));
+        $to = $request->query('to', today()->format('Y-m-d'));
+        $userId = $request->query('user_id') ? (int) $request->query('user_id') : null;
+
+        if ($request->query('export') === 'csv') {
+            return $this->streamTimelineCsv($from, $to, $userId);
+        }
+
+        $timelines = $this->reportingService->operatorWorkTimelinesQuery(
+            from: $from,
+            to: $to,
+            userId: $userId
+        );
+
+        $totalHours = $timelines->sum('hours_worked');
+        $totalChecks = $timelines->sum('checks_done');
+        $totalEscalations = $timelines->sum('escalations');
+        $avgShift = $timelines->count() > 0 ? round($totalHours / $timelines->count(), 1) : 0.0;
+
+        $users = User::orderBy('name')->get();
+
+        return view('reports.timelines', compact('timelines', 'totalHours', 'totalChecks', 'totalEscalations', 'avgShift', 'users', 'from', 'to', 'userId'));
+    }
+
+    /**
+     * Stream operator work timelines CSV export.
+     */
+    private function streamTimelineCsv(string $from, string $to, ?int $userId): StreamedResponse
+    {
+        $filename = "npontu-operator-timelines-{$from}-to-{$to}.csv";
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $timelines = $this->reportingService->operatorWorkTimelinesQuery(
+            from: $from,
+            to: $to,
+            userId: $userId
+        );
+
+        return response()->stream(function () use ($timelines) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, [
+                'Date',
+                'Operator Name',
+                'Grade',
+                'Department',
+                'Role',
+                'First Action At (GMT)',
+                'Last Action At (GMT)',
+                'Estimated Hours Active',
+                'Checks Completed (Done)',
+                'Checks Needs Attention',
+                'Total Operations Executed',
+                'Escalations Flagged',
+            ]);
+
+            foreach ($timelines as $t) {
+                fputcsv($file, [
+                    $t['date'],
+                    $t['user']->name,
+                    $t['user']->grade ?? 'L2',
+                    $t['user']->department ?? 'Operations',
+                    $t['user']->role,
+                    $t['first_action_at']->format('H:i:s'),
+                    $t['last_action_at']->format('H:i:s'),
+                    $t['hours_worked'],
+                    $t['checks_done'],
+                    $t['checks_pending'],
+                    $t['total_actions'],
+                    $t['escalations'],
+                ]);
+            }
+
+            fclose($file);
+        }, 200, $headers);
     }
 }

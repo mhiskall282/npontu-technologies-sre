@@ -381,12 +381,31 @@ prefix /admin  (role:admin,lead)
 ### `AdminPasswordResetNotification.php`
 **What it does**: Sent when an Admin triggers a password reset for a team member. Generates a secure, 60-minute tokenized reset URL so users reset their own passwords without admins seeing their credentials.
 
+### `MessageMentionMail.php`
+**What it does**: Sent when an operator is tagged via `@name` or when a broadcast is sent to `@all` or `@everyone` in team channels or incident war rooms. Provides an HTML email receipt showing the sender, channel name, message excerpt, timestamp, and a direct 1-click CTA button to open the chat thread.
+
 ---
 
 ## `app/Http/Controllers/`
 
 ### `MonitoringController.php`
 **What it does**: Powers the SRE Monitoring Dashboard (`/monitoring`). Provides live system health metrics, stale activity alerts, a 7-day completion trend chart, category progress indicators, top contributor rankings, and a paginated audit stream with JSON diff viewer.
+
+### `ReportController.php` (Enhanced Multi-Domain Reporting)
+**What it does**: Orchestrates three specialized SRE operational compliance reporting suites:
+1. `index`: Activity check history across date ranges with CSV and print-friendly export.
+2. `handovers`: Formal SRE shift handover audit reports with acceptance compliance KPIs, lead filters, and CSV export.
+3. `timelines`: SRE operator work timelines and active duty hours analytics, deriving duty duration from activity logs and handover signatures with CSV export.
+
+---
+
+## `resources/views/reports/`
+
+### `handovers.blade.php`
+**What it does**: Handover audit console featuring KPI cards (Total Handovers, Accepted %, Awaiting Sign-on, Incidents Flagged), multi-parameter filters (Shift, Lead, Acceptance Status), paginated table, and CSV streaming.
+
+### `timelines.blade.php`
+**What it does**: SRE operator work timelines and duty hours tracking dashboard. Displays total active hours, average shift length, completed checkoffs, and incident escalations per operator/date, with full CSV export.
 
 ---
 

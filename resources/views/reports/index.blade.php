@@ -3,8 +3,28 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Activity Reports</h1>
-    <p class="text-sm text-gray-500 mt-1">Query activity history across any date range.</p>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Activity Reports</h1>
+            <p class="text-sm text-gray-500 mt-1">Query activity check history, status transitions, and audit trail across any date range.</p>
+        </div>
+    </div>
+
+    {{-- Report Tabs Navigation --}}
+    <div class="flex border-b border-gray-200 mt-6 gap-2">
+        <a href="{{ route('reports.index') }}"
+           class="pb-3 px-4 text-xs font-bold text-[#1B6B3A] border-b-2 border-[#1B6B3A] transition-colors flex items-center gap-1.5">
+            <span>📋 Activity Check History</span>
+        </a>
+        <a href="{{ route('reports.handovers') }}"
+           class="pb-3 px-4 text-xs font-semibold text-gray-500 hover:text-gray-700 border-b-2 border-transparent transition-colors">
+            🤝 Shift Handovers Audit
+        </a>
+        <a href="{{ route('reports.timelines') }}"
+           class="pb-3 px-4 text-xs font-semibold text-gray-500 hover:text-gray-700 border-b-2 border-transparent transition-colors">
+            ⏱ Operator Work Timelines & Hours
+        </a>
+    </div>
 </div>
 
 {{-- Filter form --}}

@@ -41,8 +41,10 @@ Route::middleware('auth')->group(function () {
     // Activity CRUD (read = any auth; create/update/delete = lead/admin via Policy)
     Route::resource('activities', ActivityController::class);
 
-    // Reporting
+    // Reporting & Compliance Analytics
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/handovers', [ReportController::class, 'handovers'])->name('reports.handovers');
+    Route::get('/reports/timelines', [ReportController::class, 'timelines'])->name('reports.timelines');
     Route::post('/reports/email', [ReportController::class, 'email'])->name('reports.email');
 
     // Profile Settings

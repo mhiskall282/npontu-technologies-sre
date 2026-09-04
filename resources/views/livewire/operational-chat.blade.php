@@ -276,7 +276,20 @@
                                 </div>
 
                                 <div class="px-4 py-2.5 rounded-2xl text-xs leading-relaxed shadow-xs {{ $isMine ? 'bg-[#1B6B3A] text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none' }}">
-                                    <p class="whitespace-pre-wrap break-words">{{ $msg->body }}</p>
+                                    @php
+                                        $bodyText = e($msg->body);
+                                        $bodyText = preg_replace(
+                                            '/\B@(all|everyone)\b/i',
+                                            '<span class="inline-flex items-center px-1.5 py-0.2 rounded font-extrabold bg-[#F5C518] text-gray-950 text-[10px] shadow-2xs">📢 @$1</span>',
+                                            $bodyText
+                                        );
+                                        $bodyText = preg_replace(
+                                            '/\B@([A-Za-z0-9_\-\.]+)/',
+                                            '<span class="inline-flex items-center px-1.5 py-0.2 rounded font-bold bg-emerald-100 text-emerald-900 text-[10px]">@$1</span>',
+                                            $bodyText
+                                        );
+                                    @endphp
+                                    <p class="whitespace-pre-wrap break-words">{!! $bodyText !!}</p>
                                 </div>
                             </div>
 
@@ -295,15 +308,34 @@
                     @endforelse
                 </div>
 
-                {{-- Message Input Box --}}
-                <div class="p-4 border-t border-gray-200 bg-white">
+                {{-- Message Input Box & @Mention Autocomplete Toolbar --}}
+                <div class="p-4 border-t border-gray-200 bg-white space-y-2">
+                    {{-- Mention Helper Chips --}}
+                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs text-gray-500">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1 flex-shrink-0">
+                            <span>@ Tag:</span>
+                        </span>
+                        <button type="button"
+                                wire:click="insertMention('@all')"
+                                class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-[#F5C518]/20 text-amber-900 border border-[#F5C518]/40 hover:bg-[#F5C518] hover:text-gray-900 transition-colors flex items-center gap-1 flex-shrink-0">
+                            <span>📢</span> @all (Broadcast)
+                        </button>
+                        @foreach($colleagues->take(8) as $c)
+                        <button type="button"
+                                wire:click="insertMention('@' . {{ json_encode($c->name) }})"
+                                class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-[#1B6B3A] border border-emerald-200 hover:bg-[#1B6B3A] hover:text-white transition-colors flex items-center gap-1 flex-shrink-0">
+                            <span>@</span>{{ $c->name }} <span class="text-[9px] opacity-70 font-mono">({{ $c->grade ?? 'L2' }})</span>
+                        </button>
+                        @endforeach
+                    </div>
+
                     <form wire:submit="sendMessage"
                           @submit="$nextTick(() => scrollToBottom())"
                           class="flex items-end gap-2">
                         <div class="flex-1 relative">
                             <textarea wire:model="messageText"
                                       rows="2"
-                                      placeholder="Type your operational update, incident briefing, or reply (Press Shift+Enter for new line)..."
+                                      placeholder="Type your operational update or @tag colleagues (Press Shift+Enter for new line)..."
                                       @keydown.enter.prevent="if (!$event.shiftKey) { $wire.sendMessage(); $nextTick(() => scrollToBottom()); }"
                                       class="w-full text-xs rounded-xl border-gray-300 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A] resize-none"></textarea>
                             @error('messageText') <p class="text-[11px] text-red-600 mt-1">{{ $message }}</p> @enderror
