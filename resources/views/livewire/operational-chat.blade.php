@@ -253,7 +253,7 @@
                         @php
                             $isMine = $msg->sender_id === auth()->id();
                         @endphp
-                        <div class="flex gap-3 {{ $isMine ? 'justify-end' : 'justify-start' }}">
+                        <div wire:key="msg-{{ $msg->id }}" class="flex gap-3 {{ $isMine ? 'justify-end' : 'justify-start' }}">
                             @if(!$isMine)
                                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-gray-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
                                     {{ strtoupper(substr($msg->sender?->name ?? '?', 0, 1)) }}
@@ -279,7 +279,7 @@
                                     @php
                                         $bodyText = e($msg->body);
                                         $bodyText = preg_replace(
-                                            '/\B@(all|everyone)\b/i',
+                                             '/\B@(all|everyone)\b/i',
                                             '<span class="inline-flex items-center px-1.5 py-0.2 rounded font-extrabold bg-[#F5C518] text-gray-950 text-[10px] shadow-2xs">📢 @$1</span>',
                                             $bodyText
                                         );
@@ -309,7 +309,7 @@
                 </div>
 
                 {{-- Message Input Box & @Mention Autocomplete Toolbar --}}
-                <div class="p-4 border-t border-gray-200 bg-white space-y-2">
+                <div class="p-4 border-t border-gray-200 bg-white space-y-2" wire:key="chat-input-bar">
                     {{-- Mention Helper Chips --}}
                     <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs text-gray-500">
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1 flex-shrink-0">
@@ -343,13 +343,15 @@
 
                         <button type="submit"
                                 wire:loading.attr="disabled"
-                                class="px-4 py-2.5 bg-[#1B6B3A] hover:bg-[#15532D] text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1.5 flex-shrink-0">
-                            <svg wire:loading class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                                wire:target="sendMessage"
+                                class="px-4 py-2.5 bg-[#1B6B3A] hover:bg-[#15532D] text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1.5 flex-shrink-0 cursor-pointer">
+                            <svg wire:loading wire:target="sendMessage" class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            <span>Send</span>
-                            <svg class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <span wire:loading.remove wire:target="sendMessage">Send</span>
+                            <span wire:loading wire:target="sendMessage">Sending...</span>
+                            <svg wire:loading.remove wire:target="sendMessage" class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </button>
                     </form>
                 </div>
@@ -486,6 +488,7 @@
                         </button>
                         <button type="submit"
                                 wire:loading.attr="disabled"
+                                wire:target="createConversation"
                                 class="px-4 py-2 text-xs font-bold bg-[#1B6B3A] text-white rounded-lg hover:bg-[#15532D] transition-colors shadow-sm">
                             Create Channel
                         </button>

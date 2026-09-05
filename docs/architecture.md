@@ -587,6 +587,75 @@ flowchart LR
 
 ---
 
+## 9. Real-Time SRE System Health & Telemetry Subsystem
+
+```mermaid
+flowchart TD
+    subgraph Probes["Kernel & Service Telemetry Probes"]
+        P_DB["Database Ping & Latency Probe (ms)"]
+        P_CACHE["Cache & Key-Value Latency (ms)"]
+        P_MEM["Runtime Memory & Peak Footprint (MB)"]
+        P_MAIL["Outbound Notification Gateway Probe"]
+        P_DISK["Storage & Mount Point Capacity"]
+        P_SLA["24-Hour Heartbeat Timeline Engine"]
+    end
+
+    subgraph Service["app/Services/SystemHealthService.php"]
+        ENGINE["Telemetry Aggregate Engine"]
+        CACHE_STORE["5-Second Telemetry Cache"]
+        HEALTH_EVAL["SLA & Subsystem Health Evaluator"]
+    end
+
+    subgraph Presentation["Delivery Channels"]
+        JSON_API["JSON Endpoint (/health & /health/telemetry)"]
+        HUD["Live SRE Telemetry HUD (3s Polling)"]
+        MONITOR["SRE Monitoring Dashboard (/monitoring)"]
+        TOPBAR["Topbar Systems Online Badge"]
+    end
+
+    Probes --> ENGINE
+    ENGINE --> CACHE_STORE
+    CACHE_STORE --> HEALTH_EVAL
+    HEALTH_EVAL --> JSON_API
+    HEALTH_EVAL --> HUD
+    HEALTH_EVAL --> MONITOR
+    HEALTH_EVAL --> TOPBAR
+
+    style Probes fill:#f8fafc,stroke:#64748b,stroke-width:1px
+    style Service fill:#f0fdf4,stroke:#1B6B3A,stroke-width:2px
+    style Presentation fill:#eff6ff,stroke:#2563eb,stroke-width:2px
+```
+
+---
+
+## 10. Left Sidebar Global Navigation & UI Layout Architecture
+
+```mermaid
+flowchart LR
+    subgraph Shell["Global App Shell (resources/views/layouts/app.blade.php)"]
+        direction TB
+        BRAND["Npontu Brand Header (Gold Triangle Motif)"]
+        STATUS["SRE Cockpit Banner (Live Radar Pulse)"]
+        NAV["Grouped Sidebar Nav (resources/views/layouts/sidebar-nav.blade.php)"]
+        PROFILE["User Profile Card (Initials Avatar, Grade, Settings, Sign Out)"]
+    end
+
+    subgraph Content["Right-Side Main Stage"]
+        direction TB
+        CONTEXT["Context Bar (Back, Breadcrumbs, UTC Clock, Systems Online Badge)"]
+        ALERTS["Flash Messages (x-alert)"]
+        STAGE["Main Viewport (Blade @yield('content') + Livewire $slot)"]
+        FOOTER["SRE SLA Footer (no-print)"]
+    end
+
+    Shell --- Content
+
+    style Shell fill:#0F1A14,stroke:#1A2E22,stroke-width:2px,color:#ffffff
+    style Content fill:#F4F7F5,stroke:#cbd5e1,stroke-width:2px
+```
+
+---
+
 ## Architecture Decisions Log
 
 | # | Decision | Chosen | Rejected | Rationale |
@@ -605,5 +674,8 @@ flowchart LR
 | 12 | Two-Way Handover Handshake | Sign-off + Sign-on Acceptance | Outgoing sign-off only | Eliminates ambiguity in operational custody: incoming lead explicitly acknowledges blockers, verifies systems, and assumes shift duty |
 | 13 | Operational Messaging Pipeline | First-party Relational Comms + Livewire polling | Third-party Slack/Discord webhook dependency | Self-contained, zero-cost, compliant within SRE security boundary; supports 1-on-1 direct chat, team shift channels, and private incident war rooms |
 | 14 | SRE User Grades & Granular Privileges | 5-tier Grades (L1-L5) + Checkbox Privileges JSON | Rigid single-role inheritance | Allows fine-grained operational permissions (e.g. task reassignment, channel creation) across varying engineer seniority without bloating full admin access |
+| 15 | Multi-Service Telemetry Probes | `SystemHealthService` with 8 probes + HUD | Third-party APM SaaS agent (Datadog/NewRelic) | Provides native zero-overhead SRE diagnostics (DB ping, cache latency, queue health, uptime SLA) with public JSON probe endpoint |
+| 16 | Left Sidebar Navigation Architecture | Sticky Left Dark Cockpit + Responsive Drawer | Crowded 64px Horizontal Navbar | Reclaims vertical breathing room, cleanly groups operational domains, isolates background polling via `wire:target`, and supports both Blade views and Livewire 3 slots |
+
 
 

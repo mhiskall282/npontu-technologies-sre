@@ -343,12 +343,14 @@ prefix /admin  (role:admin,lead)
 
 ---
 
-## `resources/views/layouts/app.blade.php`
-**What it does**: The main application shell. Contains:
-- Npontu branded navigation bar (logo, nav links, user name/role, Settings link, Sign Out)
-- Flash message display (`session('success')` / `session('error')`)
-- Yields a `content` section for page-specific content
-- Print CSS (`@media print`) that hides navigation and non-essential elements for PDF export
+## `resources/views/layouts/app.blade.php` & `sidebar-nav.blade.php`
+**What it does**: The responsive application shell with an enterprise Left Sidebar Navigation architecture.
+- **Desktop Sidebar (`w-64 / lg:w-72`)**: Sticky, full-height dark cockpit sidebar (`bg-[#0F1A14]`) featuring the Npontu geometric gold triangle motif, "Support Tracker" branding, SRE live status banner (`v1.2`), grouped navigation links (Operations, Comms & Dispatch, Supervisory, and Telemetry), and bottom authenticated user profile card with initials avatar, grade/role pills, Settings shortcut, and CSRF-protected Sign Out.
+- **Mobile Drawer (`< md`)**: Compact top header with hamburger toggle, slide-over drawer with dark backdrop, and smooth touch-friendly transitions.
+- **Top Utility & Breadcrumb Bar**: Contextual navigation toolbar with Back button, active route breadcrumb, real-time UTC clock (`header-utc-clock`), and live SRE telemetry status badge.
+- **Livewire 3 & Blade Slot Rendering**: Uses `@yield('content')` alongside `@if(isset($slot) && !is_array($slot)) {{ $slot }} @endif` to support both traditional Blade controller views and full-page Livewire components (which pass `HtmlString` and `ComponentSlot` instances into `$slot`).
+- **Targeted Action & Loading Discipline**: Uses explicit `wire:target="sendMessage"` and `wire:target="submitHandover"` on `wire:loading` and `wire:loading.attr="disabled"` attributes, ensuring that background live polling (`wire:poll`) synchronizes incoming messages without causing buttons to reload, flicker, or disable while operators are typing.
+- **Print Optimization**: Print CSS (`@media print`) hides sidebars, topbars, and footers (`.no-print`) allowing reports and checklists to print cleanly at 100% full width.
 
 ---
 

@@ -50,21 +50,26 @@ The application is engineered using an enterprise **4-Tier Architecture**:
 | Endpoint | HTTP Method | Protected Role | Key Features |
 |---|---|---|---|
 | `/login` | `GET / POST` | Guest | Branded login page with forgot password token link |
-| `/daily` | `GET` | Authenticated | Real-time shift board checklist with Livewire reactivity |
+| `/daily` | `GET` | Authenticated | Real-time shift board checklist with Livewire reactivity, task delegation, and handover sign-off/sign-on |
+| `/messages` | `GET` | Authenticated | SRE team comms console: 1-on-1 direct messaging, team shift channels, incident war rooms, and @mention email alerts |
 | `/reports` | `GET` | Lead / Admin | Query engine, Chart.js visualisations, CSV & PDF export |
-| `/monitoring` | `GET` | Lead / Admin | Live SRE audit log stream, stale check alerts & charts |
+| `/reports/handovers` | `GET` | Lead / Admin | Shift handover audit report with acceptance rate KPIs and CSV export |
+| `/reports/timelines` | `GET` | Lead / Admin | Operator active duty hours & shift timeline analytics with CSV export |
+| `/monitoring` | `GET` | Lead / Admin | Live SRE audit log stream, stale check alerts, & completion trend charts |
+| `/health` | `GET` | Public | Interactive SRE System Health dashboard & JSON status API for monitors |
+| `/health/telemetry` | `GET` | Public | Real-time performance telemetry JSON stream (DB latency, cache, memory) |
 | `/settings` | `GET / PUT` | Authenticated | Profile updates, password changes, and privilege access card |
-| `/admin/users` | `GET / POST / DELETE` | Admin | Team member CRUD, welcome emails & password reset dispatch |
-| `/admin/activities` | `GET / POST / PUT / DELETE` | Lead / Admin | Activity template checklist management |
-| `/health` | `GET` | Public | JSON health check API (`status: ok`, DB check, system time) |
+| `/admin/users` | `GET / POST / DELETE` | Admin | Team member CRUD with 9 granular privileges checkboxes and L1-L5 SRE technical grades |
+| `/admin/activities` | `GET / POST / PUT / DELETE` | Lead / Admin | Activity template checklist management with priority, SLA, and pinned status |
 
 ---
 
 ## 5. Quality Assurance & Verification
 
-- **Automated Tests**: 14 Pest feature & unit tests passing (39 assertions covering Auth, CRUD, Status flows, and Date-range Reporting).
-- **Code Standards**: PSR-12 strictly formatted using Laravel Pint.
-- **Security**: Force HTTPS scheme enabled, trusted proxy headers (`X-Forwarded-Proto`), CSRF token protection, and bcrypt password hashing.
+- **Automated Tests**: **44 Pest feature & unit tests passing** (209 assertions covering Authentication, Activity CRUD, Status Flows, Operational Comms, Shift Handover Handshake, SRE Enterprise Features, Task Assignment, Reporting, and System Health Diagnostics).
+- **Code Standards**: PSR-12 strictly formatted using Laravel Pint (0 issues).
+- **UI & Layout**: Responsive Left Sidebar Navigation layout (Npontu brand tokens `#1B6B3A`, `#F5C518`, `#0F1A14`) with desktop sticky sidebar, mobile drawer, live UTC clock, and targeted loading state synchronization.
+- **Security**: Force HTTPS scheme enabled, trusted proxy headers (`X-Forwarded-Proto`), CSRF token protection, polymorphic audit logs with JSON diffs, and bcrypt password hashing.
 
 ---
 

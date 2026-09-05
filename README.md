@@ -6,7 +6,7 @@
 
 🌐 **Production Deployment**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)
 
-[![Tests](https://img.shields.io/badge/tests-14%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen)](tests/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.x-cyan)](https://tailwindcss.com)
@@ -19,15 +19,20 @@ Support teams managing live production systems need a lightweight, auditable too
 
 | Feature | Description |
 |---|---|
-| **Daily Shift Board** | Live checklist of today's activities — pending items glow amber, done items fade green |
+| **SRE Left Sidebar Console** | Dark cockpit navigation (`bg-[#0F1A14]`) with responsive drawer, real-time UTC clock, and SRE status indicators |
+| **Daily Shift Board** | Live checklist of today's activities — pending items glow amber, done items fade green, with task delegation |
+| **Two-Way Shift Handshake** | Outgoing lead formal sign-off paired with incoming lead sign-on and verification acceptance remarks |
+| **SRE Operations Comms** | Live team messaging hub: 1-on-1 direct chat, team channels (`#general-shift`), war rooms, and `@mention` email alerts |
+| **System Health & Telemetry** | Multi-service probes (DB, cache, memory, mail), live 3s HUD streaming, 24h heartbeat, and public JSON API |
+| **Granular Privileges & Grades** | 9 configurable access checkboxes per user and L1–L5 SRE operational tiers |
 | **Role-Based Dashboards** | Admins, Leads, and Agents each see a tailored interface with relevant quick-action buttons |
-| **Status Updates** | Mark activities Done or Pending with a remark; every change is time-stamped |
-| **Immutable Audit Trail** | Every state mutation is logged with actor identity, IP address, and before/after values |
-| **Historical Reports** | Query activity logs across any date range with status and category filters |
-| **PDF Print / CSV Export** | Print complete reports for documentation or export to CSV for analysis |
+| **Status Updates & Escalations** | Mark activities Done or Pending with a remark, flag incident tickets (`INC-1042`), and trigger alert pings |
+| **Immutable Audit Trail** | Every state mutation is logged with actor identity, IP address, and before/after JSON diff values |
+| **Multi-Domain SRE Reports** | Date-range checkoff history, shift handover compliance KPIs, and operator work timelines & duty hours |
+| **PDF Print / CSV Export** | Print complete reports for compliance documentation or stream to CSV for analysis |
 | **Email Reports** | Send customised activity reports to selected team members via email |
 | **Account Settings** | All users can update their profile and change their password |
-| **Admin Console** | Admins manage users (CRUD) and define the activity checklist |
+| **Admin Console** | Admins manage users (CRUD), assign granular privileges, and define the activity checklist |
 
 ---
 
