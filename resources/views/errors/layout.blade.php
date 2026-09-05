@@ -61,9 +61,11 @@
             <div class="flex items-center gap-4 text-gray-400">
                 <a href="{{ route('activities.daily') }}" class="hover:text-white transition-colors">Today's Board</a>
                 <span>&bull;</span>
-                <a href="{{ route('messages.index') }}" class="hover:text-white transition-colors">Ops Comms</a>
-                <span>&bull;</span>
                 <a href="{{ route('health') }}" class="hover:text-white transition-colors">Telemetry HUD</a>
+                <span>&bull;</span>
+                <a href="{{ route('policy.privacy') }}" class="hover:text-white transition-colors">Privacy</a>
+                <span>&bull;</span>
+                <a href="{{ route('policy.terms') }}" class="hover:text-white transition-colors">Terms</a>
             </div>
         </div>
     </footer>

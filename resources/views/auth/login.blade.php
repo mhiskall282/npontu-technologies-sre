@@ -208,6 +208,16 @@
                     </a>
                     <span>SRE SLA: 99.98%</span>
                 </div>
+
+                <div class="flex items-center justify-center gap-3 text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-100">
+                    <a href="{{ route('policy.privacy') }}" class="hover:text-gray-600 transition-colors">Privacy Policy</a>
+                    <span>&bull;</span>
+                    <a href="{{ route('policy.terms') }}" class="hover:text-gray-600 transition-colors">Terms of Service</a>
+                    <span>&bull;</span>
+                    <a href="{{ route('policy.security') }}" class="hover:text-gray-600 transition-colors">Security</a>
+                    <span>&bull;</span>
+                    <a href="{{ route('landing') }}" class="hover:text-gray-600 transition-colors">Home</a>
+                </div>
             </div>
         </div>
     </div>

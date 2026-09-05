@@ -582,44 +582,8 @@
 
     </main>
 
-    {{-- ── FOOTER ─────────────────────────────────────────────────────────────── --}}
-    <footer class="bg-[#050A07] border-t border-[#14261B] py-12 text-gray-400 text-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/5">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                            <polygon points="16,3 30,27 2,27"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-extrabold text-white text-sm leading-none">Support Tracker</p>
-                        <p class="text-[#F5C518] text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold">NPONTU TECHNOLOGIES</p>
-                    </div>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-center gap-6 text-gray-400 font-medium">
-                    <a href="{{ route('landing') }}" class="hover:text-white transition-colors">The Platform</a>
-                    <a href="{{ route('health') }}" class="hover:text-white transition-colors">System Health</a>
-                    <a href="{{ route('login') }}" class="hover:text-white transition-colors">Operator Sign In</a>
-                    <a href="https://github.com/mhiskall282/npontu-technologies-sre" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">
-                        <span>GitHub Repository</span>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </a>
-                </div>
-
-                <div class="flex items-center gap-2 font-mono text-[11px]">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span class="text-gray-300">All Systems Nominal &bull; 99.98% SLA</span>
-                </div>
-            </div>
-
-            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-gray-500">
-                <p>&copy; 2026 Npontu Technologies Limited. Internal SRE Platform &bull; Making you free to achieve.</p>
-                <p class="font-mono">Production Release v1.2 &bull; SLA 99.98%</p>
-            </div>
-        </div>
-    </footer>
+    {{-- ── COMPREHENSIVE ENTERPRISE SRE FOOTER ─────────────────────────────────── --}}
+    @include('layouts.partials.footer')
 
     {{-- UTC Clock Live Synchronizer --}}
     <script>

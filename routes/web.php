@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MonitoringController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Livewire\DailyActivityBoard;
@@ -16,6 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 // ─── Public routes (accessible by visitors & teams) ─────────────────────────
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+// ─── Public SRE Policies & Legal Compliance ────────────────────────────────
+Route::get('/privacy-policy', [PolicyController::class, 'privacy'])->name('policy.privacy');
+Route::get('/terms-of-service', [PolicyController::class, 'terms'])->name('policy.terms');
+Route::get('/security-policy', [PolicyController::class, 'security'])->name('policy.security');
+Route::get('/sla-commitment', [PolicyController::class, 'sla'])->name('policy.sla');
 
 Route::middleware('guest')->group(function () {
     // Auth routes injected by Breeze
