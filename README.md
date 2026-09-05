@@ -6,7 +6,7 @@
 
 🌐 **Production Deployment**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)
 
-[![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)](tests/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.x-cyan)](https://tailwindcss.com)
@@ -19,12 +19,14 @@ Support teams managing live production systems need a lightweight, auditable too
 
 | Feature | Description |
 |---|---|
+| **Public SRE Landing Page** | High-impact overview of Npontu's SRE platform (`GET /`): capability matrix, 4-step handover lifecycle, live telemetry probes, and 1-click test roles |
 | **SRE Left Sidebar Console** | Dark cockpit navigation (`bg-[#0F1A14]`) with responsive drawer, real-time UTC clock, and SRE status indicators |
 | **Daily Shift Board** | Live checklist of today's activities — pending items glow amber, done items fade green, with task delegation |
 | **Two-Way Shift Handshake** | Outgoing lead formal sign-off paired with incoming lead sign-on and verification acceptance remarks |
 | **SRE Operations Comms** | Live team messaging hub: 1-on-1 direct chat, team channels (`#general-shift`), war rooms, and `@mention` email alerts |
 | **System Health & Telemetry** | Multi-service probes (DB, cache, memory, mail), live 3s HUD streaming, 24h heartbeat, and public JSON API |
 | **Granular Privileges & Grades** | 9 configurable access checkboxes per user and L1–L5 SRE operational tiers |
+| **Branded Error Pages & Session Security** | Custom SRE 419 (Session Expired), 404 (Route Not Found), 403 (Forbidden), 500 (Runtime Exception), and 503 (Maintenance) with Livewire 419 interceptor and redesigned operator sign-in with 1-click test credentials |
 | **Role-Based Dashboards** | Admins, Leads, and Agents each see a tailored interface with relevant quick-action buttons |
 | **Status Updates & Escalations** | Mark activities Done or Pending with a remark, flag incident tickets (`INC-1042`), and trigger alert pings |
 | **Immutable Audit Trail** | Every state mutation is logged with actor identity, IP address, and before/after JSON diff values |
@@ -127,26 +129,32 @@ Open **[http://localhost:8000](http://localhost:8000)**
 ## Running Tests
 
 ```bash
-# Full test suite (14 tests, ~4s)
+# Full test suite (55 tests, 280 assertions)
 ./vendor/bin/pest
 
 # With verbose output
 ./vendor/bin/pest --verbose
 
 # Filter by test name
-./vendor/bin/pest --filter "status update"
+./vendor/bin/pest --filter "LandingPageTest"
 
 # Run a specific file
-./vendor/bin/pest tests/Feature/AuthenticationTest.php
+./vendor/bin/pest tests/Feature/LandingPageTest.php
 ```
 
 Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — no external DB needed.
 
 **Test coverage areas:**
-- Authentication (login success, failure, logout, redirect)
-- Activity CRUD (create, read, update, soft-delete)
-- Status update flow with audit log verification
-- Date-range reporting with boundary/edge-case queries
+- **Public SRE Landing Page**: Unauthenticated visitor showcase, 6 capability pillars, architecture walkthrough, pre-seeded test roles, authenticated SRE cockpit CTA
+- **Authentication & Security**: Login success, failure validation alerts, logout, redirect, session expiration banners
+- **Custom Branded Error Handling**: 419 (Session Expired), 404 (Route Not Found), 403 (Forbidden), 500 (Runtime Error), 503 (Maintenance Mode)
+- **Livewire 419 Interceptor**: Hook intercepting expired session tokens and redirecting cleanly to `/login?expired=1` without raw modal popups
+- **Activity CRUD**: Create, read, update, soft-delete, with task assignment and delegation
+- **Status Update Flow**: Status changes (Done/Pending) with mandatory remarks, incident escalation flags, and domain/audit logs
+- **Operational Communications**: Direct 1-on-1 chats, team shift channels, incident war rooms, `@name` & `@all` email receipts
+- **Shift Handover Handshake**: Outgoing briefing sign-off and incoming lead verification sign-on
+- **Multi-Domain Reporting**: Custom date-range activity checks, handover audit reports, and operator work timelines & duty hours
+- **System Health Diagnostics**: Live telemetry streaming, subsystem probes, and availability SLA metrics
 
 ---
 

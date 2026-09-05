@@ -656,6 +656,100 @@ flowchart LR
 
 ---
 
+## 11. SRE Branded Error Handling & Session Expiry Lifecycle
+
+```mermaid
+flowchart TD
+    subgraph Client["Client Browser / SRE Terminal"]
+        ACTION["User Action (Livewire poll, form submit, link navigation)"]
+    end
+
+    subgraph Middleware["Laravel Security & Middleware Guard"]
+        CSRF["VerifyCsrfToken / Session Lifespan (120 min)"]
+        AUTH["Authenticate / Authorize Middleware"]
+        ROUTING["Route Matching Engine"]
+    end
+
+    subgraph ErrorHandling["Branded SRE Error Architecture"]
+        EXP_CHECK{"Session or CSRF Valid?"}
+        AUTH_CHECK{"Privileged Capability Met?"}
+        ROUTE_CHECK{"Endpoint Registered?"}
+        
+        LW_HOOK["Livewire.hook('request.fail') Interceptor (app.blade.php)"]
+        EXP_REDIRECT["Clean Client Redirect: /login?expired=1"]
+        LOGIN_ALERT["Redesigned Operator Sign-In (Banner: Session Expired + Quick Credentials)"]
+
+        VIEW_419["resources/views/errors/419.blade.php (SESSION TIMEOUT + Re-Auth CTA)"]
+        VIEW_403["resources/views/errors/403.blade.php (ACCESS FORBIDDEN + Admin Contact)"]
+        VIEW_404["resources/views/errors/404.blade.php (RESOURCE NOT FOUND + Today's Board CTA)"]
+        VIEW_500["resources/views/errors/500.blade.php (RUNTIME EXCEPTION + Incident Code)"]
+        VIEW_503["resources/views/errors/503.blade.php (MAINTENANCE WINDOW + Status Check)"]
+    end
+
+    ACTION --> EXP_CHECK
+    EXP_CHECK -- "No (CSRF 419 via Livewire)" --> LW_HOOK
+    LW_HOOK --> EXP_REDIRECT
+    EXP_REDIRECT --> LOGIN_ALERT
+
+    EXP_CHECK -- "No (Standard HTTP 419)" --> VIEW_419
+    EXP_CHECK -- "Yes" --> AUTH_CHECK
+    
+    AUTH_CHECK -- "Forbidden (403)" --> VIEW_403
+    AUTH_CHECK -- "Authorized" --> ROUTE_CHECK
+    
+    ROUTE_CHECK -- "Not Found (404)" --> VIEW_404
+    ROUTE_CHECK -- "Internal Crash (500)" --> VIEW_500
+
+    style Client fill:#0F1A14,stroke:#1A2E22,stroke-width:2px,color:#ffffff
+    style Middleware fill:#f8fafc,stroke:#64748b,stroke-width:1px
+    style ErrorHandling fill:#f0fdf4,stroke:#1B6B3A,stroke-width:2px
+```
+
+---
+
+## 12. Public SRE Landing Page & Route Gateway Architecture
+
+```mermaid
+flowchart TD
+    subgraph Inbound["Inbound Traffic (Visitor, Leadership, On-Duty Engineer)"]
+        REQ_ROOT["GET / (Root URL)"]
+        REQ_DASH["GET /dashboard"]
+        REQ_DAILY["GET /daily"]
+    end
+
+    subgraph Router["Routing Layer (routes/web.php)"]
+        GATE_ROOT{"Authenticated?"}
+        AUTH_GUARD{"Auth Middleware Guard"}
+    end
+
+    subgraph Destinations["Target Presentation Interfaces"]
+        LANDING["Public Landing Page (LandingController@index)\n• Brand Hero & Live UTC Clock\n• 6 Capability Pillars\n• 4-Step Handover Lifecycle\n• 8 Subsystems Telemetry\n• Pre-seeded Test Accounts Showcase"]
+        COCKPIT_REDIRECT["Redirect: /daily (DashboardController@index)"]
+        LOGIN["Operator Sign-In (/login)\n• SRE Brand Layout\n• 1-Click Test Credentials Helper"]
+        SHIFT_BOARD["SRE Shift Cockpit (/daily)\n• Livewire 3 Shift Board\n• Left Dark Sidebar Navigation"]
+    end
+
+    REQ_ROOT --> GATE_ROOT
+    GATE_ROOT -- "Guest (Unauthenticated)" --> LANDING
+    GATE_ROOT -- "Authenticated" --> LANDING
+    LANDING -. "Click: Launch Shift Console" .-> LOGIN
+    LANDING -. "Click: Enter SRE Cockpit" .-> SHIFT_BOARD
+
+    REQ_DASH --> AUTH_GUARD
+    REQ_DAILY --> AUTH_GUARD
+
+    AUTH_GUARD -- "Unauthenticated" --> LOGIN
+    AUTH_GUARD -- "Authenticated (/dashboard)" --> COCKPIT_REDIRECT
+    COCKPIT_REDIRECT --> SHIFT_BOARD
+    AUTH_GUARD -- "Authenticated (/daily)" --> SHIFT_BOARD
+
+    style Inbound fill:#0F1A14,stroke:#1A2E22,stroke-width:2px,color:#ffffff
+    style Router fill:#f8fafc,stroke:#64748b,stroke-width:1px
+    style Destinations fill:#f0fdf4,stroke:#1B6B3A,stroke-width:2px
+```
+
+---
+
 ## Architecture Decisions Log
 
 | # | Decision | Chosen | Rejected | Rationale |
@@ -676,6 +770,8 @@ flowchart LR
 | 14 | SRE User Grades & Granular Privileges | 5-tier Grades (L1-L5) + Checkbox Privileges JSON | Rigid single-role inheritance | Allows fine-grained operational permissions (e.g. task reassignment, channel creation) across varying engineer seniority without bloating full admin access |
 | 15 | Multi-Service Telemetry Probes | `SystemHealthService` with 8 probes + HUD | Third-party APM SaaS agent (Datadog/NewRelic) | Provides native zero-overhead SRE diagnostics (DB ping, cache latency, queue health, uptime SLA) with public JSON probe endpoint |
 | 16 | Left Sidebar Navigation Architecture | Sticky Left Dark Cockpit + Responsive Drawer | Crowded 64px Horizontal Navbar | Reclaims vertical breathing room, cleanly groups operational domains, isolates background polling via `wire:target`, and supports both Blade views and Livewire 3 slots |
+| 17 | Branded SRE Error Pages & 419 Interceptor | Custom SRE Error Views + Livewire 419 Redirect Hook | Default stark Laravel/Symfony error pages and raw modal popups | Prevents jarring user disconnect during session expiration; redirects operators seamlessly to `/login?expired=1` with informative banner and 1-click credential recovery |
+| 18 | Public SRE Landing Page at Root (`/`) | High-Impact SRE Landing View with Test Roles Showcase | Immediate blank redirect from `/` to `/login` | Educates external evaluators, management, and new operators on platform capabilities and architecture before authentication |
 
 
 

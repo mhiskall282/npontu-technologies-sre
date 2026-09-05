@@ -6,6 +6,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
@@ -13,7 +14,9 @@ use App\Livewire\DailyActivityBoard;
 use App\Livewire\OperationalChat;
 use Illuminate\Support\Facades\Route;
 
-// ─── Public routes (guest only) ────────────────────────────────────────────
+// ─── Public routes (accessible by visitors & teams) ─────────────────────────
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+
 Route::middleware('guest')->group(function () {
     // Auth routes injected by Breeze
 });
@@ -25,7 +28,8 @@ Route::get('/health/telemetry', [HealthController::class, 'telemetry'])->name('h
 // ─── Authenticated routes ───────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // Primary gateway redirect (sends authenticated operators to /daily)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Daily handover view (Livewire component)
     Route::get('/daily', DailyActivityBoard::class)->name('activities.daily');

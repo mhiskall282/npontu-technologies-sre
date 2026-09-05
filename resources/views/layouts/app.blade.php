@@ -337,6 +337,22 @@
 
     @livewireScripts
 
+    {{-- Livewire 3 Graceful 419 Session Expiration Interceptor --}}
+    <script>
+        document.addEventListener('livewire:init', () => {
+            if (window.Livewire) {
+                window.Livewire.hook('request', ({ fail }) => {
+                    fail(({ status, preventDefault }) => {
+                        if (status === 419) {
+                            preventDefault();
+                            window.location.href = '{{ route("login") }}?expired=1';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
     {{-- Mobile Sidebar Drawer Scripts & Live UTC Clock --}}
     <script>
         function openMobileSidebar() {

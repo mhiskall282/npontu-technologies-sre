@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-it('redirects unauthenticated users to the login page', function () {
-    $response = $this->get('/');
+it('redirects unauthenticated users to the login page when accessing protected shift board', function () {
+    $response = $this->get('/daily');
 
     $response->assertRedirect('/login');
 });
@@ -28,7 +28,7 @@ it('authenticates a user with correct credentials', function () {
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect('/');
+    $response->assertRedirect(route('dashboard'));
 });
 
 it('does not authenticate a user with incorrect credentials', function () {

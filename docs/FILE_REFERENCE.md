@@ -390,6 +390,9 @@ prefix /admin  (role:admin,lead)
 
 ## `app/Http/Controllers/`
 
+### `LandingController.php` (Public SRE Platform Showcase & Gateway)
+**What it does**: Powers the public landing page (`GET /`). Calculates non-sensitive platform metrics (99.98% SLA, 8 monitored subsystems, active checklist definitions count) and provides seeded operator profiles (Admin Kwame, Lead Abena, Agent Kofi) for instant evaluator access prior to sign-in.
+
 ### `MonitoringController.php`
 **What it does**: Powers the SRE Monitoring Dashboard (`/monitoring`). Provides live system health metrics, stale activity alerts, a 7-day completion trend chart, category progress indicators, top contributor rankings, and a paginated audit stream with JSON diff viewer.
 
@@ -428,6 +431,42 @@ prefix /admin  (role:admin,lead)
 
 ### `timelines.blade.php`
 **What it does**: SRE operator work timelines and duty hours tracking dashboard. Displays total active hours, average shift length, completed checkoffs, and incident escalations per operator/date, with full CSV export.
+
+---
+
+## `resources/views/`
+
+### `landing.blade.php`
+**What it does**: High-impact public SRE landing page. Styled with Npontu brand tokens (`#0F1A14`, `#1B6B3A`, `#F5C518`), signature angled geometry (`clip-path: polygon(0 0, 100% 0, 100% 93%, 0 100%)`), live UTC clock, 99.98% SLA pulse badge, interactive SRE Cockpit terminal preview, 6 core capability pillars, 4-step shift handover workflow, 8 subsystems telemetry matrix, and pre-seeded test roles showcase with 1-click login CTAs.
+
+---
+
+## `resources/views/auth/`
+
+### `login.blade.php`
+**What it does**: Redesigned SRE Operator Sign-In console. Features dual-pane split layout with Npontu brand motif, real-time platform status indicator, session timeout alert banner (`@if(request()->has('expired'))`), clear error summary box (`$errors->any()`) with red boundary styling, and 1-click test credentials helper buttons for rapid evaluation (Admin Kwame, Lead Abena, Agent Kofi).
+
+---
+
+## `resources/views/errors/`
+
+### `layout.blade.php`
+**What it does**: Base master layout for all HTTP error responses. Styled with Npontu dark cockpit brand tokens (`#0F1A14`, `#1B6B3A`, `#F5C518`), responsive header with live UTC clock and System Health badge, central glassmorphic card, and footer navigation.
+
+### `419.blade.php` (Session Expired / Page Expired)
+**What it does**: Branded session timeout page shown when CSRF or authentication sessions expire. Explains the security safeguard against custody takeover, displays audit code `SRE_CSRF_EXPIRATION`, and provides a primary CTA to Sign In and Resume Shift. Paired with the Livewire 419 interceptor in `layouts/app.blade.php` to automatically redirect users smoothly to `/login?expired=1`.
+
+### `404.blade.php` (Resource Not Found)
+**What it does**: Branded 404 page for missing endpoints, unknown checklist URLs, or stale links. Offers 1-click navigation shortcuts to Today's Board, Ops Comms, and System Health.
+
+### `403.blade.php` (Access Forbidden)
+**What it does**: Security gate page for unauthorized role or capability requests. Informs operators of the required permissions and provides administrator contact details (`admin@npontu.local`).
+
+### `500.blade.php` (SRE Runtime Exception)
+**What it does**: Branded 500 error display with dynamic incident reference code (`INC-YYYYMMDD-XXXXXX`), reassurance that automated telemetry alerts have fired, and 1-click Retry / Inspect Health HUD CTAs.
+
+### `503.blade.php` (Maintenance Window)
+**What it does**: Scheduled maintenance notice alerting engineers of platform infrastructure upgrades and providing a reload action.
 
 ---
 

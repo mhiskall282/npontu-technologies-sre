@@ -49,7 +49,8 @@ The application is engineered using an enterprise **4-Tier Architecture**:
 
 | Endpoint | HTTP Method | Protected Role | Key Features |
 |---|---|---|---|
-| `/login` | `GET / POST` | Guest | Branded login page with forgot password token link |
+| `/` | `GET` | Public | High-impact SRE landing page: brand hero, 6 capability pillars, handover lifecycle, live telemetry, and test accounts |
+| `/login` | `GET / POST` | Guest | Branded login page with session expired banner, error alerts, and 1-click test credentials helper |
 | `/daily` | `GET` | Authenticated | Real-time shift board checklist with Livewire reactivity, task delegation, and handover sign-off/sign-on |
 | `/messages` | `GET` | Authenticated | SRE team comms console: 1-on-1 direct messaging, team shift channels, incident war rooms, and @mention email alerts |
 | `/reports` | `GET` | Lead / Admin | Query engine, Chart.js visualisations, CSV & PDF export |
@@ -66,10 +67,10 @@ The application is engineered using an enterprise **4-Tier Architecture**:
 
 ## 5. Quality Assurance & Verification
 
-- **Automated Tests**: **44 Pest feature & unit tests passing** (209 assertions covering Authentication, Activity CRUD, Status Flows, Operational Comms, Shift Handover Handshake, SRE Enterprise Features, Task Assignment, Reporting, and System Health Diagnostics).
+- **Automated Tests**: **55 Pest feature & unit tests passing** (280 assertions covering Public SRE Landing Page, Authentication & Session Expiry, Custom Branded SRE Error Pages, Activity CRUD, Status Flows, Operational Comms, Shift Handover Handshake, SRE Enterprise Features, Task Assignment, Reporting, and System Health Diagnostics).
 - **Code Standards**: PSR-12 strictly formatted using Laravel Pint (0 issues).
 - **UI & Layout**: Responsive Left Sidebar Navigation layout (Npontu brand tokens `#1B6B3A`, `#F5C518`, `#0F1A14`) with desktop sticky sidebar, mobile drawer, live UTC clock, and targeted loading state synchronization.
-- **Security**: Force HTTPS scheme enabled, trusted proxy headers (`X-Forwarded-Proto`), CSRF token protection, polymorphic audit logs with JSON diffs, and bcrypt password hashing.
+- **Security & Error Resilience**: Branded error pages (419, 404, 403, 500, 503), Livewire 419 session expiration interceptor with smooth redirect to `/login?expired=1`, operator sign-in error handling with 1-click test credentials, Force HTTPS scheme, trusted proxy headers (`X-Forwarded-Proto`), CSRF token protection, polymorphic audit logs with JSON diffs, and bcrypt password hashing.
 
 ---
 
