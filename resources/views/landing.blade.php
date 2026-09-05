@@ -87,11 +87,11 @@
     <main class="flex-1">
 
         {{-- ── HERO SECTION: STORYTELLING & HOOK ─────────────────────────────────── --}}
-        <section class="relative bg-gradient-to-b from-[#12492A] via-[#1B6B3A]/90 to-[#07100B] pt-20 pb-32 md:pt-32 md:pb-48 clip-angled-hero overflow-hidden">
+        <section class="relative bg-gradient-to-b from-[#12492A] via-[#1B6B3A]/90 to-[#07100B] pt-6 sm:pt-8 md:pt-10 pb-16 sm:pb-20 md:pb-24 clip-angled-hero overflow-hidden">
             {{-- Ambient Glow Elements --}}
             <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1B6B3A]/20 blur-[130px] rounded-full pointer-events-none"></div>
-            <div class="absolute top-10 right-10 opacity-10 pointer-events-none">
-                <svg class="w-[500px] h-[500px] text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
+            <div class="absolute top-6 right-6 opacity-10 pointer-events-none">
+                <svg class="w-[420px] h-[420px] text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
                     <polygon points="16,3 30,27 2,27"/>
                 </svg>
             </div>
@@ -99,13 +99,13 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="max-w-3xl mx-auto text-center">
                     {{-- Narrative Badge --}}
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/30 border border-white/20 text-emerald-200 text-xs font-mono mb-8 shadow-inner">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/30 border border-white/20 text-emerald-200 text-[11px] sm:text-xs font-mono mb-3 sm:mb-4 shadow-inner">
                         <span class="w-2 h-2 rounded-full bg-[#F5C518] animate-ping"></span>
                         <span>THE RELIABILITY PLATFORM FOR MISSION-CRITICAL SRE OPERATIONS</span>
                     </div>
 
                     {{-- Main Storytelling Headline --}}
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.12]">
+                    <h1 class="text-2xl sm:text-3xl lg:text-[40px] font-black text-white tracking-tight leading-snug">
                         When critical infrastructure runs 24/7,
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#F5C518] via-amber-200 to-yellow-400">
                             a missed handover is an outage waiting to happen.
@@ -113,29 +113,29 @@
                     </h1>
 
                     {{-- Narrative Subtitle --}}
-                    <p class="text-base sm:text-lg text-green-50 mt-6 leading-relaxed font-normal max-w-2xl mx-auto">
+                    <p class="text-xs sm:text-sm text-green-50/90 mt-2.5 sm:mt-3 leading-relaxed font-normal max-w-2xl mx-auto">
                         Engineered for the Site Reliability Engineers and Operations teams powering Npontu Technologies. We replaced fragmented chat messages and forgotten sticky notes with a mathematically verifiable, two-way operational custody handshake.
                     </p>
 
-                    {{-- Primary CTAs --}}
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+                    {{-- Primary CTAs (Centered & Prominently Positioned) --}}
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5 sm:mt-6">
                         @auth
                             <a href="{{ route('activities.daily') }}"
-                               class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-extrabold text-sm shadow-2xl transition-all duration-200 hover:scale-[1.02]">
+                               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-extrabold text-sm shadow-xl transition-all duration-150 hover:scale-[1.02]">
                                 <span>Go to Today's Shift Board</span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                             </a>
                         @else
                             <a href="{{ route('login') }}"
                                id="hero-cta-login"
-                               class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-extrabold text-sm shadow-2xl transition-all duration-200 hover:scale-[1.02]">
+                               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-extrabold text-sm shadow-xl transition-all duration-150 hover:scale-[1.02]">
                                 <span>Launch Shift Console</span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                             </a>
                         @endauth
 
                         <a href="{{ route('health') }}"
-                           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl bg-black/30 hover:bg-black/50 text-white font-bold text-sm border border-white/20 transition-colors">
+                           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-black/30 hover:bg-black/50 text-white font-bold text-sm border border-white/20 transition-colors">
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             <span>Inspect Telemetry HUD</span>
                         </a>
@@ -143,29 +143,29 @@
                 </div>
 
                 {{-- Live Operational Guarantee Cards --}}
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-16 pt-10 border-t border-white/15">
-                    <div class="p-5 rounded-2xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
-                        <p class="text-3xl sm:text-4xl font-black text-[#F5C518] font-mono leading-none">100%</p>
-                        <p class="text-xs font-bold text-white mt-2">Audit Custody</p>
-                        <p class="text-[11px] text-green-200/70 mt-1">Polymorphic before & after JSON diffs on every state change</p>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-10 sm:mt-12 pt-8 border-t border-white/15">
+                    <div class="p-4 rounded-xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
+                        <p class="text-2xl sm:text-3xl font-black text-[#F5C518] font-mono leading-none">100%</p>
+                        <p class="text-xs font-bold text-white mt-1.5">Audit Custody</p>
+                        <p class="text-[11px] text-green-200/70 mt-0.5">Polymorphic before & after JSON diffs on every change</p>
                     </div>
 
-                    <div class="p-5 rounded-2xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
-                        <p class="text-3xl sm:text-4xl font-black text-[#F5C518] font-mono leading-none">&lt; 100ms</p>
-                        <p class="text-xs font-bold text-white mt-2">Telemetry Speed</p>
-                        <p class="text-[11px] text-green-200/70 mt-1">Real-time health probes actively pinging 8 core subsystems</p>
+                    <div class="p-4 rounded-xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
+                        <p class="text-2xl sm:text-3xl font-black text-[#F5C518] font-mono leading-none">&lt; 100ms</p>
+                        <p class="text-xs font-bold text-white mt-1.5">Telemetry Speed</p>
+                        <p class="text-[11px] text-green-200/70 mt-0.5">Real-time health probes across 8 core subsystems</p>
                     </div>
 
-                    <div class="p-5 rounded-2xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
-                        <p class="text-3xl sm:text-4xl font-black text-[#F5C518] font-mono leading-none">99.98%</p>
-                        <p class="text-xs font-bold text-white mt-2">Availability SLA</p>
-                        <p class="text-[11px] text-green-200/70 mt-1">Guaranteed operational uptime verified via continuous heartbeat</p>
+                    <div class="p-4 rounded-xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
+                        <p class="text-2xl sm:text-3xl font-black text-[#F5C518] font-mono leading-none">99.98%</p>
+                        <p class="text-xs font-bold text-white mt-1.5">Availability SLA</p>
+                        <p class="text-[11px] text-green-200/70 mt-0.5">Continuous automated uptime health heartbeat</p>
                     </div>
 
-                    <div class="p-5 rounded-2xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
-                        <p class="text-3xl sm:text-4xl font-black text-[#F5C518] font-mono leading-none">0</p>
-                        <p class="text-xs font-bold text-white mt-2">Broken Handoffs</p>
-                        <p class="text-[11px] text-green-200/70 mt-1">Cryptographically enforced outgoing sign-off & incoming sign-on</p>
+                    <div class="p-4 rounded-xl bg-black/25 border border-white/10 backdrop-blur-sm text-center">
+                        <p class="text-2xl sm:text-3xl font-black text-[#F5C518] font-mono leading-none">0</p>
+                        <p class="text-xs font-bold text-white mt-1.5">Broken Handoffs</p>
+                        <p class="text-[11px] text-green-200/70 mt-0.5">Two-way briefing sign-off & verified sign-on</p>
                     </div>
                 </div>
             </div>
