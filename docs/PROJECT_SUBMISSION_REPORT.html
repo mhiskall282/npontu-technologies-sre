@@ -196,22 +196,64 @@
         </thead>
         <tbody>
             <tr>
+                <td><code>/</code></td>
+                <td>GET</td>
+                <td>Public</td>
+                <td>High-impact SRE landing page: brand hero, capability pillars, handover lifecycle, live telemetry, and test accounts</td>
+            </tr>
+            <tr>
+                <td><code>/docs</code></td>
+                <td>GET</td>
+                <td>Public</td>
+                <td>High-level SRE platform documentation portal (5 chapters, quickstart personas, verification commands, and interactive FAQ)</td>
+            </tr>
+            <tr>
                 <td><code>/login</code></td>
                 <td>GET / POST</td>
                 <td>Guest</td>
-                <td>Branded security portal with tokenized forgot password link</td>
+                <td>Branded security portal with session expiration banner, error alerts, and 1-click test credentials helper</td>
             </tr>
             <tr>
                 <td><code>/daily</code></td>
                 <td>GET</td>
                 <td>Authenticated</td>
-                <td>Real-time shift board checklist with Livewire reactivity</td>
+                <td>Real-time shift board checklist with Livewire reactivity, task delegation, and two-way handover sign-off/sign-on</td>
+            </tr>
+            <tr>
+                <td><code>/messages</code></td>
+                <td>GET</td>
+                <td>Authenticated</td>
+                <td>SRE team comms console: 1-on-1 direct chat, team shift channels, incident war rooms, Base64 PDF/Image attachments, and @mention email receipts</td>
+            </tr>
+            <tr>
+                <td><code>/messages/reply/{token}</code></td>
+                <td>GET / POST</td>
+                <td>Public (Signed)</td>
+                <td>1-Click fast web reply composer for on-call engineers responding directly from email receipts</td>
+            </tr>
+            <tr>
+                <td><code>/api/webhooks/inbound-email</code></td>
+                <td>POST</td>
+                <td>Public (Tokenized)</td>
+                <td>Inbound email webhook bridge allowing team members to reply via email straight to shift channels</td>
             </tr>
             <tr>
                 <td><code>/reports</code></td>
                 <td>GET</td>
                 <td>Lead / Admin</td>
                 <td>Query engine, Chart.js visualisations, CSV export & PDF print view</td>
+            </tr>
+            <tr>
+                <td><code>/reports/handovers</code></td>
+                <td>GET</td>
+                <td>Lead / Admin</td>
+                <td>Shift handover audit report with acceptance rate KPIs and CSV export</td>
+            </tr>
+            <tr>
+                <td><code>/reports/timelines</code></td>
+                <td>GET</td>
+                <td>Lead / Admin</td>
+                <td>Operator active duty hours & shift timeline analytics with CSV export</td>
             </tr>
             <tr>
                 <td><code>/monitoring</code></td>
@@ -229,22 +271,35 @@
                 <td><code>/admin/users</code></td>
                 <td>GET / POST / DELETE</td>
                 <td>Admin</td>
-                <td>Team member CRUD, welcome emails & password reset dispatch</td>
+                <td>Team member CRUD with 9 granular privileges checkboxes and L1-L5 SRE technical grades</td>
+            </tr>
+            <tr>
+                <td><code>/admin/activities</code></td>
+                <td>GET / POST / PUT / DELETE</td>
+                <td>Lead / Admin</td>
+                <td>Activity template checklist management with priority, SLA, and pinned status</td>
             </tr>
             <tr>
                 <td><code>/health</code></td>
                 <td>GET</td>
                 <td>Public</td>
-                <td>JSON health check API (Status 200, DB latency check, system timestamp)</td>
+                <td>Interactive SRE System Health dashboard & JSON status API for monitors</td>
+            </tr>
+            <tr>
+                <td><code>/health/telemetry</code></td>
+                <td>GET</td>
+                <td>Public</td>
+                <td>Real-time performance telemetry JSON stream (DB latency, cache, memory)</td>
             </tr>
         </tbody>
     </table>
 
     <h2>5. Quality Assurance & Verification</h2>
     <ul>
-        <li><strong>Automated Tests:</strong> 14 Pest feature & unit tests passing with 39 assertions.</li>
-        <li><strong>Code Standards:</strong> PSR-12 strictly enforced using Laravel Pint.</li>
-        <li><strong>Security:</strong> Force HTTPS scheme enabled, trusted reverse proxy headers (`X-Forwarded-Proto`), CSRF token protection, and bcrypt password hashing.</li>
+        <li><strong>Automated Tests:</strong> 79 Pest feature & unit tests passing with 409 verified assertions.</li>
+        <li><strong>Code Standards:</strong> PSR-12 strictly enforced using Laravel Pint (0 violations) and strict types (<code>declare(strict_types=1);</code>) declared across 100% of PHP files.</li>
+        <li><strong>Security:</strong> Custom branded error pages (419, 404, 403, 500, 503) with zero mobile overflow, Livewire 419 session expiration interceptor with smooth redirect to <code>/login?expired=1</code>, Force HTTPS scheme, trusted reverse proxy headers (<code>X-Forwarded-Proto</code>), CSRF token protection, and bcrypt password hashing.</li>
+        <li><strong>Automated SRE Scheduler:</strong> Console command <code>php artisan reports:send-automated {period=daily|weekly|monthly}</code> with automated cron digests registered in <code>routes/console.php</code>.</li>
     </ul>
 
     <div class="footer">

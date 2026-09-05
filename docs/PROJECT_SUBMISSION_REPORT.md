@@ -50,9 +50,12 @@ The application is engineered using an enterprise **4-Tier Architecture**:
 | Endpoint | HTTP Method | Protected Role | Key Features |
 |---|---|---|---|
 | `/` | `GET` | Public | High-impact SRE landing page: brand hero, 6 capability pillars, handover lifecycle, live telemetry, and test accounts |
+| `/docs` | `GET` | Public | High-level SRE platform documentation portal (5 chapters, quickstart personas, verification commands, and interactive FAQ) |
 | `/login` | `GET / POST` | Guest | Branded login page with session expired banner, error alerts, and 1-click test credentials helper |
 | `/daily` | `GET` | Authenticated | Real-time shift board checklist with Livewire reactivity, task delegation, and handover sign-off/sign-on |
-| `/messages` | `GET` | Authenticated | SRE team comms console: 1-on-1 direct messaging, team shift channels, incident war rooms, and @mention email alerts |
+| `/messages` | `GET` | Authenticated | SRE team comms console: 1-on-1 direct messaging, team shift channels, incident war rooms, Base64 PDF & Image attachments, and @mention email alerts |
+| `/messages/reply/{token}` | `GET / POST` | Public (Signed) | 1-Click fast web reply composer for on-call engineers responding directly from email receipts |
+| `/api/webhooks/inbound-email` | `POST` | Public (Tokenized) | Inbound email webhook bridge allowing team members to reply via email straight to shift channels |
 | `/reports` | `GET` | Lead / Admin | Query engine, Chart.js visualisations, CSV & PDF export |
 | `/reports/handovers` | `GET` | Lead / Admin | Shift handover audit report with acceptance rate KPIs and CSV export |
 | `/reports/timelines` | `GET` | Lead / Admin | Operator active duty hours & shift timeline analytics with CSV export |
@@ -67,10 +70,11 @@ The application is engineered using an enterprise **4-Tier Architecture**:
 
 ## 5. Quality Assurance & Verification
 
-- **Automated Tests**: **55 Pest feature & unit tests passing** (280 assertions covering Public SRE Landing Page, Authentication & Session Expiry, Custom Branded SRE Error Pages, Activity CRUD, Status Flows, Operational Comms, Shift Handover Handshake, SRE Enterprise Features, Task Assignment, Reporting, and System Health Diagnostics).
-- **Code Standards**: PSR-12 strictly formatted using Laravel Pint (0 issues).
+- **Automated Tests**: **79 Pest feature & unit tests passing** (409 assertions covering Public SRE Landing Page, Authentication & Session Expiry, Custom Branded SRE Error Pages, Activity CRUD, Status Flows, Operational Comms, Shift Handover Handshake, SRE Enterprise Features, Task Assignment, Reporting, System Health Diagnostics, Email Reply Bridge, and Docs Portal).
+- **Code Standards**: PSR-12 strictly formatted using Laravel Pint (0 violations) and strict types (`declare(strict_types=1);`) across 100% of PHP files.
 - **UI & Layout**: Responsive Left Sidebar Navigation layout (Npontu brand tokens `#1B6B3A`, `#F5C518`, `#0F1A14`) with desktop sticky sidebar, mobile drawer, live UTC clock, and targeted loading state synchronization.
 - **Security & Error Resilience**: Branded error pages (419, 404, 403, 500, 503), Livewire 419 session expiration interceptor with smooth redirect to `/login?expired=1`, operator sign-in error handling with 1-click test credentials, Force HTTPS scheme, trusted proxy headers (`X-Forwarded-Proto`), CSRF token protection, polymorphic audit logs with JSON diffs, and bcrypt password hashing.
+- **Automated SRE Scheduler**: Console command `php artisan reports:send-automated {period=daily|weekly|monthly}` with automated cron schedules registered in `routes/console.php`.
 
 ---
 

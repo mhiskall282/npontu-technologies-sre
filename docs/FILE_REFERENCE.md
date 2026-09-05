@@ -470,6 +470,45 @@ prefix /admin  (role:admin,lead)
 
 ---
 
+## High-Level Docs & Operations Communication Extensions
+
+### `app/Http/Controllers/DocsController.php` & `resources/views/docs/index.blade.php`
+**What it does**: The `/docs` portal provides a high-level operational guide for both technical and non-technical stakeholders. It renders 5 permanent chapters with smooth hash anchor navigation:
+- `#quickstart`: Pre-Seeded Operational Personas (Kwame Mensah, Abena Owusu, Kofi Asante) with 1-click test access.
+- `#architecture`: Technical stack, database schema, verification commands (`php artisan test`), and design principles.
+- `#handover-flow`: 4-phase custody transfer protocol (Live Verification, Outgoing Sign-Off, Incoming Sign-On, Forensic Seal) and Chat War Rooms.
+- `#governance`: Cost of outages, SIEM compliance standards, and automated daily/weekly/monthly email reports.
+- `#faq`: Interactive Engineering FAQ accordion answering custody mechanics, session lifetimes, SIEM audit guarantees, and automated reporting.
+
+**Interview Q: Why keep all documentation chapters permanently in the DOM rather than using tabs?**
+> Tab-based documentation hides inactive sections (`display: none`), preventing browser fragment navigation (`#architecture`) and native in-page searches (`Ctrl+F`). By rendering all chapters permanently with CSS scroll margins (`scroll-mt-24`) and sticky chapter navigation, deep links work reliably and users can read or search the entire document seamlessly.
+
+---
+
+### `app/Services/EmailReplyTokenService.php` & `app/Http/Controllers/EmailReplyController.php`
+**What it does**: Facilitates bi-directional email integration:
+- Generates cryptographically signed HMAC SHA256 tokens encoding `user_id`, `conversation_id`, `message_id`, and `expires_at` (14-day TTL).
+- `show()`: Renders the 1-click fast web reply interface for on-duty engineers clicking links in notification emails.
+- `store()`: Submits the reply, attaches Base64 images/PDFs if uploaded, and dispatches notifications.
+- `inbound()`: Accepts inbound webhook payloads (`POST /api/webhooks/inbound-email`), extracts the reply token from address/headers, strips quoted reply text, and writes directly to the channel.
+
+**Interview Q: Why convert file attachments to Base64 blobs stored in the database instead of local disk storage?**
+> On cloud platforms like Render or containerized environments (Kubernetes, Docker), local container disk storage is ephemeral and is wiped clean on every restart or redeployment unless persistent volume mounts or external S3 buckets are configured. By storing compressed file attachments as Base64 data URIs directly in MySQL `longText` (`attachment_blob`), attachments are completely persistent, backup-safe, and zero-configuration.
+
+---
+
+### `app/Console/Commands/SendAutomatedReportsCommand.php` & `app/Mail/AutomatedDigestReportMail.php`
+**What it does**: Implements automated operational reporting scheduled via `routes/console.php`:
+- Command: `php artisan reports:send-automated {period=daily|weekly|monthly} {--to=}`.
+- Daily digest runs every night at 23:55 GMT.
+- Weekly executive summary runs every Sunday at 23:55 GMT.
+- Monthly operational review runs on the final day of every month at 23:55 GMT.
+- Computes period metrics: completed checks, pending checks, incident escalations, resolution percentage, and uptime guarantees.
+- Delivers responsive HTML/CSS email reports with status pills and direct SRE Cockpit jump links.
+
+
+---
+
 ## Deployment & Containerization
 
 ### `Dockerfile`

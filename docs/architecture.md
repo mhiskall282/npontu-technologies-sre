@@ -124,6 +124,10 @@ erDiagram
         bigint conversation_id FK
         bigint sender_id FK
         text body
+        string attachment_name "nullable"
+        string attachment_mime "nullable"
+        bigint attachment_size "nullable"
+        longtext attachment_blob "Base64 data URI"
         timestamp created_at
         timestamp updated_at
     }

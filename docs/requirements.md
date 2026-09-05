@@ -103,10 +103,10 @@ Authenticated support personnel must be able to **update the status** of any act
 Each status update must include an **optional remark** (free-text note about the update).
 
 **Acceptance criteria:**
-- [ ] Any authenticated user can update the status of an existing activity.
-- [ ] A remark field is presented on the update form.
-- [ ] Each status change is stored as a discrete update record (not just overwriting the activity row), so history is preserved.
-- [ ] The UI clearly shows the current status.
+- [x] Any authenticated user can update the status of an existing activity.
+- [x] A remark field is presented on the update form.
+- [x] Each status change is stored as a discrete update record (not just overwriting the activity row), so history is preserved.
+- [x] The UI clearly shows the current status.
 
 ---
 
@@ -122,9 +122,9 @@ Every status update must **capture and store** the following about the person ma
 | IP address | For audit trail integrity |
 
 **Acceptance criteria:**
-- [ ] Personnel details are stored alongside each update record (not just a foreign key — denormalise name/role as a snapshot in case user records change).
-- [ ] The shift-handover view (FR-4) must surface this information.
-- [ ] This information must be in the audit log (see AGENTS.md §3).
+- [x] Personnel details are stored alongside each update record (not just a foreign key — denormalise name/role as a snapshot in case user records change).
+- [x] The shift-handover view (FR-4) must surface this information.
+- [x] This information must be in the audit log (see AGENTS.md §3).
 
 ---
 
@@ -136,11 +136,11 @@ A **daily dashboard** must show:
 - **Pending items must be visually prominent** — this view is the primary tool for shift handover. An outgoing shift must be able to hand over to an incoming shift using this page alone.
 
 **Acceptance criteria:**
-- [ ] Default view shows today's activities.
-- [ ] User can select a different date to view that day's snapshot.
-- [ ] Pending activities are clearly distinguished from done ones (colour, badge, section grouping — implementer's choice).
-- [ ] Each activity shows the full update timeline for that day.
-- [ ] The page is printable / easy to screenshot for handover reports.
+- [x] Default view shows today's activities.
+- [x] User can select a different date to view that day's snapshot.
+- [x] Pending activities are clearly distinguished from done ones (colour, badge, section grouping — implementer's choice).
+- [x] Each activity shows the full update timeline for that day.
+- [x] The page is printable / easy to screenshot for handover reports.
 
 ---
 
@@ -149,23 +149,23 @@ A **daily dashboard** must show:
 A **reporting view** must allow querying activity history over a **custom date range**.
 
 **Acceptance criteria:**
-- [ ] User selects a start date and end date.
-- [ ] System returns all activities (and their updates) within that range.
-- [ ] Results are filterable by status (pending / done / all).
-- [ ] The query is performant on at least 12 months of data (add appropriate DB indexes).
-- [ ] Export to CSV or PDF is desirable but not required for the base submission (flag as enhancement if implemented).
+- [x] User selects a start date and end date.
+- [x] System returns all activities (and their updates) within that range.
+- [x] Results are filterable by status (pending / done / all).
+- [x] The query is performant on at least 12 months of data (add appropriate DB indexes).
+- [x] Export to CSV or PDF is implemented (both streaming CSV and dedicated A4-landscape print view).
 
 ---
 
 ### FR-6 — Authentication Gate
 
-**All routes** (except the login page itself) must require authentication. No data is accessible to unauthenticated users.
+**All routes** (except the public landing page, docs, policies, system health probes, and login page itself) must require authentication. No operational data is accessible to unauthenticated users.
 
 **Acceptance criteria:**
-- [ ] Visiting any protected route while unauthenticated redirects to login.
-- [ ] Laravel Breeze or a custom auth scaffold is acceptable.
-- [ ] Roles: minimum two roles — `admin` (can manage users, view all) and `support` (can create/update activities). Role implementation details are at the implementer's discretion; document the decision.
-- [ ] Remember-me and session timeout are desirable but not required for base submission.
+- [x] Visiting any protected route while unauthenticated redirects to login.
+- [x] Custom auth scaffold with secure session management and Livewire 419 interceptor.
+- [x] Roles: three roles — `admin`, `lead`, and `agent` with 9 configurable granular privileges and SRE grades (L1–L5).
+- [x] Session timeout banners, custom branded error pages (419, 404, 403, 500, 503), and 1-click test credentials helper on login screen.
 
 ---
 
@@ -244,9 +244,36 @@ The following are explicitly **not** required unless noted as enhancements:
 - Private Group Operations Rooms & Incident War Rooms.
 - Real-time polling (`wire:poll.4000ms`) and per-participant read receipt tracking (`last_read_at`).
 - Live unread notification badges in navigation header and mobile drawer.
+- `@mention` alerts and `@all` shift broadcasts dispatching signed email receipts.
+
+### FR-7.1: Image & PDF Attachments Stored as Base64 Blobs
+- Operational file sharing directly inside Livewire chat (screenshots, incident postmortems, log dumps).
+- Stored as compressed data URI blobs (`data:mime;base64,...`) directly in MySQL `longText` column (`attachment_blob`), eliminating ephemeral container wipes and external S3 dependencies.
+- Interactive image thumbnail modals and PDF download cards rendered directly in the chat stream.
+
+### FR-7.2: 1-Click Email Reply Bridge & Inbound Webhook
+- Cryptographically signed HMAC SHA256 reply tokens (14-day validity).
+- 1-Click fast web reply interface for on-call engineers replying from mobile mail clients.
+- Inbound email webhook endpoint (`POST /api/webhooks/inbound-email`) parsing sender tokens, stripping email quotes, and publishing responses straight into active shift channels.
+
+### FR-5.1: Automated Scheduled SRE Reporting Engine
+- Multi-cadence automated reporting via `php artisan reports:send-automated {period=daily|weekly|monthly}`.
+- Automated cron schedules registered in `routes/console.php` (Daily at 23:55, Weekly on Sundays at 23:55, Monthly on the last day at 23:55).
+- Aggregated health metrics: total checks completed, pending items, escalation counts, resolution rates, and system uptime figures.
+- Rich HTML/CSS email templates with tabular summaries and direct links to the SRE Cockpit.
 
 ### FR-8: SRE Engineering Grades & Granular Privileges
 - 5-tier technical ladder: L1 Support Operator, L2 Support Engineer, L3 Senior SRE, L4 Principal Lead, L5 Director/Architect.
 - Department division categorization (Cloud Infrastructure, Payment Gateways, DBA, Compliance).
 - 9 Granular permission checkboxes with Alpine.js 1-click role presets in account creation and user editing forms.
+
+### FR-9: High-Level SRE Platform Documentation Portal (`/docs`)
+- Dedicated high-level documentation portal explaining the complete system architecture for technical, semi-technical, and executive stakeholders.
+- 5 permanently rendered chapters with smooth hash anchor navigation:
+  1. `#quickstart`: Pre-Seeded Operational Personas & 1-Click Cockpit Access
+  2. `#architecture`: Technical Foundation, Database Schema & Verification Commands
+  3. `#handover-flow`: 4-Phase Two-Way Handover Protocol & Chat War Rooms
+  4. `#governance`: Cost of Outages, Data Governance & Automated Reporting
+  5. `#faq`: Interactive Engineering FAQ Accordion
+
 

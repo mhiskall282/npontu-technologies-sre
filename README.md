@@ -6,7 +6,7 @@
 
 🌐 **Production Deployment**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)
 
-[![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-79%20passing%20(409%20assertions)-brightgreen)](tests/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.x-cyan)](https://tailwindcss.com)
@@ -20,13 +20,16 @@ Support teams managing live production systems need a lightweight, auditable too
 | Feature | Description |
 |---|---|
 | **Public SRE Landing Page** | High-impact overview of Npontu's SRE platform (`GET /`): capability matrix, 4-step handover lifecycle, live telemetry probes, and 1-click test roles |
+| **High-Level SRE Docs Portal** | High-level platform guide (`GET /docs`): 5 permanent chapters with smooth anchor scrolling (`#quickstart`, `#architecture`, `#handover-flow`, `#governance`, `#faq`) for technical, non-technical, and executive stakeholders |
 | **SRE Left Sidebar Console** | Dark cockpit navigation (`bg-[#0F1A14]`) with responsive drawer, real-time UTC clock, and SRE status indicators |
 | **Daily Shift Board** | Live checklist of today's activities — pending items glow amber, done items fade green, with task delegation |
 | **Two-Way Shift Handshake** | Outgoing lead formal sign-off paired with incoming lead sign-on and verification acceptance remarks |
-| **SRE Operations Comms** | Live team messaging hub: 1-on-1 direct chat, team channels (`#general-shift`), war rooms, and `@mention` email alerts |
-| **System Health & Telemetry** | Multi-service probes (DB, cache, memory, mail), live 3s HUD streaming, 24h heartbeat, and public JSON API |
+| **SRE Operations Comms** | Live team messaging hub: 1-on-1 direct chat, team channels (`#general-shift`), war rooms, Base64 PDF/image attachments, and `@mention` email alerts |
+| **1-Click Email Reply Bridge** | Cryptographically signed HMAC SHA256 reply tokens allowing engineers to post to shift channels directly via email or 1-click web composer (`POST /api/webhooks/inbound-email`) |
+| **Automated SRE Reports** | Scheduled automated daily, weekly, and monthly email digests (`php artisan reports:send-automated`) with SLA metrics and shift health KPIs |
+| **System Health & Telemetry** | Multi-service probes (DB, cache, memory, mail), live 3s HUD streaming, 24h heartbeat, and public JSON API (`GET /health`) |
 | **Granular Privileges & Grades** | 9 configurable access checkboxes per user and L1–L5 SRE operational tiers |
-| **Branded Error Pages & Session Security** | Custom SRE 419 (Session Expired), 404 (Route Not Found), 403 (Forbidden), 500 (Runtime Exception), and 503 (Maintenance) with Livewire 419 interceptor and redesigned operator sign-in with 1-click test credentials |
+| **Branded Error Pages & Security** | Custom SRE 419 (Session Expired), 404 (Route Not Found), 403 (Forbidden), 500 (Runtime Exception), and 503 (Maintenance) with zero mobile overflow, Livewire 419 interceptor, and redesigned operator sign-in with 1-click test credentials |
 | **Role-Based Dashboards** | Admins, Leads, and Agents each see a tailored interface with relevant quick-action buttons |
 | **Status Updates & Escalations** | Mark activities Done or Pending with a remark, flag incident tickets (`INC-1042`), and trigger alert pings |
 | **Immutable Audit Trail** | Every state mutation is logged with actor identity, IP address, and before/after JSON diff values |
@@ -129,32 +132,59 @@ Open **[http://localhost:8000](http://localhost:8000)**
 ## Running Tests
 
 ```bash
-# Full test suite (55 tests, 280 assertions)
+## Running Tests
+
+```bash
+# Full test suite (79 tests, 409 assertions)
+php artisan test
+# or
 ./vendor/bin/pest
 
-# With verbose output
+# With verbose execution details
 ./vendor/bin/pest --verbose
 
-# Filter by test name
-./vendor/bin/pest --filter "LandingPageTest"
-
-# Run a specific file
-./vendor/bin/pest tests/Feature/LandingPageTest.php
+# Run a specific test suite
+./vendor/bin/pest tests/Feature/DocsPortalTest.php
+./vendor/bin/pest tests/Feature/OperationalCommunicationsAndPrivilegesTest.php
 ```
 
 Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — no external DB needed.
 
-**Test coverage areas:**
+**Test coverage areas (79 tests / 409 assertions):**
 - **Public SRE Landing Page**: Unauthenticated visitor showcase, 6 capability pillars, architecture walkthrough, pre-seeded test roles, authenticated SRE cockpit CTA
+- **High-Level SRE Documentation Portal**: 5 permanent chapters (`#quickstart`, `#architecture`, `#handover-flow`, `#governance`, `#faq`), verification commands, and interactive FAQ accordion
 - **Authentication & Security**: Login success, failure validation alerts, logout, redirect, session expiration banners
-- **Custom Branded Error Handling**: 419 (Session Expired), 404 (Route Not Found), 403 (Forbidden), 500 (Runtime Error), 503 (Maintenance Mode)
+- **Custom Branded Error Handling**: 419 (Session Expired), 404 (Route Not Found), 403 (Forbidden), 500 (Runtime Error), 503 (Maintenance Mode) with zero mobile viewport overflow
 - **Livewire 419 Interceptor**: Hook intercepting expired session tokens and redirecting cleanly to `/login?expired=1` without raw modal popups
 - **Activity CRUD**: Create, read, update, soft-delete, with task assignment and delegation
 - **Status Update Flow**: Status changes (Done/Pending) with mandatory remarks, incident escalation flags, and domain/audit logs
-- **Operational Communications**: Direct 1-on-1 chats, team shift channels, incident war rooms, `@name` & `@all` email receipts
+- **Operational Communications**: Direct 1-on-1 chats, team shift channels, incident war rooms, `@name` & `@all` email receipts, and Base64 PDF/image blob attachments
+- **Email Reply Bridge & Inbound Webhook**: Cryptographically signed HMAC SHA256 tokens, 1-click web reply composer, and inbound email webhook parser (`POST /api/webhooks/inbound-email`)
+- **Automated SRE Reports Scheduler**: `php artisan reports:send-automated {period=daily|weekly|monthly}` command validation and automated email dispatch
 - **Shift Handover Handshake**: Outgoing briefing sign-off and incoming lead verification sign-on
 - **Multi-Domain Reporting**: Custom date-range activity checks, handover audit reports, and operator work timelines & duty hours
 - **System Health Diagnostics**: Live telemetry streaming, subsystem probes, and availability SLA metrics
+- **Compliance Policies**: SLA 99.98% commitment, SOC2/SIEM audit policy, terms of service, and privacy standards
+
+---
+
+## Automated SRE Reports Command
+
+The platform ships an automated multi-cadence reporting engine registered in `routes/console.php`:
+
+```bash
+# Send daily shift digest (dispatches every night at 23:55 GMT)
+php artisan reports:send-automated daily
+
+# Send weekly executive SRE report (dispatches every Sunday at 23:55 GMT)
+php artisan reports:send-automated weekly
+
+# Send monthly SRE operational review (dispatches last day of month at 23:55 GMT)
+php artisan reports:send-automated monthly
+
+# Send report to a specific recipient address
+php artisan reports:send-automated daily --to=lead@npontu.local
+```
 
 ---
 
@@ -182,37 +212,53 @@ Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — no 
 │   │   ├── UpdateActivityAction.php
 │   │   ├── UpdateActivityStatusAction.php
 │   │   └── DeleteActivityAction.php
+│   ├── Console/Commands/           # Artisan commands
+│   │   └── SendAutomatedReportsCommand.php # Scheduled daily/weekly/monthly reports
 │   ├── Http/
 │   │   ├── Controllers/            # Thin HTTP glue (validate → delegate → respond)
 │   │   │   ├── ActivityController.php
 │   │   │   ├── DashboardController.php
-│   │   │   ├── ReportController.php
-│   │   │   ├── SettingsController.php
+│   │   │   ├── DocsController.php      # High-level documentation portal
+│   │   │   ├── EmailReplyController.php # 1-Click web replies & inbound webhook
+│   │   │   ├── HealthController.php    # Interactive telemetry & health probes
+│   │   │   ├── LandingController.php   # Public SRE landing page
+│   │   │   ├── MonitoringController.php # SRE operational oversight & audit log stream
+│   │   │   ├── PolicyController.php    # SLA, SIEM, and governance policies
+│   │   │   ├── ReportController.php    # Date-range queries, CSV & print views
+│   │   │   ├── SettingsController.php  # User profile & credential settings
 │   │   │   └── Admin/
 │   │   │       ├── ActivityController.php
-│   │   │       └── UserController.php
+│   │   │       └── UserController.php  # Granular privileges & technical grades
 │   │   ├── Middleware/
 │   │   │   ├── EnsureRole.php      # Role-based route guard
 │   │   │   └── SecureHeaders.php   # Security HTTP headers
 │   │   └── Requests/               # Form Requests (validation + authorization)
 │   ├── Livewire/
 │   │   ├── DailyActivityBoard.php  # Shift handover real-time board
-│   │   └── ActivityStatusUpdater.php # Inline status toggle component
+│   │   ├── ActivityStatusUpdater.php # Inline status toggle component
+│   │   └── OperationalChat.php     # Team channels, war rooms, Base64 attachments
 │   ├── Mail/
-│   │   └── ActivityReportMail.php  # Mailable for emailed activity reports
+│   │   ├── ActivityReportMail.php  # Mailable for manual activity reports
+│   │   ├── AutomatedDigestReportMail.php # Scheduled daily/weekly/monthly digests
+│   │   └── MessageMentionMail.php  # @mention receipts & email reply bridge
 │   ├── Models/
-│   │   ├── Activity.php            # Core entity (what is checked)
-│   │   ├── ActivityLog.php         # Append-only status event log
+│   │   ├── Activity.php            # Core operational check entity
+│   │   ├── ActivityLog.php         # Append-only status checkoff log
 │   │   ├── AuditLog.php            # Security/compliance change log
-│   │   └── User.php                # Auth user with role helpers
+│   │   ├── Conversation.php        # Chat channels & war rooms
+│   │   ├── Message.php             # Operational messages & Base64 attachments
+│   │   ├── ShiftHandover.php       # Two-way shift handover agreements
+│   │   └── User.php                # Auth user with role & privilege helpers
 │   ├── Policies/
 │   │   ├── ActivityPolicy.php      # Who can create/update/delete activities
 │   │   └── UserPolicy.php          # Who can manage users
 │   ├── Providers/
-│   │   └── AppServiceProvider.php  # Layout component aliases
+│   │   └── AppServiceProvider.php  # Layout component aliases & HTTPS enforcement
 │   └── Services/
 │       ├── AuditService.php        # Write immutable audit log entries
-│       └── ReportingService.php    # Date-range report queries
+│       ├── EmailReplyTokenService.php # Cryptographic HMAC reply tokens
+│       ├── ReportingService.php    # Date-range, handover & timeline queries
+│       └── SystemHealthService.php # Multi-probe telemetry & health diagnostics
 ├── database/
 │   ├── factories/                  # Model factories for seeding & testing
 │   ├── migrations/                 # Versioned schema (all have down())
@@ -221,20 +267,29 @@ Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — no 
 │   ├── requirements.md             # Functional requirements + grading rubric
 │   ├── architecture.md             # ERD, module boundaries, deployment diagram
 │   ├── context.md                  # Brand guidelines, business context
-│   └── FILE_REFERENCE.md           # ← This file — per-file interview reference
+│   ├── FILE_REFERENCE.md           # Per-file interview reference
+│   └── PROJECT_SUBMISSION_REPORT.md # Formal submission report
 ├── resources/
 │   ├── views/
-│   │   ├── layouts/app.blade.php   # Main app shell with navigation
+│   │   ├── layouts/app.blade.php   # SRE cockpit layout with left sidebar
 │   │   ├── livewire/               # Livewire component views
 │   │   ├── activities/             # Activity CRUD views
 │   │   ├── admin/                  # Admin panel views
+│   │   ├── docs/                   # High-level documentation portal
+│   │   ├── emails/                 # Rich HTML email templates
+│   │   ├── errors/                 # Branded 404, 419, 403, 500, 503 error pages
+│   │   ├── health/                 # Interactive telemetry HUD
+│   │   ├── messages/               # Operational chat & email reply screens
+│   │   ├── monitoring/             # SRE monitoring console
+│   │   ├── policies/               # SLA & governance policy pages
 │   │   ├── reports/                # Reporting and chart views
 │   │   ├── settings/               # Account settings views
 │   │   └── auth/                   # Login form
 │   └── css/app.css                 # Tailwind entry point + brand tokens
 ├── routes/
-│   ├── web.php                     # All web routes (guarded by auth middleware)
-│   └── auth.php                    # Login/logout routes
+│   ├── web.php                     # Web routes, public pages & webhook endpoints
+│   ├── auth.php                    # Login/logout routes
+│   └── console.php                 # Artisan scheduler cron jobs
 └── tests/
     ├── Feature/                    # HTTP-level Pest feature tests
     └── Unit/                       # Action/Service unit tests
