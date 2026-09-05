@@ -12,16 +12,16 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 /**
- * LandingController — Public SRE Platform Showcase & Gateway
+ * LandingController — Public SRE Platform Narrative & Showcase
  *
- * Provides an authoritative, high-impact landing experience for visitors, leadership,
- * and engineering teams prior to authentication, highlighting core capabilities,
- * shift handover protocols, telemetry SLAs, and quick evaluation accounts.
+ * Serves the public storytelling homepage illustrating Npontu Technologies'
+ * mission-critical operations philosophy, two-way shift custody lifecycle,
+ * and high-availability telemetry benchmarks.
  */
 class LandingController extends Controller
 {
     /**
-     * Display the public SRE landing page.
+     * Display the public SRE storytelling landing page.
      */
     public function index(Request $request): View
     {
@@ -53,36 +53,8 @@ class LandingController extends Controller
             'active_operators' => $activeOperatorsCount > 0 ? $activeOperatorsCount : 3,
         ];
 
-        $testAccounts = [
-            [
-                'role' => 'Administrator',
-                'name' => 'Kwame Mensah',
-                'email' => 'admin@npontu.local',
-                'grade' => 'L4 Principal Lead',
-                'department' => 'Cloud Infrastructure & SRE',
-                'description' => 'Full administrative command, user provisioning, checklists definition, and forensic audit logs.',
-            ],
-            [
-                'role' => 'Team Lead',
-                'name' => 'Abena Owusu',
-                'email' => 'lead@npontu.local',
-                'grade' => 'L3 Senior SRE',
-                'department' => 'Payment Gateway Operations',
-                'description' => 'Shift handover sign-off, task delegation, monitoring telemetry HUD, and compliance reports.',
-            ],
-            [
-                'role' => 'Support Agent',
-                'name' => 'Kofi Asante',
-                'email' => 'agent@npontu.local',
-                'grade' => 'L2 Support Engineer',
-                'department' => 'Database Operations & DBA',
-                'description' => 'Shift checklist status updates, remark logging, incident ticket references, and team ops comms.',
-            ],
-        ];
-
         return view('landing', [
             'metrics' => $metrics,
-            'testAccounts' => $testAccounts,
         ]);
     }
 }

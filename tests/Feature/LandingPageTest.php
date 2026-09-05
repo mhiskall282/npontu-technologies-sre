@@ -9,27 +9,30 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-it('renders the public landing page with 200 ok for unauthenticated visitors', function () {
+it('renders the public storytelling landing page with 200 ok for unauthenticated visitors', function () {
     $response = $this->get('/');
 
     $response->assertOk();
     $response->assertSee('Support Tracker');
     $response->assertSee('NPONTU TECHNOLOGIES');
-    $response->assertSee('Making you free to achieve');
-    $response->assertSee('zero-blindspot');
+    $response->assertSee('When critical infrastructure runs 24/7');
     $response->assertSee('Launch Shift Console');
     $response->assertSee('Inspect Telemetry HUD');
-    $response->assertSee('Reactive Daily Shift Board');
-    $response->assertSee('Two-Way Shift Handover Handshake');
-    $response->assertSee('Ops Comms & Incident War Rooms', false);
-    $response->assertSee('Forensic Compliance Audit Trail');
-    $response->assertSee('Granular Privileges & SRE Grades', false);
-    $response->assertSee('Real-Time Telemetry & Probes', false);
-    $response->assertSee('The 4-Step Handover Lifecycle');
-    $response->assertSee('Pre-Seeded Operational Roles');
-    $response->assertSee('Kwame Mensah');
-    $response->assertSee('Abena Owusu');
-    $response->assertSee('Kofi Asante');
+    $response->assertSee('The Reactive Daily Shift Board');
+    $response->assertSee('Verifiable Custody Transfer');
+    $response->assertSee('Zero-Friction Incident War Rooms');
+    $response->assertSee('100% Immutable Forensic Audit Shield');
+    $response->assertSee('The Anatomy of a Flawless Handover');
+    $response->assertSee('Live Verification');
+    $response->assertSee('Outgoing Sign-Off');
+    $response->assertSee('Incoming Sign-On');
+    $response->assertSee('Compliance Archival');
+    $response->assertSee('8 Core Subsystems');
+
+    // Asserts that raw test credentials and demo checklists are NOT on public homepage
+    $response->assertDontSee('Password: password');
+    $response->assertDontSee('Pre-Seeded Operational Roles');
+    $response->assertDontSee('sre-cockpit.npontu.local');
 });
 
 it('shows enter sre cockpit button when user is authenticated on the landing page', function () {
