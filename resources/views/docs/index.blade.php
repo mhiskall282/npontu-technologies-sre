@@ -152,8 +152,8 @@
                 {{-- Key Telemetry Metrics Pill Grid --}}
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">
                     <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
-                        <p class="text-xl sm:text-2xl font-black text-[#F5C518] font-mono">60 Tests</p>
-                        <p class="text-[11px] text-gray-400 mt-0.5">314 Verified Assertions</p>
+                        <p class="text-xl sm:text-2xl font-black text-[#F5C518] font-mono">{{ $stats['feature_tests'] }} Tests</p>
+                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $stats['test_assertions'] }} Verified Assertions</p>
                     </div>
                     <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
                         <p class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">&lt; 100ms</p>
@@ -313,7 +313,7 @@
                         <div class="p-4 rounded-xl bg-black/30 border border-white/10">
                             <p class="text-xs font-bold text-white flex items-center gap-2">
                                 <span class="text-[#F5C518] font-mono">4.</span>
-                                <span>Pest 3 Test Suite (60 Feature Tests / 314 Assertions)</span>
+                                <span>Pest 3 Test Suite ({{ $stats['feature_tests'] }} Feature Tests / {{ $stats['test_assertions'] }} Assertions)</span>
                             </p>
                             <p class="text-xs text-gray-400 mt-1">Full coverage of Authentication, Activity CRUD, Handover Sign-Off &amp; Sign-On, Chat @Mentions, Reporting date-range queries, and Error handling.</p>
                         </div>

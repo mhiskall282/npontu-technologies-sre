@@ -20,8 +20,8 @@ class DocsController extends Controller
             'total_users' => User::count(),
             'subsystems_monitored' => 8,
             'sla_uptime' => '99.98%',
-            'test_assertions' => 314,
-            'feature_tests' => 60,
+            'test_assertions' => 409,
+            'feature_tests' => 79,
         ];
 
         return view('docs.index', compact('stats'));
