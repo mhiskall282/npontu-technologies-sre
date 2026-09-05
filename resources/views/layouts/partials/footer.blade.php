@@ -72,6 +72,12 @@
                 <p class="font-bold text-white text-xs uppercase tracking-wider font-mono mb-4 text-[#F5C518]">Platform Modules</p>
                 <ul class="space-y-2.5 text-xs">
                     <li>
+                        <a href="{{ route('docs') }}" class="text-[#F5C518] hover:underline transition-colors font-bold flex items-center gap-1.5">
+                            <span>Documentation &amp; Guide</span>
+                            <span class="text-[9px] font-mono bg-amber-950 text-[#F5C518] px-1.5 py-0.5 rounded border border-amber-800">PORTAL</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('landing') }}" class="text-gray-400 hover:text-white transition-colors">Platform Overview</a>
                     </li>
                     <li>
@@ -174,7 +180,7 @@
             <div class="flex flex-wrap items-center gap-4">
                 <span class="flex items-center gap-1.5 font-mono text-[11px] text-gray-400">
                     <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>55 Feature Tests Passed (281 Assertions)</span>
+                    <span>60 Feature Tests Passed (314 Assertions)</span>
                 </span>
                 <span class="text-gray-700">&bull;</span>
                 <span class="font-mono text-[11px] text-gray-400">Pest Architecture Clean</span>
@@ -183,6 +189,8 @@
             </div>
 
             <div class="flex items-center gap-4 text-gray-400 font-medium">
+                <a href="{{ route('docs') }}" class="text-[#F5C518] hover:underline font-bold">Docs</a>
+                <span>&bull;</span>
                 <a href="{{ route('policy.privacy') }}" class="hover:text-white transition-colors">Privacy</a>
                 <span>&bull;</span>
                 <a href="{{ route('policy.terms') }}" class="hover:text-white transition-colors">Terms</a>

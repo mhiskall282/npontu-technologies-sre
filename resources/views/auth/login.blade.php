@@ -68,16 +68,22 @@
             <div class="w-full max-w-md">
 
                 {{-- Mobile Brand Header --}}
-                <div class="lg:hidden flex items-center gap-3 mb-8">
-                    <div class="w-10 h-10 rounded-xl bg-[#1B6B3A] flex items-center justify-center shadow-md">
-                        <svg class="w-6 h-6 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                            <polygon points="16,3 30,27 2,27"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-extrabold text-gray-900 text-lg leading-none">Support Tracker</p>
-                        <p class="text-[#1B6B3A] text-[10px] font-mono tracking-widest uppercase mt-0.5 font-bold">NPONTU TECHNOLOGIES</p>
-                    </div>
+                <div class="lg:hidden flex items-center justify-between gap-3 mb-6">
+                    <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
+                        <div class="w-10 h-10 rounded-xl bg-[#1B6B3A] flex items-center justify-center shadow-md group-hover:bg-[#2A8F52] transition-colors">
+                            <svg class="w-6 h-6 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
+                                <polygon points="16,3 30,27 2,27"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-extrabold text-gray-900 text-lg leading-none">Support Tracker</p>
+                            <p class="text-[#1B6B3A] text-[10px] font-mono tracking-widest uppercase mt-0.5 font-bold">NPONTU TECHNOLOGIES</p>
+                        </div>
+                    </a>
+                    <a href="{{ route('landing') }}" class="text-xs font-semibold text-gray-500 hover:text-gray-900 flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-lg shadow-2xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span>Home</span>
+                    </a>
                 </div>
 
                 {{-- Card Container --}}
@@ -173,8 +179,8 @@
                         </button>
                     </form>
 
-                    {{-- ── Quick Operator Credentials Helper ─────────────────────── --}}
-                    <div class="mt-6 pt-5 border-t border-gray-100">
+                    {{-- ── Quick Operator Credentials Helper (Hidden on Mobile) ─────────────────────── --}}
+                    <div class="hidden sm:block mt-6 pt-5 border-t border-gray-100">
                         <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">
                             Quick Operator Access (Test Accounts):
                         </p>
@@ -210,11 +216,11 @@
                 </div>
 
                 <div class="flex items-center justify-center gap-3 text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-100">
-                    <a href="{{ route('policy.privacy') }}" class="hover:text-gray-600 transition-colors">Privacy Policy</a>
+                    <a href="{{ route('docs') }}" class="text-[#1B6B3A] hover:underline font-bold">Docs &amp; Guide</a>
                     <span>&bull;</span>
-                    <a href="{{ route('policy.terms') }}" class="hover:text-gray-600 transition-colors">Terms of Service</a>
+                    <a href="{{ route('policy.privacy') }}" class="hover:text-gray-600 transition-colors">Privacy</a>
                     <span>&bull;</span>
-                    <a href="{{ route('policy.security') }}" class="hover:text-gray-600 transition-colors">Security</a>
+                    <a href="{{ route('policy.terms') }}" class="hover:text-gray-600 transition-colors">Terms</a>
                     <span>&bull;</span>
                     <a href="{{ route('landing') }}" class="hover:text-gray-600 transition-colors">Home</a>
                 </div>

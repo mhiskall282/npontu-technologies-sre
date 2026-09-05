@@ -29,31 +29,32 @@
 <body class="bg-[#07100B] text-white antialiased selection:bg-[#F5C518] selection:text-gray-950 min-h-full flex flex-col overflow-x-hidden">
 
     {{-- ── GLOBAL SRE HEADER ──────────────────────────────────────────────────── --}}
-    <header class="sticky top-0 z-50 bg-[#0A140E]/85 backdrop-blur-md border-b border-[#14261B]">
+    <header class="sticky top-0 z-50 bg-[#0A140E]/90 backdrop-blur-md border-b border-[#14261B]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             {{-- Brand Logo --}}
-            <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1B6B3A] to-[#0F1A14] border border-[#F5C518]/30 flex items-center justify-center shadow-lg group-hover:border-[#F5C518] transition-colors">
+            <a href="{{ route('landing') }}" class="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1B6B3A] to-[#0F1A14] border border-[#F5C518]/30 flex items-center justify-center shadow-lg group-hover:border-[#F5C518] transition-colors shrink-0">
                     <svg class="w-5 h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
                         <polygon points="16,3 30,27 2,27"/>
                     </svg>
                 </div>
-                <div>
-                    <span class="font-extrabold text-base sm:text-lg tracking-tight text-white block leading-none">Support Tracker</span>
-                    <span class="block text-[#F5C518] text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold">NPONTU TECHNOLOGIES</span>
+                <div class="min-w-0">
+                    <span class="font-extrabold text-sm sm:text-base tracking-tight text-white block leading-none truncate">Support Tracker</span>
+                    <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">NPONTU TECHNOLOGIES</span>
                 </div>
             </a>
 
-            {{-- Story Navigation Links --}}
-            <nav class="hidden md:flex items-center gap-7 text-xs font-semibold text-gray-300">
+            {{-- Story Navigation Links (Desktop) --}}
+            <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-gray-300">
                 <a href="#the-problem" class="hover:text-[#F5C518] transition-colors">The Challenge</a>
                 <a href="#the-solution" class="hover:text-[#F5C518] transition-colors">The Handshake</a>
                 <a href="#pillars" class="hover:text-[#F5C518] transition-colors">Core Pillars</a>
                 <a href="#telemetry" class="hover:text-[#F5C518] transition-colors">Live Telemetry</a>
+                <a href="{{ route('docs') }}" class="text-[#F5C518] hover:underline transition-colors font-bold">Docs &amp; Guide</a>
             </nav>
 
             {{-- Right CTA Section --}}
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                 <div class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono text-gray-400">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span id="nav-live-clock">UTC --:--:--</span>
@@ -68,18 +69,72 @@
                 @auth
                     <a href="{{ route('activities.daily') }}"
                        id="cta-enter-cockpit"
-                       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1B6B3A] hover:bg-[#2A8F52] text-white font-bold text-xs shadow-md transition-colors">
+                       class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl bg-[#1B6B3A] hover:bg-[#2A8F52] text-white font-bold text-xs shadow-md transition-colors whitespace-nowrap">
                         <span>Enter SRE Cockpit</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </a>
                 @else
                     <a href="{{ route('login') }}"
                        id="cta-nav-login"
-                       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-bold text-xs shadow-md transition-colors">
-                        <span>Operator Sign In</span>
+                       class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-bold text-xs shadow-md transition-colors whitespace-nowrap">
+                        <span>Sign In</span>
                         <svg class="w-3.5 h-3.5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                     </a>
                 @endauth
+
+                {{-- Mobile Hamburger Toggle Button --}}
+                <button type="button"
+                        id="mobile-nav-toggle-btn"
+                        onclick="toggleLandingNav()"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation menu"
+                        class="md:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-[#F5C518]">
+                    <svg id="mobile-hamburger-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <svg id="mobile-close-icon" class="w-5 h-5 hidden text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- Mobile Collapsible Navigation Menu --}}
+        <div id="landing-mobile-menu"
+             class="hidden md:hidden bg-[#0A140E]/98 border-b border-[#14261B] px-4 pt-3 pb-5 space-y-1 shadow-2xl backdrop-blur-xl">
+            <div class="px-3 pb-2 text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">
+                Navigation &amp; Operations
+            </div>
+            <a href="#the-problem" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
+                The Challenge
+            </a>
+            <a href="#the-solution" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
+                The Handshake
+            </a>
+            <a href="#pillars" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
+                Core Pillars
+            </a>
+            <a href="#telemetry" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
+                Live Telemetry
+            </a>
+            <a href="{{ route('docs') }}" class="block px-3 py-2 rounded-lg text-sm font-bold text-[#F5C518] hover:bg-white/5 transition-colors flex items-center justify-between">
+                <span>Docs &amp; Architecture Guide</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F5C518]/20 text-[#F5C518] uppercase">Full Manual</span>
+            </a>
+            <a href="{{ route('health') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-emerald-300 hover:bg-white/5 transition-colors flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>System Diagnostics HUD</span>
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/30 text-emerald-300">99.98% SLA</span>
+            </a>
+
+            <div class="pt-3 mt-2 border-t border-white/10 flex items-center justify-between text-xs text-gray-400 px-3 font-mono">
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span>ACCRA-CLUSTER-01</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('policy.privacy') }}" class="hover:text-gray-200 text-[11px]">Privacy</a>
+                    <span>&bull;</span>
+                    <a href="{{ route('policy.terms') }}" class="hover:text-gray-200 text-[11px]">Terms</a>
+                </div>
             </div>
         </div>
     </header>
@@ -585,8 +640,28 @@
     {{-- ── COMPREHENSIVE ENTERPRISE SRE FOOTER ─────────────────────────────────── --}}
     @include('layouts.partials.footer')
 
-    {{-- UTC Clock Live Synchronizer --}}
+    {{-- UTC Clock Live Synchronizer & Mobile Menu Controller --}}
     <script>
+        function toggleLandingNav() {
+            const menu = document.getElementById('landing-mobile-menu');
+            const hamburger = document.getElementById('mobile-hamburger-icon');
+            const close = document.getElementById('mobile-close-icon');
+            const btn = document.getElementById('mobile-nav-toggle-btn');
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                hamburger?.classList.add('hidden');
+                close?.classList.remove('hidden');
+                btn?.setAttribute('aria-expanded', 'true');
+            } else {
+                menu.classList.add('hidden');
+                hamburger?.classList.remove('hidden');
+                close?.classList.add('hidden');
+                btn?.setAttribute('aria-expanded', 'false');
+            }
+        }
+
         (function() {
             function updateNavClock() {
                 const el = document.getElementById('nav-live-clock');

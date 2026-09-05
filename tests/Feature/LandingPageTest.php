@@ -61,3 +61,22 @@ it('maintains strict authentication guards on protected operational routes', fun
         $response->assertRedirect('/login');
     }
 });
+
+it('hides quick operator access helper on mobile in the login interface', function () {
+    $response = $this->get('/login');
+
+    $response->assertOk();
+    // Verify that quick access test accounts container is explicitly hidden on mobile (<sm)
+    $response->assertSee('hidden sm:block mt-6 pt-5 border-t border-gray-100', false);
+    $response->assertSee('Quick Operator Access (Test Accounts):');
+    $response->assertSee('admin@npontu.local');
+});
+
+it('provides collapsible mobile navigation drawer on public pages', function () {
+    $response = $this->get('/');
+
+    $response->assertOk();
+    $response->assertSee('id="landing-mobile-menu"', false);
+    $response->assertSee('id="mobile-nav-toggle-btn"', false);
+    $response->assertSee('toggleLandingNav');
+});

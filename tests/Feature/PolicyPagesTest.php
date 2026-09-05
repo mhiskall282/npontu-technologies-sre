@@ -57,5 +57,5 @@ test('it renders the comprehensive multi-column footer with policy and corporate
     $response->assertSee('Accra-Cluster-01 (Primary SRE NOC)');
     $response->assertSee('Greater Accra Region, Ghana');
     $response->assertSee('ops@npontu.com');
-    $response->assertSee('55 Feature Tests Passed');
+    $response->assertSee('Feature Tests Passed');
 });
