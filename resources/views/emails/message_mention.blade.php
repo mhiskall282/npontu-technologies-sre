@@ -66,20 +66,41 @@
                                     </span>
                                 </div>
                                 <div style="font-size: 14px; line-height: 1.6; color: #111827; white-space: pre-wrap;">{{ $chatMessage->body }}</div>
+
+                                @if($chatMessage->hasAttachment())
+                                    <div style="margin-top: 12px; padding: 8px 12px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 12px; display: inline-block;">
+                                        📎 <strong>Attached:</strong> {{ $chatMessage->attachment_name }} ({{ $chatMessage->formattedAttachmentSize() }})
+                                    </div>
+                                @endif
                             </div>
 
-                            {{-- Action Button --}}
-                            <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 28px 0;">
+                            {{-- Action Buttons (Instant Web Reply + Open App) --}}
+                            <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
                                 <tr>
+                                    @if(!empty($replyUrl))
+                                    <td align="center" style="background-color: #F5C518; border-radius: 8px; padding-right: 12px;">
+                                        <a href="{{ $replyUrl }}"
+                                           target="_blank"
+                                           style="display: inline-block; padding: 12px 22px; font-size: 13px; font-weight: 800; color: #0F1A14; text-decoration: none; border-radius: 8px;">
+                                            ⚡ Quick Reply via Web &rarr;
+                                        </a>
+                                    </td>
+                                    @endif
                                     <td align="center" style="background-color: #1B6B3A; border-radius: 8px;">
                                         <a href="{{ url('/messages?c=' . $conversation->id) }}"
                                            target="_blank"
-                                           style="display: inline-block; padding: 12px 28px; font-size: 13px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 8px;">
-                                            Open SRE Operations Comms &rarr;
+                                           style="display: inline-block; padding: 12px 22px; font-size: 13px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 8px;">
+                                            Open SRE Comms &rarr;
                                         </a>
                                     </td>
                                 </tr>
                             </table>
+
+                            <div style="background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                                <p style="font-size: 12px; color: #166534; line-height: 1.5; margin: 0;">
+                                    💡 <strong>Email Reply Supported:</strong> You can also reply directly to this email in your email client (Gmail, Outlook, Apple Mail), and your message will automatically be posted to <strong>#{{ $conversation->title ?? 'General Shift' }}</strong>.
+                                </p>
+                            </div>
 
                             <p style="font-size: 12px; color: #9ca3af; line-height: 1.5; margin-bottom: 0;">
                                 You are receiving this operational receipt because you were mentioned or tagged in an active SRE shift channel.

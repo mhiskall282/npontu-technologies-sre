@@ -56,3 +56,19 @@ test('docs portal is linked from the public landing page navigation and footer',
     $response->assertSee(route('docs'));
     $response->assertSee('Docs &amp; Guide', false);
 });
+
+test('docs portal permanently renders all 5 chapters and section anchor IDs', function () {
+    $response = $this->get(route('docs'));
+
+    $response->assertStatus(200);
+    $response->assertSee('id="quickstart"', false);
+    $response->assertSee('id="architecture"', false);
+    $response->assertSee('id="handover-flow"', false);
+    $response->assertSee('id="governance"', false);
+    $response->assertSee('id="faq"', false);
+    $response->assertSee('#quickstart');
+    $response->assertSee('#architecture');
+    $response->assertSee('#handover-flow');
+    $response->assertSee('#governance');
+    $response->assertSee('#faq');
+});

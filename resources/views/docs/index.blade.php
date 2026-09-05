@@ -54,11 +54,12 @@
             </div>
 
             {{-- Navigation Links (Desktop) --}}
-            <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-gray-300">
+            <nav class="hidden md:flex items-center gap-5 text-xs font-semibold text-gray-300">
                 <a href="{{ route('landing') }}" class="hover:text-[#F5C518] transition-colors">Platform</a>
                 <a href="#quickstart" class="hover:text-[#F5C518] transition-colors">Quickstart</a>
                 <a href="#architecture" class="hover:text-[#F5C518] transition-colors">Architecture</a>
                 <a href="#handover-flow" class="hover:text-[#F5C518] transition-colors">Handover Protocol</a>
+                <a href="#governance" class="hover:text-[#F5C518] transition-colors">Governance</a>
                 <a href="#faq" class="hover:text-[#F5C518] transition-colors">Comprehensive FAQ</a>
                 <a href="{{ route('health') }}" class="hover:text-[#F5C518] transition-colors">Telemetry HUD</a>
             </nav>
@@ -117,6 +118,9 @@
             <a @click="mobileNavOpen = false" href="#handover-flow" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
                 4-Phase Shift Handover Protocol
             </a>
+            <a @click="mobileNavOpen = false" href="#governance" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
+                Governance, SLA &amp; Automated Reports
+            </a>
             <a @click="mobileNavOpen = false" href="#faq" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
                 Interactive Engineering FAQ
             </a>
@@ -168,44 +172,49 @@
         </div>
     </section>
 
-    {{-- Main Documentation Layout with Persona Navigation --}}
+    {{-- Main Documentation Layout with Permanent Chapter Navigation --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
-        {{-- Persona Selector Bar --}}
-        <div class="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-[#050D07] border border-emerald-900/40 mb-10 shadow-lg">
-            <button type="button"
-                    @click="activeTab = 'evaluators'"
-                    :class="activeTab === 'evaluators' ? 'bg-[#F5C518] text-gray-950 font-extrabold shadow-md' : 'text-gray-300 hover:text-white hover:bg-white/5 font-semibold'"
-                    class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition-all cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                <span>For Evaluators &amp; Technical Leads</span>
-            </button>
+        {{-- Section Navigator Bar --}}
+        <div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl bg-[#050D07] border border-emerald-900/40 mb-10 shadow-lg sticky top-20 z-30 backdrop-blur-md">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] px-3 font-bold hidden md:inline">CHAPTERS:</span>
+            <a href="#quickstart"
+               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
+                <svg class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Quickstart &amp; Personas</span>
+            </a>
 
-            <button type="button"
-                    @click="activeTab = 'operators'"
-                    :class="activeTab === 'operators' ? 'bg-[#F5C518] text-gray-950 font-extrabold shadow-md' : 'text-gray-300 hover:text-white hover:bg-white/5 font-semibold'"
-                    class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition-all cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>For SRE Shift Operators &amp; NOC Teams</span>
-            </button>
+            <a href="#architecture"
+               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>Architecture &amp; Stack</span>
+            </a>
 
-            <button type="button"
-                    @click="activeTab = 'stakeholders'"
-                    :class="activeTab === 'stakeholders' ? 'bg-[#F5C518] text-gray-950 font-extrabold shadow-md' : 'text-gray-300 hover:text-white hover:bg-white/5 font-semibold'"
-                    class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs transition-all cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                <span>For Leadership &amp; Non-Technical Stakeholders</span>
-            </button>
+            <a href="#handover-flow"
+               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
+                <svg class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Handover Protocol</span>
+            </a>
+
+            <a href="#governance"
+               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
+                <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>Governance &amp; SLA</span>
+            </a>
+
+            <a href="#faq"
+               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all ml-auto">
+                <span>FAQ &rarr;</span>
+            </a>
         </div>
 
-        {{-- ── TAB 1: FOR EVALUATORS & TECHNICAL LEADS ───────────────────────────── --}}
-        <div x-show="activeTab === 'evaluators'" x-cloak class="space-y-10">
+        <div class="space-y-14">
 
             {{-- Evaluator Quick Access Cards --}}
-            <div id="quickstart" class="bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
+            <div id="quickstart" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-6">
                     <div>
-                        <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">EVALUATOR FAST-TRACK</span>
+                        <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 01 &bull; EVALUATOR FAST-TRACK</span>
                         <h2 class="text-2xl font-black text-white mt-1">Pre-Seeded Operational Test Personas</h2>
                         <p class="text-xs text-gray-400 mt-1">Experience the console from each perspective with pre-configured grades, departments, and granular privileges.</p>
                     </div>
@@ -269,8 +278,8 @@
             </div>
 
             {{-- Architectural Tech Stack & Code Quality --}}
-            <div id="architecture" class="bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">TECHNICAL FOUNDATION</span>
+            <div id="architecture" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">CHAPTER 02 &bull; TECHNICAL FOUNDATION</span>
                 <h2 class="text-2xl font-black text-white mt-1">Architectural Stack &amp; Standards</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -347,14 +356,9 @@
                 </div>
             </div>
 
-        </div>
-
-        {{-- ── TAB 2: FOR SRE SHIFT OPERATORS & NOC TEAMS ────────────────────────── --}}
-        <div x-show="activeTab === 'operators'" x-cloak class="space-y-10">
-
             {{-- Handover Protocol Deep-Dive --}}
-            <div id="handover-flow" class="bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">OPERATIONAL CUSTODY TRANSFER</span>
+            <div id="handover-flow" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 03 &bull; OPERATIONAL CUSTODY TRANSFER</span>
                 <h2 class="text-2xl font-black text-white mt-1">The 4-Phase Two-Way Handover Protocol</h2>
                 <p class="text-xs text-gray-400 mt-1 max-w-2xl">
                     Traditional shift handoffs rely on informal Slack messages or post-it notes. Npontu enforces a legally binding, mathematically verifiable two-way custody transfer.
@@ -433,13 +437,9 @@
                 </div>
             </div>
 
-        </div>
-
-        {{-- ── TAB 3: FOR LEADERSHIP & NON-TECHNICAL STAKEHOLDERS ────────────────── --}}
-        <div x-show="activeTab === 'stakeholders'" x-cloak class="space-y-10">
-
-            <div class="bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">BUSINESS VALUE &amp; GOVERNANCE</span>
+            {{-- Business Value & Governance --}}
+            <div id="governance" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 04 &bull; BUSINESS VALUE &amp; GOVERNANCE</span>
                 <h2 class="text-2xl font-black text-white mt-1">Why Support Tracker Exists: The Cost of Silent Outages</h2>
                 <p class="text-sm text-gray-300 mt-3 leading-relaxed">
                     In high-throughput telecommunications and payment processing environments, <strong>unacknowledged shift handovers represent the single largest vector for catastrophic downtime</strong>. When an outgoing team forgets to mention a degraded database replica or an ongoing upstream telco failover, the incoming shift assumes all is nominal until client transactions begin failing.
@@ -495,7 +495,7 @@
         </div>
 
         {{-- ── COMPREHENSIVE INTERACTIVE FAQ ACCORDION ───────────────────────────── --}}
-        <div id="faq" class="mt-16 pt-10 border-t border-white/10">
+        <div id="faq" class="scroll-mt-24 mt-16 pt-10 border-t border-white/10">
             <div class="text-center max-w-2xl mx-auto mb-10">
                 <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">KNOWLEDGE BASE</span>
                 <h2 class="text-3xl font-black text-white mt-1">Frequently Asked Questions</h2>
@@ -623,7 +623,7 @@
     {{-- Comprehensive Enterprise Footer --}}
     @include('layouts.partials.footer')
 
-    {{-- Live UTC Clock Synchronizer --}}
+    {{-- Live UTC Clock Synchronizer & Hash Scroll Handler --}}
     <script>
         (function() {
             function updateNavClock() {
@@ -638,6 +638,22 @@
             }
             setInterval(updateNavClock, 1000);
             updateNavClock();
+
+            // Smoothly jump to hash if present on load or hash change
+            function handleHash() {
+                if (window.location.hash) {
+                    try {
+                        const target = document.querySelector(window.location.hash);
+                        if (target) {
+                            setTimeout(() => {
+                                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                        }
+                    } catch (e) {}
+                }
+            }
+            window.addEventListener('hashchange', handleHash);
+            document.addEventListener('DOMContentLoaded', handleHash);
         })();
     </script>
     @livewireScripts

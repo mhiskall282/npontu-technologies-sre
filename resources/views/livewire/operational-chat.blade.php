@@ -284,12 +284,50 @@
                                             $bodyText
                                         );
                                         $bodyText = preg_replace(
-                                            '/\B@([A-Za-z0-9_\-\.]+)/',
+                                             '/\B@([A-Za-z0-9_\-\.]+)/',
                                             '<span class="inline-flex items-center px-1.5 py-0.2 rounded font-bold bg-emerald-100 text-emerald-900 text-[10px]">@$1</span>',
                                             $bodyText
                                         );
                                     @endphp
                                     <p class="whitespace-pre-wrap break-words">{!! $bodyText !!}</p>
+
+                                    {{-- Attachment Display: PDF or Image Blob --}}
+                                    @if($msg->hasAttachment())
+                                        <div class="mt-2 pt-2 border-t {{ $isMine ? 'border-emerald-600/60' : 'border-gray-200' }}">
+                                            @if($msg->isImage())
+                                                <div class="space-y-1.5">
+                                                    <a href="{{ $msg->attachment_blob }}" target="_blank" download="{{ $msg->attachment_name }}" class="block overflow-hidden rounded-lg group">
+                                                        <img src="{{ $msg->attachment_blob }}"
+                                                             alt="{{ $msg->attachment_name }}"
+                                                             class="max-h-60 max-w-full rounded-lg object-contain bg-black/10 border {{ $isMine ? 'border-emerald-500/40' : 'border-gray-200' }} group-hover:opacity-90 transition-opacity">
+                                                    </a>
+                                                    <div class="flex items-center justify-between text-[10px] {{ $isMine ? 'text-green-100' : 'text-gray-500' }}">
+                                                        <span class="truncate max-w-[180px]">{{ $msg->attachment_name }}</span>
+                                                        <a href="{{ $msg->attachment_blob }}" download="{{ $msg->attachment_name }}" class="font-bold hover:underline ml-2">
+                                                            ↓ {{ $msg->formattedAttachmentSize() }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @elseif($msg->isPdf())
+                                                <div class="flex items-center gap-2.5 p-2 rounded-xl {{ $isMine ? 'bg-emerald-900/60 border border-emerald-500/40' : 'bg-gray-50 border border-gray-200' }}">
+                                                    <div class="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-xs">
+                                                        PDF
+                                                    </div>
+                                                    <div class="min-w-0 flex-1">
+                                                        <p class="font-bold text-xs truncate {{ $isMine ? 'text-white' : 'text-gray-900' }}">{{ $msg->attachment_name }}</p>
+                                                        <p class="text-[10px] {{ $isMine ? 'text-green-200' : 'text-gray-500' }}">{{ $msg->formattedAttachmentSize() }} &bull; Document</p>
+                                                    </div>
+                                                    <a href="{{ $msg->attachment_blob }}"
+                                                       target="_blank"
+                                                       download="{{ $msg->attachment_name }}"
+                                                       class="px-2.5 py-1 rounded-lg text-xs font-bold {{ $isMine ? 'bg-[#F5C518] text-gray-950 hover:bg-amber-400' : 'bg-[#1B6B3A] text-white hover:bg-[#15532D]' }} transition-colors shadow-xs shrink-0 flex items-center gap-1">
+                                                        <span>View</span>
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -329,29 +367,65 @@
                         @endforeach
                     </div>
 
+                    {{-- Attachment Preview Chip --}}
+                    @if($attachment)
+                        <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950">
+                            <div class="flex items-center gap-2 truncate">
+                                <span class="text-base">📎</span>
+                                <div class="truncate">
+                                    <span class="font-bold truncate">{{ $attachment->getClientOriginalName() }}</span>
+                                    <span class="text-[10px] text-gray-500 ml-1">({{ round($attachment->getSize() / 1024, 0) }} KB)</span>
+                                </div>
+                            </div>
+                            <button type="button" wire:click="removeAttachment" class="text-gray-400 hover:text-red-600 font-bold px-1" title="Remove attachment">
+                                &times;
+                            </button>
+                        </div>
+                    @endif
+
                     <form wire:submit="sendMessage"
                           @submit="$nextTick(() => scrollToBottom())"
-                          class="flex items-end gap-2">
+                          class="flex items-end gap-2"
+                          x-data>
+                        {{-- Paperclip File Picker Button --}}
+                        <div class="relative">
+                            <input type="file"
+                                   wire:model="attachment"
+                                   x-ref="fileInput"
+                                   accept="image/*,application/pdf"
+                                   class="hidden">
+                            <button type="button"
+                                    @click="$refs.fileInput.click()"
+                                    class="p-2.5 rounded-xl border border-gray-300 text-gray-600 hover:text-[#1B6B3A] hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer"
+                                    title="Attach PDF or Image (stored as compressed Blob)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                </svg>
+                            </button>
+                        </div>
+
                         <div class="flex-1 relative">
                             <textarea wire:model="messageText"
                                       rows="2"
-                                      placeholder="Type your operational update or @tag colleagues (Press Shift+Enter for new line)..."
+                                      placeholder="Type your operational update, attach PDF/image, or @tag colleagues..."
                                       @keydown.enter.prevent="if (!$event.shiftKey) { $wire.sendMessage(); $nextTick(() => scrollToBottom()); }"
                                       class="w-full text-xs rounded-xl border-gray-300 focus:ring-1 focus:ring-[#1B6B3A] focus:border-[#1B6B3A] resize-none"></textarea>
                             @error('messageText') <p class="text-[11px] text-red-600 mt-1">{{ $message }}</p> @enderror
+                            @error('attachment') <p class="text-[11px] text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <button type="submit"
                                 wire:loading.attr="disabled"
-                                wire:target="sendMessage"
+                                wire:target="sendMessage,attachment"
                                 class="px-4 py-2.5 bg-[#1B6B3A] hover:bg-[#15532D] text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1.5 flex-shrink-0 cursor-pointer">
-                            <svg wire:loading wire:target="sendMessage" class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                            <svg wire:loading wire:target="sendMessage,attachment" class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            <span wire:loading.remove wire:target="sendMessage">Send</span>
+                            <span wire:loading.remove wire:target="sendMessage,attachment">Send</span>
                             <span wire:loading wire:target="sendMessage">Sending...</span>
-                            <svg wire:loading.remove wire:target="sendMessage" class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <span wire:loading wire:target="attachment">Processing...</span>
+                            <svg wire:loading.remove wire:target="sendMessage,attachment" class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </button>
                     </form>
                 </div>

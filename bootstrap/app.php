@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->validateCsrfTokens(except: [
             'logout',
+            'api/webhooks/*',
+            'webhooks/*',
         ]);
         $middleware->alias([
             'role' => EnsureRole::class,

@@ -11,7 +11,9 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\ShiftHandover;
 use App\Models\User;
+use App\Services\EmailReplyTokenService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -229,4 +231,99 @@ test('users with create_channels privilege can create group ops channels', funct
     expect($channel->is_private)->toBeTrue()
         ->and($channel->type)->toBe('group')
         ->and($channel->participants->pluck('id')->all())->toContain($lead->id, $engineer->id);
+});
+
+test('operators can attach images and pdfs to operational chat messages and store as blob', function () {
+    $operator = User::factory()->create(['name' => 'Kofi Image SRE', 'role' => 'agent']);
+    $conv = Conversation::create(['type' => 'team', 'title' => 'General Shift Operations']);
+    $conv->participants()->attach([$operator->id => ['last_read_at' => now()]]);
+
+    $file = UploadedFile::fake()->create('incident_diagram.png', 120, 'image/png');
+
+    Livewire::actingAs($operator)
+        ->test(OperationalChat::class, ['c' => $conv->id])
+        ->set('messageText', 'Here is the network topology during the incident')
+        ->set('attachment', $file)
+        ->call('sendMessage')
+        ->assertHasNoErrors();
+
+    $message = Message::where('conversation_id', $conv->id)->latest('id')->firstOrFail();
+
+    expect($message->hasAttachment())->toBeTrue()
+        ->and($message->isImage())->toBeTrue()
+        ->and($message->isPdf())->toBeFalse()
+        ->and($message->attachment_name)->toBe('incident_diagram.png')
+        ->and($message->attachment_mime)->toBe('image/png')
+        ->and($message->attachment_blob)->toStartWith('data:image/png;base64,');
+
+    // Test PDF upload
+    $pdf = UploadedFile::fake()->create('sla_audit_report.pdf', 300, 'application/pdf');
+
+    Livewire::actingAs($operator)
+        ->test(OperationalChat::class, ['c' => $conv->id])
+        ->set('messageText', '')
+        ->set('attachment', $pdf)
+        ->call('sendMessage')
+        ->assertHasNoErrors();
+
+    $pdfMessage = Message::where('conversation_id', $conv->id)->latest('id')->firstOrFail();
+
+    expect($pdfMessage->hasAttachment())->toBeTrue()
+        ->and($pdfMessage->isPdf())->toBeTrue()
+        ->and($pdfMessage->isImage())->toBeFalse()
+        ->and($pdfMessage->attachment_name)->toBe('sla_audit_report.pdf')
+        ->and($pdfMessage->attachment_mime)->toBe('application/pdf')
+        ->and($pdfMessage->attachment_blob)->toStartWith('data:application/pdf;base64,');
+});
+
+test('recipients can use 1-click email reply link to post to shift channel', function () {
+    $recipient = User::factory()->create(['name' => 'Abena Email Reply', 'email' => 'abena.reply@npontu.local']);
+    $conv = Conversation::create(['type' => 'team', 'title' => 'Shift Ops']);
+    $conv->participants()->attach([$recipient->id => ['last_read_at' => now()]]);
+
+    $originalMsg = Message::create([
+        'conversation_id' => $conv->id,
+        'sender_id' => $recipient->id,
+        'body' => 'Can someone confirm the status of cache warmup?',
+    ]);
+
+    $token = EmailReplyTokenService::generateToken($recipient, $conv, $originalMsg->id);
+
+    // 1. Visit the reply composer
+    $response = $this->get(route('messages.email_reply.show', ['token' => $token]));
+    $response->assertOk();
+    $response->assertSee('Instant Reply');
+    $response->assertSee('Shift Ops');
+    $response->assertSee('Can someone confirm the status of cache warmup?');
+
+    // 2. Submit the reply
+    $postResponse = $this->post(route('messages.email_reply.store', ['token' => $token]), [
+        'body' => 'Cache warmup confirmed across all 4 worker nodes.',
+    ]);
+
+    $newMsg = Message::where('conversation_id', $conv->id)->latest('id')->firstOrFail();
+
+    expect($newMsg->body)->toBe('Cache warmup confirmed across all 4 worker nodes.')
+        ->and($newMsg->sender_id)->toBe($recipient->id);
+});
+
+test('inbound email webhook extracts token and posts message to conversation', function () {
+    $user = User::factory()->create(['name' => 'Webhook Operator', 'email' => 'webhook@npontu.local']);
+    $conv = Conversation::create(['type' => 'team', 'title' => 'Webhook Channel']);
+    $conv->participants()->attach([$user->id => ['last_read_at' => now()]]);
+
+    $token = EmailReplyTokenService::generateToken($user, $conv);
+
+    $response = $this->postJson(route('webhooks.inbound_email'), [
+        'token' => $token,
+        'text' => "Acknowledged. Database replica failover completed successfully.\n\nOn Fri, Sep 5, 2026 at 5:00 AM SRE wrote:\n> Status check?",
+    ]);
+
+    $response->assertOk()
+        ->assertJson(['success' => true]);
+
+    $message = Message::where('conversation_id', $conv->id)->latest('id')->firstOrFail();
+
+    expect($message->sender_id)->toBe($user->id)
+        ->and($message->body)->toBe('Acknowledged. Database replica failover completed successfully.');
 });

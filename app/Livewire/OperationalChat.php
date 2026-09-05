@@ -16,6 +16,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * OperationalChat — SRE Real-Time Team Communications & Messaging Console
@@ -26,11 +27,14 @@ use Livewire\Component;
  *   - Operational Group Channels & Incident War Rooms (with privacy toggles).
  *   - Real-time message streaming with unread badges and automated read-receipt tracking.
  *   - Granular privilege checks (create_channels).
+ *   - PDF and Image attachments converted to Base64 blobs for reliable storage.
  */
 #[Layout('layouts.app')]
 #[Title('Operational Communications — Support Tracker')]
 class OperationalChat extends Component
 {
+    use WithFileUploads;
+
     /**
      * Currently active conversation ID.
      */
@@ -40,6 +44,11 @@ class OperationalChat extends Component
      * Composing message draft text.
      */
     public string $messageText = '';
+
+    /**
+     * Optional file attachment (PDF or Image).
+     */
+    public $attachment = null;
 
     /**
      * Search filter for channels and direct message contacts.
@@ -181,8 +190,15 @@ class OperationalChat extends Component
      */
     public function sendMessage(): void
     {
+        if (trim($this->messageText) === '' && ! $this->attachment) {
+            $this->addError('messageText', 'Please enter a message or attach an image or PDF.');
+
+            return;
+        }
+
         $this->validate([
-            'messageText' => ['required', 'string', 'min:1', 'max:5000'],
+            'messageText' => ['nullable', 'string', 'max:5000'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp,gif', 'max:10240'],
         ]);
 
         if (! $this->activeConversationId) {
@@ -191,10 +207,34 @@ class OperationalChat extends Component
 
         $conversation = Conversation::forUser(Auth::id())->findOrFail($this->activeConversationId);
 
+        $attachmentName = null;
+        $attachmentMime = null;
+        $attachmentSize = null;
+        $attachmentBlob = null;
+
+        if ($this->attachment) {
+            $attachmentMime = $this->attachment->getMimeType();
+            $attachmentName = $this->attachment->getClientOriginalName();
+            $attachmentSize = $this->attachment->getSize();
+            $rawContent = file_get_contents($this->attachment->getRealPath());
+            $attachmentBlob = 'data:'.$attachmentMime.';base64,'.base64_encode($rawContent);
+        }
+
+        $bodyText = trim($this->messageText);
+        if ($bodyText === '' && $attachmentName) {
+            $bodyText = $attachmentMime === 'application/pdf'
+                ? "📎 Shared a document: {$attachmentName}"
+                : "📷 Shared an image: {$attachmentName}";
+        }
+
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => Auth::id(),
-            'body' => trim($this->messageText),
+            'body' => $bodyText,
+            'attachment_name' => $attachmentName,
+            'attachment_mime' => $attachmentMime,
+            'attachment_size' => $attachmentSize,
+            'attachment_blob' => $attachmentBlob,
         ]);
 
         // Touch conversation updated_at for ordering
@@ -215,6 +255,15 @@ class OperationalChat extends Component
         $this->dispatchMentionEmails($message, $conversation);
 
         $this->messageText = '';
+        $this->attachment = null;
+    }
+
+    /**
+     * Discard active attachment selection.
+     */
+    public function removeAttachment(): void
+    {
+        $this->attachment = null;
     }
 
     /**

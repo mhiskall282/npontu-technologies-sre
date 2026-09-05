@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full overflow-hidden">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,27 +13,27 @@
         .font-mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
-<body class="h-full bg-[#0F1A14] text-white flex flex-col antialiased selection:bg-[#F5C518] selection:text-gray-900">
+<body class="h-full h-[100dvh] bg-[#0F1A14] text-white flex flex-col justify-between antialiased selection:bg-[#F5C518] selection:text-gray-900 overflow-hidden">
     {{-- Header --}}
-    <header class="border-b border-[#1A2E22] px-6 py-4 flex items-center justify-between bg-[#0A120E]/80 backdrop-blur-sm">
-        <a href="{{ url('/') }}" class="flex items-center gap-3 group">
-            <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-sm group-hover:border-[#F5C518]/50 transition-colors">
-                <svg class="w-5 h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
+    <header class="border-b border-[#1A2E22] px-4 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between bg-[#0A120E]/80 backdrop-blur-sm shrink-0">
+        <a href="{{ url('/') }}" class="flex items-center gap-2.5 sm:gap-3 group">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-sm group-hover:border-[#F5C518]/50 transition-colors">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
                     <polygon points="16,3 30,27 2,27"/>
                 </svg>
             </div>
             <div>
-                <span class="font-bold text-sm tracking-tight text-white block leading-none">Support Tracker</span>
-                <span class="block text-[#F5C518] text-[9px] font-mono tracking-widest uppercase mt-0.5 font-semibold">NPONTU TECHNOLOGIES</span>
+                <span class="font-bold text-xs sm:text-sm tracking-tight text-white block leading-none">Support Tracker</span>
+                <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-semibold">NPONTU TECHNOLOGIES</span>
             </div>
         </a>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3">
             <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-gray-400">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span id="err-clock">UTC --:--:--</span>
             </div>
-            <a href="{{ route('health') }}" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/60 transition-colors">
+            <a href="{{ route('health') }}" class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/60 transition-colors">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 <span>System Health</span>
             </a>
@@ -41,7 +41,7 @@
     </header>
 
     {{-- Main Error Container --}}
-    <main class="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
+    <main class="flex-1 flex items-center justify-center px-4 py-2 sm:p-6 relative overflow-hidden">
         {{-- Background geometric decoration --}}
         <div class="absolute inset-0 pointer-events-none opacity-5 flex items-center justify-center">
             <svg class="w-[600px] h-[600px] text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
@@ -55,10 +55,10 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="border-t border-[#1A2E22] px-6 py-4 text-center text-xs text-gray-500 bg-[#0A120E]/50">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+    <footer class="border-t border-[#1A2E22] px-4 sm:px-6 py-2.5 sm:py-3.5 text-center text-xs text-gray-500 bg-[#0A120E]/50 shrink-0">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-[10px] sm:text-xs">
             <span>&copy; {{ date('Y') }} Npontu Technologies. Operations SRE Platform.</span>
-            <div class="flex items-center gap-4 text-gray-400">
+            <div class="flex items-center gap-3 sm:gap-4 text-gray-400">
                 <a href="{{ route('activities.daily') }}" class="hover:text-white transition-colors">Today's Board</a>
                 <span>&bull;</span>
                 <a href="{{ route('health') }}" class="hover:text-white transition-colors">Telemetry HUD</a>

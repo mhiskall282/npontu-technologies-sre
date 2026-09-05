@@ -27,6 +27,10 @@ class Message extends Model
         'conversation_id',
         'sender_id',
         'body',
+        'attachment_name',
+        'attachment_mime',
+        'attachment_size',
+        'attachment_blob',
     ];
 
     public function conversation(): BelongsTo
@@ -37,5 +41,33 @@ class Message extends Model
     public function sender(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sender_id');
+    }
+
+    public function hasAttachment(): bool
+    {
+        return ! empty($this->attachment_blob);
+    }
+
+    public function isImage(): bool
+    {
+        return ! empty($this->attachment_mime) && str_starts_with($this->attachment_mime, 'image/');
+    }
+
+    public function isPdf(): bool
+    {
+        return $this->attachment_mime === 'application/pdf';
+    }
+
+    public function formattedAttachmentSize(): string
+    {
+        if (! $this->attachment_size) {
+            return '0 KB';
+        }
+
+        if ($this->attachment_size >= 1048576) {
+            return round($this->attachment_size / 1048576, 1).' MB';
+        }
+
+        return round($this->attachment_size / 1024, 0).' KB';
     }
 }

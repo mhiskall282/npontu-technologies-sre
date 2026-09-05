@@ -6,6 +6,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocsController;
+use App\Http\Controllers\EmailReplyController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MonitoringController;
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 // ─── Public routes (accessible by visitors & teams) ─────────────────────────
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/docs', [DocsController::class, 'index'])->name('docs');
+
+// ─── Instant Email Reply Bridge & Inbound Webhook ──────────────────────────
+Route::get('/messages/reply/{token}', [EmailReplyController::class, 'show'])->name('messages.email_reply.show');
+Route::post('/messages/reply/{token}', [EmailReplyController::class, 'store'])->name('messages.email_reply.store');
+Route::post('/api/webhooks/inbound-email', [EmailReplyController::class, 'inbound'])->name('webhooks.inbound_email');
 
 // ─── Public SRE Policies & Legal Compliance ────────────────────────────────
 Route::get('/privacy-policy', [PolicyController::class, 'privacy'])->name('policy.privacy');

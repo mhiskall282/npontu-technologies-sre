@@ -7,6 +7,7 @@ namespace App\Mail;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
+use App\Services\EmailReplyTokenService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -17,6 +18,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * Dispatched when an operator is mentioned (@name) or when an @all broadcast
  * is published in team shift channels or incident war rooms.
+ * Includes signed 1-click reply bridge and inbound email headers.
  */
 class MessageMentionMail extends Mailable
 {
@@ -52,8 +54,18 @@ class MessageMentionMail extends Mailable
             $subject = "{$prefix} {$senderName} mentioned you in {$channelTitle}";
         }
 
+        $replyToken = EmailReplyTokenService::generateToken($this->recipient, $this->conversation, $this->chatMessage->id);
+        $replyUrl = route('messages.email_reply.show', ['token' => $replyToken]);
+
+        $host = parse_url(config('app.url', 'http://localhost'), PHP_URL_HOST) ?: 'npontu-tracker.johnokyere.xyz';
+        $replyToEmail = "reply+{$replyToken}@{$host}";
+
         return $this->subject($subject)
-            ->view('emails.message_mention');
+            ->replyTo($replyToEmail, "SRE Channel ({$channelTitle})")
+            ->view('emails.message_mention', [
+                'replyToken' => $replyToken,
+                'replyUrl' => $replyUrl,
+            ]);
     }
 
     /**
