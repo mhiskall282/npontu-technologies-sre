@@ -23,26 +23,23 @@
                 width: 100% !important;
                 border-radius: 8px !important;
             }
-            .stack-cell {
-                display: block !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                margin-bottom: 10px !important;
-            }
-            .stack-spacer {
-                display: none !important;
-            }
             .header-padding {
-                padding: 20px 16px !important;
+                padding: 18px 16px !important;
             }
             .body-padding {
-                padding: 20px 16px !important;
+                padding: 20px 14px !important;
+            }
+            .timeframe-cell {
+                display: block !important;
+                width: 100% !important;
+                text-align: left !important;
+                margin-top: 6px !important;
             }
         }
     </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #F0F4F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1E293B;">
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #F0F4F2; padding: 24px 12px;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #F0F4F2; padding: 20px 8px;">
         <tr>
             <td align="center">
                 <!-- Main Email Card Container (High-Contrast Solid Surface) -->
@@ -80,144 +77,152 @@
 
                     <!-- Body Content Area -->
                     <tr>
-                        <td class="body-padding" style="padding: 28px;">
+                        <td class="body-padding" style="padding: 24px 28px;">
                             
-                            <!-- Greeting & Dispatch Info -->
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
-                                <tr>
-                                    <td style="vertical-align: top;">
-                                        <span style="display: block; font-size: 11px; font-family: -apple-system, monospace; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            OPERATIONAL DISPATCH FOR:
-                                        </span>
-                                        <h2 style="margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: -0.3px;">
-                                            Hello, {{ $recipient->name }}
-                                        </h2>
-                                        <div style="margin-top: 6px;">
-                                            <span style="display: inline-block; padding: 2px 8px; background-color: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: -apple-system, monospace; color: #065F46;">
-                                                {{ $recipient->grade ?? 'L2' }} &bull; {{ $recipient->department ?? 'SRE & Operations' }} &bull; {{ ucfirst($recipient->role) }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td align="right" style="vertical-align: top;">
-                                        <div style="background-color: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px 12px; text-align: right; display: inline-block;">
-                                            <span style="display: block; font-size: 9px; font-weight: 800; color: #64748B; font-family: -apple-system, monospace; text-transform: uppercase; letter-spacing: 0.5px;">
-                                                SHIFT DURATION (FROM - TO)
-                                            </span>
-                                            <span style="display: block; font-size: 11px; font-weight: 700; color: #0F172A; font-family: -apple-system, monospace; margin-top: 2px;">
-                                                <span style="color: #64748B; font-weight: 600;">From:</span> {{ \Illuminate\Support\Carbon::parse($startDate)->format('d M Y') }} (00:00 UTC)
-                                            </span>
-                                            <span style="display: block; font-size: 11px; font-weight: 700; color: #0F172A; font-family: -apple-system, monospace; margin-top: 1px;">
-                                                <span style="color: #64748B; font-weight: 600;">To:</span> {{ \Illuminate\Support\Carbon::parse($endDate)->format('d M Y') }} (23:59 UTC)
-                                            </span>
-                                            <span style="display: block; font-size: 10px; font-weight: 700; color: #059669; font-family: -apple-system, monospace; margin-top: 2px;">
-                                                Duration: {{ $period === 'daily' ? '24 Hours (Full Day Shift)' : ($period === 'weekly' ? '7 Days (Weekly Cycle)' : '30 Days (Monthly Cycle)') }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
+                            <!-- Greeting & Dispatch Info (Clean Stacked Layout) -->
+                            <div style="margin-bottom: 14px;">
+                                <span style="display: block; font-size: 11px; font-family: -apple-system, monospace; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    OPERATIONAL DISPATCH FOR:
+                                </span>
+                                <h2 style="margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: -0.3px;">
+                                    Hello, {{ $recipient->name }}
+                                </h2>
+                                <div style="margin-top: 5px;">
+                                    <span style="display: inline-block; padding: 2px 8px; background-color: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: -apple-system, monospace; color: #065F46;">
+                                        {{ $recipient->grade ?? 'L3' }} &bull; {{ $recipient->department ?? 'Cloud Infrastructure & SRE' }} &bull; {{ ucfirst($recipient->role) }}
+                                    </span>
+                                </div>
+                            </div>
 
-                            <p style="margin: 0 0 22px 0; font-size: 14px; line-height: 1.6; color: #334155;">
-                                Below is your automated <strong>{{ ucfirst($period) }}</strong> operational summary for Npontu mission-critical infrastructure, covering the duration from <strong>{{ \Illuminate\Support\Carbon::parse($startDate)->format('d M Y') }}</strong> to <strong>{{ \Illuminate\Support\Carbon::parse($endDate)->format('d M Y') }}</strong>. All activity status mutations and shift custody handshakes have been verified into immutable audit logs.
+                            <!-- Dedicated Full-Width Shift Duration Card -->
+                            <div style="background-color: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <tr>
+                                        <td style="vertical-align: middle;">
+                                            <span style="display: block; font-size: 10px; font-weight: 800; color: #64748B; font-family: -apple-system, monospace; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                SHIFT DURATION (UTC):
+                                            </span>
+                                            <span style="display: block; font-size: 12px; font-weight: 700; color: #0F172A; font-family: -apple-system, monospace; margin-top: 2px;">
+                                                From: <strong>{{ \Illuminate\Support\Carbon::parse($startDate)->format('d M Y') }}</strong> (00:00 UTC) &rarr; To: <strong>{{ \Illuminate\Support\Carbon::parse($endDate)->format('d M Y') }}</strong> (23:59 UTC)
+                                            </span>
+                                        </td>
+                                        <td align="right" class="timeframe-cell" style="vertical-align: middle;">
+                                            <span style="display: inline-block; padding: 3px 8px; background-color: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 6px; font-size: 10px; font-weight: 800; color: #065F46; font-family: -apple-system, monospace; text-transform: uppercase; white-space: nowrap;">
+                                                {{ $period === 'daily' ? '24h Full Shift' : ($period === 'weekly' ? '7-Day SRE Cycle' : '30-Day Cycle') }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <p style="margin: 0 0 20px 0; font-size: 13px; line-height: 1.6; color: #334155;">
+                                @if(\Illuminate\Support\Carbon::parse($startDate)->toDateString() === \Illuminate\Support\Carbon::parse($endDate)->toDateString())
+                                    Below is your automated <strong>Daily</strong> operational summary for Npontu mission-critical infrastructure, covering your 24-hour duty shift on <strong>{{ \Illuminate\Support\Carbon::parse($startDate)->format('d M Y') }}</strong> (00:00 UTC &rarr; 23:59 UTC). All activity status mutations and shift custody handshakes have been verified into immutable audit logs.
+                                @else
+                                    Below is your automated <strong>{{ ucfirst($period) }}</strong> operational summary for Npontu mission-critical infrastructure, covering the duration from <strong>{{ \Illuminate\Support\Carbon::parse($startDate)->format('d M Y') }}</strong> to <strong>{{ \Illuminate\Support\Carbon::parse($endDate)->format('d M Y') }}</strong>. All activity status mutations and shift custody handshakes have been verified into immutable audit logs.
+                                @endif
                             </p>
 
-                            <!-- High-Contrast 2x2 Metric KPI Tiles -->
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 24px;">
+                            <!-- High-Contrast 2x2 Metric KPI Tiles (Preserved 2-Column Grid on Mobile) -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 22px;">
                                 <tr>
-                                    <td class="stack-cell" width="48%" style="padding: 14px 16px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;">
+                                    <td width="48%" style="padding: 12px 14px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; vertical-align: top;">
                                         <span style="display: block; font-size: 10px; font-weight: 800; color: #475569; font-family: -apple-system, monospace; text-transform: uppercase; letter-spacing: 0.5px;">
                                             Resolution Rate
                                         </span>
-                                        <span style="display: block; font-size: 26px; font-weight: 900; color: #B45309; font-family: -apple-system, monospace; margin-top: 3px; line-height: 1.1;">
+                                        <span style="display: block; font-size: 24px; font-weight: 900; color: #B45309; font-family: -apple-system, monospace; margin-top: 2px; line-height: 1.1;">
                                             {{ $metrics['resolution_rate'] ?? 0 }}%
                                         </span>
-                                        <span style="display: block; font-size: 11px; font-weight: 600; color: #059669; margin-top: 3px;">
+                                        <span style="display: block; font-size: 10px; font-weight: 600; color: #059669; margin-top: 3px;">
                                             {{ $metrics['completed_count'] ?? 0 }} completed / {{ $metrics['total_activities'] ?? 0 }} total
                                         </span>
                                     </td>
-                                    <td class="stack-spacer" width="4%"></td>
-                                    <td class="stack-cell" width="48%" style="padding: 14px 16px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;">
+                                    <td width="4%"></td>
+                                    <td width="48%" style="padding: 12px 14px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; vertical-align: top;">
                                         <span style="display: block; font-size: 10px; font-weight: 800; color: #475569; font-family: -apple-system, monospace; text-transform: uppercase; letter-spacing: 0.5px;">
                                             Shift Handshakes
                                         </span>
-                                        <span style="display: block; font-size: 26px; font-weight: 900; color: #059669; font-family: -apple-system, monospace; margin-top: 3px; line-height: 1.1;">
+                                        <span style="display: block; font-size: 24px; font-weight: 900; color: #059669; font-family: -apple-system, monospace; margin-top: 2px; line-height: 1.1;">
                                             {{ $metrics['handovers_count'] ?? 0 }}
                                         </span>
-                                        <span style="display: block; font-size: 11px; font-weight: 600; color: #047857; margin-top: 3px;">
+                                        <span style="display: block; font-size: 10px; font-weight: 600; color: #047857; margin-top: 3px;">
                                             Two-way custody verified
                                         </span>
                                     </td>
                                 </tr>
                                 <tr><td height="10" colspan="3"></td></tr>
                                 <tr>
-                                    <td class="stack-cell" width="48%" style="padding: 14px 16px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;">
+                                    <td width="48%" style="padding: 12px 14px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; vertical-align: top;">
                                         <span style="display: block; font-size: 10px; font-weight: 800; color: #475569; font-family: -apple-system, monospace; text-transform: uppercase; letter-spacing: 0.5px;">
                                             Active Blockers
                                         </span>
-                                        <span style="display: block; font-size: 26px; font-weight: 900; color: {{ ($metrics['pending_count'] ?? 0) > 0 ? '#DC2626' : '#059669' }}; font-family: -apple-system, monospace; margin-top: 3px; line-height: 1.1;">
+                                        <span style="display: block; font-size: 24px; font-weight: 900; color: {{ ($metrics['pending_count'] ?? 0) > 0 ? '#DC2626' : '#059669' }}; font-family: -apple-system, monospace; margin-top: 2px; line-height: 1.1;">
                                             {{ $metrics['pending_count'] ?? 0 }}
                                         </span>
-                                        <span style="display: block; font-size: 11px; font-weight: 600; color: #64748B; margin-top: 3px;">
+                                        <span style="display: block; font-size: 10px; font-weight: 600; color: #64748B; margin-top: 3px;">
                                             Requiring attention
                                         </span>
                                     </td>
-                                    <td class="stack-spacer" width="4%"></td>
-                                    <td class="stack-cell" width="48%" style="padding: 14px 16px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;">
+                                    <td width="4%"></td>
+                                    <td width="48%" style="padding: 12px 14px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; vertical-align: top;">
                                         <span style="display: block; font-size: 10px; font-weight: 800; color: #475569; font-family: -apple-system, monospace; text-transform: uppercase; letter-spacing: 0.5px;">
                                             Uptime SLA Target
                                         </span>
-                                        <span style="display: block; font-size: 26px; font-weight: 900; color: #0284C7; font-family: -apple-system, monospace; margin-top: 3px; line-height: 1.1;">
+                                        <span style="display: block; font-size: 24px; font-weight: 900; color: #0284C7; font-family: -apple-system, monospace; margin-top: 2px; line-height: 1.1;">
                                             99.98%
                                         </span>
-                                        <span style="display: block; font-size: 11px; font-weight: 600; color: #64748B; margin-top: 3px;">
+                                        <span style="display: block; font-size: 10px; font-weight: 600; color: #64748B; margin-top: 3px;">
                                             8 Subsystems Nominal
                                         </span>
                                     </td>
                                 </tr>
                             </table>
 
-                            <!-- Key Operational Activities Section -->
-                            <div style="margin-bottom: 24px;">
-                                <div style="border-bottom: 2px solid #1B6B3A; padding-bottom: 8px; margin-bottom: 12px;">
-                                    <span style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; font-family: -apple-system, monospace; letter-spacing: 0.5px;">
+                            <!-- Key Operational Activities Section (Clean 3-Column Mobile Friendly) -->
+                            <div style="margin-bottom: 22px;">
+                                <div style="border-bottom: 2px solid #1B6B3A; padding-bottom: 6px; margin-bottom: 10px;">
+                                    <span style="font-size: 11px; font-weight: 800; color: #0F172A; text-transform: uppercase; font-family: -apple-system, monospace; letter-spacing: 0.5px;">
                                         Key Shift Activities ({{ $activities->count() }})
                                     </span>
                                 </div>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 12px; border-collapse: collapse;">
                                     <thead>
-                                        <tr style="background-color: #F1F5F9; text-align: left; color: #475569; font-family: -apple-system, monospace; font-size: 11px; font-weight: 700;">
-                                            <th style="padding: 8px 10px; border-bottom: 1px solid #CBD5E1;">Title</th>
-                                            <th style="padding: 8px 10px; border-bottom: 1px solid #CBD5E1;">Category</th>
-                                            <th style="padding: 8px 10px; border-bottom: 1px solid #CBD5E1;">Status</th>
-                                            <th style="padding: 8px 10px; border-bottom: 1px solid #CBD5E1;">Assignee</th>
+                                        <tr style="background-color: #F1F5F9; text-align: left; color: #475569; font-family: -apple-system, monospace; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                                            <th style="padding: 8px 10px; border-bottom: 1px solid #CBD5E1;">Activity Details</th>
+                                            <th style="padding: 8px 10px; border-bottom: 1px solid #CBD5E1; text-align: center;">Status</th>
+                                            <th style="padding: 8px 10px; border-bottom: 1px solid #CBD5E1; text-align: right;">Assignee</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse($activities->take(8) as $act)
                                             <tr style="border-bottom: 1px solid #E2E8F0;">
-                                                <td style="padding: 10px 10px; font-weight: 700; color: #0F172A;">
-                                                    {{ $act->title }}
-                                                    @if($act->is_pinned)
-                                                        <span style="color: #F5C518; font-size: 12px;">&#9733;</span>
-                                                    @endif
+                                                <td style="padding: 10px 10px; color: #0F172A;">
+                                                    <div style="font-weight: 700; font-size: 12px; color: #0F172A; line-height: 1.3;">
+                                                        {{ $act->title }}
+                                                        @if($act->is_pinned)
+                                                            <span style="color: #F5C518; font-size: 12px;">&#9733;</span>
+                                                        @endif
+                                                    </div>
+                                                    <div style="margin-top: 3px;">
+                                                        <span style="display: inline-block; padding: 1px 6px; background-color: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 4px; font-size: 9px; font-family: -apple-system, monospace; color: #64748B; text-transform: uppercase;">
+                                                            {{ $act->category ?? 'General' }}
+                                                        </span>
+                                                    </div>
                                                 </td>
-                                                <td style="padding: 10px 10px; color: #64748B; font-family: -apple-system, monospace; font-size: 11px;">
-                                                    {{ $act->category ?? 'General' }}
-                                                </td>
-                                                <td style="padding: 10px 10px;">
+                                                <td style="padding: 10px 10px; text-align: center; vertical-align: middle;">
                                                     @if(($act->current_status ?? 'pending') === 'done')
                                                         <span style="display: inline-block; padding: 3px 8px; background-color: #D1FAE5; border: 1px solid #10B981; border-radius: 4px; color: #065F46; font-size: 10px; font-weight: 800; font-family: -apple-system, monospace; text-transform: uppercase;">DONE</span>
                                                     @else
                                                         <span style="display: inline-block; padding: 3px 8px; background-color: #FEE2E2; border: 1px solid #F87171; border-radius: 4px; color: #991B1B; font-size: 10px; font-weight: 800; font-family: -apple-system, monospace; text-transform: uppercase;">PENDING</span>
                                                     @endif
                                                 </td>
-                                                <td style="padding: 10px 10px; color: #475569; font-size: 11px;">
+                                                <td style="padding: 10px 10px; text-align: right; vertical-align: middle; color: #475569; font-size: 11px;">
                                                     {{ $act->assignee?->name ?? 'Unassigned' }}
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" style="padding: 16px; text-align: center; color: #94A3B8; font-style: italic;">
+                                                <td colspan="3" style="padding: 16px; text-align: center; color: #94A3B8; font-style: italic;">
                                                     No activities recorded for this timeframe.
                                                 </td>
                                             </tr>

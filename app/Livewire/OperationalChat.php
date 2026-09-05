@@ -280,6 +280,50 @@ class OperationalChat extends Component
                 }
             }
         }
+
+        // 3. If direct message (1-on-1), ALWAYS dispatch email to the other participant
+        if ($conversation->type === 'direct') {
+            $directRecipient = $conversation->participants()->where('users.id', '!=', $myId)->first();
+            if ($directRecipient && ! in_array($directRecipient->id, $notifiedUserIds, true)) {
+                $notifiedUserIds[] = $directRecipient->id;
+                if ($directRecipient->email) {
+                    try {
+                        Mail::to($directRecipient->email)->send(new MessageMentionMail(
+                            chatMessage: $message,
+                            conversation: $conversation,
+                            recipient: $directRecipient,
+                            isBroadcast: false,
+                            isDirectMessage: true
+                        ));
+                    } catch (\Throwable $e) {
+                        logger()->warning("Failed to dispatch direct message email to {$directRecipient->email}: {$e->getMessage()}");
+                    }
+                }
+            }
+        }
+
+        // 4. If private channel or war room, dispatch email to participants who haven't been notified yet
+        if ($conversation->is_private && $conversation->type !== 'direct') {
+            $participants = $conversation->participants()->where('users.id', '!=', $myId)->get();
+            foreach ($participants as $participant) {
+                if (! in_array($participant->id, $notifiedUserIds, true)) {
+                    $notifiedUserIds[] = $participant->id;
+                    if ($participant->email) {
+                        try {
+                            Mail::to($participant->email)->send(new MessageMentionMail(
+                                chatMessage: $message,
+                                conversation: $conversation,
+                                recipient: $participant,
+                                isBroadcast: false,
+                                isDirectMessage: false
+                            ));
+                        } catch (\Throwable $e) {
+                            logger()->warning("Failed to dispatch private war room email to {$participant->email}: {$e->getMessage()}");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

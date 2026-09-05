@@ -10,8 +10,6 @@ use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
@@ -31,31 +29,31 @@ class MessageMentionMail extends Mailable
         public Message $chatMessage,
         public Conversation $conversation,
         public User $recipient,
-        public bool $isBroadcast = false
+        public bool $isBroadcast = false,
+        public bool $isDirectMessage = false
     ) {}
 
     /**
-     * Get the message envelope.
+     * Build the message.
      */
-    public function getEnvelope(): Envelope
+    public function build(): self
     {
-        $prefix = $this->isBroadcast ? '[SRE Broadcast]' : '[Comms Alert]';
         $senderName = $this->chatMessage->sender?->name ?? 'SRE Operator';
         $channelTitle = $this->conversation->title ?? 'Direct Message';
 
-        return new Envelope(
-            subject: "{$prefix} {$senderName} mentioned you in {$channelTitle}",
-        );
-    }
+        if ($this->isDirectMessage) {
+            $prefix = '[SRE Direct]';
+            $subject = "{$prefix} New operational message from {$senderName}";
+        } elseif ($this->isBroadcast) {
+            $prefix = '[SRE Broadcast]';
+            $subject = "{$prefix} {$senderName} announced to all in #{$channelTitle}";
+        } else {
+            $prefix = '[Comms Alert]';
+            $subject = "{$prefix} {$senderName} mentioned you in {$channelTitle}";
+        }
 
-    /**
-     * Get the message content definition.
-     */
-    public function getContent(): Content
-    {
-        return new Content(
-            view: 'emails.message_mention',
-        );
+        return $this->subject($subject)
+            ->view('emails.message_mention');
     }
 
     /**

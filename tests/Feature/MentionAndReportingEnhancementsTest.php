@@ -81,6 +81,38 @@ test('at-all broadcast triggers email notifications to all channel members excep
     });
 });
 
+test('direct operational message dispatches email notification to recipient', function () {
+    Mail::fake();
+
+    $sender = User::factory()->create(['name' => 'Operator Kwame', 'email' => 'kwame@npontu.com']);
+    $recipient = User::factory()->create(['name' => 'Operator Abena', 'email' => 'abena@npontu.com']);
+
+    $directConversation = Conversation::create([
+        'title' => 'Kwame & Abena Direct',
+        'type' => 'direct',
+        'created_by' => $sender->id,
+    ]);
+    $directConversation->participants()->attach([$sender->id, $recipient->id]);
+
+    Livewire::actingAs($sender)
+        ->test(OperationalChat::class)
+        ->call('selectConversation', $directConversation->id)
+        ->set('messageText', 'Hey Abena, the Kubernetes node memory alert has cleared.')
+        ->call('sendMessage')
+        ->assertHasNoErrors();
+
+    Mail::assertSent(MessageMentionMail::class, function (MessageMentionMail $mail) use ($recipient) {
+        return $mail->hasTo($recipient->email)
+            && $mail->isDirectMessage === true
+            && str_contains($mail->chatMessage->body, 'Kubernetes node memory alert');
+    });
+
+    // Sender should not receive email
+    Mail::assertNotSent(MessageMentionMail::class, function (MessageMentionMail $mail) use ($sender) {
+        return $mail->hasTo($sender->email);
+    });
+});
+
 test('shift handover reporting query renders page with metrics and handover rows', function () {
     $lead1 = User::factory()->create(['name' => 'Lead Kwame', 'role' => 'lead']);
     $lead2 = User::factory()->create(['name' => 'Lead Abena', 'role' => 'lead']);

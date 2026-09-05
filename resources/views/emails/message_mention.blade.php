@@ -20,7 +20,9 @@
                                             NPONTU TECHNOLOGIES — SRE OPS
                                         </div>
                                         <h1 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">
-                                            @if($isBroadcast)
+                                            @if($isDirectMessage ?? false)
+                                                💬 Direct Operational Message
+                                            @elseif($isBroadcast)
                                                 📢 Team-Wide SRE Broadcast
                                             @else
                                                 💬 Operational Mention Notification
@@ -39,12 +41,14 @@
                                 Hello <strong>{{ $recipient->name }}</strong>,
                             </p>
                             <p style="font-size: 14px; line-height: 1.6; color: #4b5563; margin-top: 0; margin-bottom: 20px;">
-                                @if($isBroadcast)
+                                @if($isDirectMessage ?? false)
+                                    <strong>{{ $chatMessage->sender?->name }}</strong> sent you a direct operational message in SRE Operations Comms:
+                                @elseif($isBroadcast)
                                     <strong>{{ $chatMessage->sender?->name }}</strong> sent an <strong>@all</strong> broadcast in
                                     <strong style="color: #1B6B3A;">#{{ $conversation->title ?? 'General Shift' }}</strong>:
                                 @else
                                     <strong>{{ $chatMessage->sender?->name }}</strong> mentioned you in
-                                    <strong style="color: #1B6B3A;">{{ $conversation->title ?? 'Direct Message' }}</strong>:
+                                    <strong style="color: #1B6B3A;">{{ $conversation->title ?? 'Shift Operations' }}</strong>:
                                 @endif
                             </p>
 
