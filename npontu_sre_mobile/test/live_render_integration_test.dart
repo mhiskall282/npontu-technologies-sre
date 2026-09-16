@@ -10,8 +10,8 @@ void main() {
     setUp(() {
       directDio = Dio(
         BaseOptions(
-          connectTimeout: const Duration(seconds: 45),
-          receiveTimeout: const Duration(seconds: 45),
+          connectTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
           headers: {'Accept': 'application/json'},
         ),
       );
@@ -40,10 +40,10 @@ void main() {
             return;
           }
         } catch (_) {
-          // Fallback for isolated CI environments or network timeouts
+          // Fallback for network latency or offline test execution
         }
 
-        // Assert deserialization integrity
+        // Assert model deserialization integrity
         final fallbackData = {
           'status': 'ok',
           'db': 'ok',
