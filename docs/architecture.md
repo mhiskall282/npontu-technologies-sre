@@ -754,6 +754,90 @@ flowchart TD
 
 ---
 
+## 13. Multi-Client SRE Platform Architecture (Flutter Mobile + Laravel 11)
+
+```mermaid
+flowchart TD
+    subgraph Clients["Multi-Client Presentation Layer"]
+        WEB["Laravel Blade + Livewire 3\n(Tailwind CSS v3 - Responsive Browser)"]
+        MOBILE_A["Flutter Mobile Client (Android)\n(Riverpod + Dio + Material 3)"]
+        MOBILE_I["Flutter Mobile Client (iOS)\n(Riverpod + Dio + Material 3)"]
+    end
+
+    subgraph Gateway["Unified Laravel 11 Backend (Render Deployment)"]
+        WEB_ROUTES["routes/web.php\n(Session Cookie Auth + CSRF)"]
+        API_ROUTES["routes/api.php\n(/api/v1/* Sanctum Bearer Token Auth)"]
+        
+        SANCTUM["Laravel Sanctum Guard\n(Personal Access Tokens Table)"]
+        AUTH_POLICIES["Domain Policies & Form Requests\n(Strict Role & Privilege Authorization)"]
+    end
+
+    subgraph Core["Shared Business Logic & Domain Actions"]
+        ACTIONS["app/Actions/\n• UpdateActivityStatusAction\n• RecordAuditLogAction\n• CalculateReportMetricsAction"]
+        SERVICES["app/Services/\n• AuditService\n• SystemHealthService\n• EmailNotificationService"]
+    end
+
+    subgraph Persistence["Storage & Infrastructure Layer"]
+        DB[(Production Database\nPostgreSQL / SQLite Storage)]
+        AUDIT[(audit_logs\nImmutable Compliance Store)]
+        ACTIVITY[(activity_logs\nAppend-Only Execution Timeline)]
+    end
+
+    WEB --> WEB_ROUTES
+    MOBILE_A --> API_ROUTES
+    MOBILE_I --> API_ROUTES
+
+    WEB_ROUTES --> AUTH_POLICIES
+    API_ROUTES --> SANCTUM
+    SANCTUM --> AUTH_POLICIES
+
+    AUTH_POLICIES --> ACTIONS
+    ACTIONS --> SERVICES
+    SERVICES --> DB
+    SERVICES --> AUDIT
+    SERVICES --> ACTIVITY
+
+    style Clients fill:#0F1A14,stroke:#1A2E22,stroke-width:2px,color:#ffffff
+    style Gateway fill:#f8fafc,stroke:#1B6B3A,stroke-width:2px
+    style Core fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    style Persistence fill:#fefce8,stroke:#F5C518,stroke-width:2px
+```
+
+---
+
+## 14. Mobile Sanctum Token Lifecycle & Secure Storage Architecture
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant App as Flutter Mobile App (Android/iOS)
+    participant SecStore as Secure Platform Storage (KeyStore / Keychain)
+    participant API as Laravel 11 API (/api/v1)
+    participant DB as Production DB (Sanctum Tokens)
+
+    Note over App,API: Authentication Phase
+    App->>API: POST /api/v1/auth/login {email, password, device_name}
+    API->>API: Validate credentials & retrieve user privileges
+    API->>DB: Hash & insert new token into personal_access_tokens
+    API-->>App: HTTP 200 {success: true, data: {token: "3|xyz...", user: {...}}}
+    App->>SecStore: Encrypt & store Bearer token (AES-GCM / Keychain)
+
+    Note over App,API: Authenticated Operational Requests
+    App->>SecStore: Retrieve Bearer token
+    App->>API: GET /api/v1/activities (Header: Authorization: Bearer 3|xyz...)
+    API->>DB: Hash incoming token & verify signature & expiry
+    API->>API: Authorize via ActivityPolicy
+    API-->>App: HTTP 200 {success: true, data: [...]}
+
+    Note over App,API: Session Revocation / Logout
+    App->>API: POST /api/v1/auth/logout
+    API->>DB: Delete current personal_access_token record
+    API-->>App: HTTP 200 {message: "Logged out successfully"}
+    App->>SecStore: Delete stored token key
+```
+
+---
+
 ## Architecture Decisions Log
 
 | # | Decision | Chosen | Rejected | Rationale |
@@ -765,17 +849,21 @@ flowchart TD
 | 5 | Soft deletes | `SoftDeletes` on Activity + User | Hard delete | Historical logs must not break when records are removed |
 | 6 | Role system | String column + Policy | Spatie Permissions | YAGNI — 3 roles, fixed boundaries; no permission matrix needed |
 | 7 | Monitoring access | Admin + Lead only | All users | Audit trails contain sensitive IP and change data |
-| 8 | Database (production) | Render PostgreSQL | SQLite / MySQL | High durability, relational integrity, connection pooling on Render |
-| 9 | Task Delegation | Optional Nullable FK (`users.id`) | Separate Team/Assignment Pivot | Preserves shift pool elasticity (null = shift pool) while giving 1-click personal accountability without relational overhead |
-| 10 | Incident Escalation | Denormalized on `activity_logs` | External Ticketing Webhook Only | Connects shift checkoff discrepancies directly to incident ticket references (e.g., `INC-1042`) without blocking offline operations |
-| 11 | Digital Shift Handover | Dedicated `shift_handovers` table | Unstructured remarks or chat apps | Enforces formal briefing sign-off between outgoing and incoming shift leads with statistical non-repudiation |
-| 12 | Two-Way Handover Handshake | Sign-off + Sign-on Acceptance | Outgoing sign-off only | Eliminates ambiguity in operational custody: incoming lead explicitly acknowledges blockers, verifies systems, and assumes shift duty |
-| 13 | Operational Messaging Pipeline | First-party Relational Comms + Livewire polling | Third-party Slack/Discord webhook dependency | Self-contained, zero-cost, compliant within SRE security boundary; supports 1-on-1 direct chat, team shift channels, and private incident war rooms |
-| 14 | SRE User Grades & Granular Privileges | 5-tier Grades (L1-L5) + Checkbox Privileges JSON | Rigid single-role inheritance | Allows fine-grained operational permissions (e.g. task reassignment, channel creation) across varying engineer seniority without bloating full admin access |
-| 15 | Multi-Service Telemetry Probes | `SystemHealthService` with 8 probes + HUD | Third-party APM SaaS agent (Datadog/NewRelic) | Provides native zero-overhead SRE diagnostics (DB ping, cache latency, queue health, uptime SLA) with public JSON probe endpoint |
-| 16 | Left Sidebar Navigation Architecture | Sticky Left Dark Cockpit + Responsive Drawer | Crowded 64px Horizontal Navbar | Reclaims vertical breathing room, cleanly groups operational domains, isolates background polling via `wire:target`, and supports both Blade views and Livewire 3 slots |
-| 17 | Branded SRE Error Pages & 419 Interceptor | Custom SRE Error Views + Livewire 419 Redirect Hook | Default stark Laravel/Symfony error pages and raw modal popups | Prevents jarring user disconnect during session expiration; redirects operators seamlessly to `/login?expired=1` with informative banner and 1-click credential recovery |
-| 18 | Public SRE Landing Page at Root (`/`) | High-Impact SRE Landing View with Test Roles Showcase | Immediate blank redirect from `/` to `/login` | Educates external evaluators, management, and new operators on platform capabilities and architecture before authentication |
+| 8 | Database (production) | Render PostgreSQL / SQLite disk | MySQL SaaS | High durability, relational integrity, zero external vendor bill |
+| 9 | Task Delegation | Optional Nullable FK (`users.id`) | Separate Team/Assignment Pivot | Preserves shift pool elasticity while giving 1-click personal accountability |
+| 10 | Incident Escalation | Denormalized on `activity_logs` | External Ticketing Webhook Only | Connects shift checkoff discrepancies directly to incident ticket references |
+| 11 | Digital Shift Handover | Dedicated `shift_handovers` table | Unstructured remarks or chat apps | Enforces formal briefing sign-off between outgoing and incoming shift leads |
+| 12 | Two-Way Handover Handshake | Sign-off + Sign-on Acceptance | Outgoing sign-off only | Eliminates ambiguity in operational custody between shifts |
+| 13 | Operational Messaging Pipeline | First-party Relational Comms + Livewire polling | Slack/Discord webhook dependency | Self-contained, zero-cost, compliant within SRE security boundary |
+| 14 | SRE User Grades & Granular Privileges | 5-tier Grades (L1-L5) + Checkbox Privileges JSON | Rigid single-role inheritance | Allows fine-grained operational permissions across seniority |
+| 15 | Multi-Service Telemetry Probes | `SystemHealthService` with 8 probes + HUD | Third-party APM SaaS agent | Zero-overhead native SRE diagnostics with public JSON probe endpoint |
+| 16 | Left Sidebar Navigation Architecture | Sticky Left Dark Cockpit + Responsive Drawer | Crowded 64px Horizontal Navbar | Reclaims vertical breathing room, isolates background polling |
+| 17 | Branded SRE Error Pages & 419 Interceptor | Custom SRE Error Views + Livewire 419 Redirect Hook | Default stark Laravel error pages | Prevents jarring user disconnect during session expiration |
+| 18 | Public SRE Landing Page at Root (`/`) | High-Impact SRE Landing View with Test Roles Showcase | Immediate blank redirect to `/login` | Educates external evaluators and leadership on platform capabilities |
+| 19 | Cross-Platform Mobile Client | Flutter 3.24+ (Dart) with Riverpod + Dio | React Native / Progressive Web App | Single high-performance codebase for iOS and Android, native KeyStore/Keychain security |
+| 20 | Mobile Authentication Protocol | Laravel Sanctum Personal Access Tokens | JWT / OAuth2 Passport | Native Laravel ecosystem alignment, simple revocation, token hash in DB |
+| 21 | Production Cloud Deployment | Render Web Service (`https://npontu-support-tracker.onrender.com`) | Self-hosted VPS | Automated Git-backed continuous deployments with persistent disk storage |
+
 
 
 

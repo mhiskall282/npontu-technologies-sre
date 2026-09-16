@@ -1,0 +1,56 @@
+name: Mobile CI (Flutter Android & iOS)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'npontu_sre_mobile/**'
+      - '.github/workflows/flutter-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'npontu_sre_mobile/**'
+      - '.github/workflows/flutter-ci.yml'
+
+jobs:
+  flutter-test-and-build:
+    name: Flutter Lint, Test & Android Build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: npontu_sre_mobile
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Verify Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify code formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Static Analysis
+        run: flutter analyze
+
+      - name: Run Unit and Widget Tests
+        run: flutter test --coverage
+
+      - name: Build Android Debug APK
+        run: flutter build apk --debug

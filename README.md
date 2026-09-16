@@ -4,11 +4,13 @@
 >
 > 
 
-🌐 **Production Deployment**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)
+🌐 **Production Deployment**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)
 
-[![Tests](https://img.shields.io/badge/tests-79%20passing%20(409%20assertions)-brightgreen)](tests/)
+[![Backend Tests](https://img.shields.io/badge/backend%20tests-96%20passing%20(491%20assertions)-brightgreen)](tests/)
+[![Mobile Tests](https://img.shields.io/badge/mobile%20tests-15%20passing-brightgreen)](npontu_sre_mobile/test/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
+[![Flutter](https://img.shields.io/badge/Flutter-3.24+-02569B?logo=flutter)](npontu_sre_mobile/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.x-cyan)](https://tailwindcss.com)
 
 ---
@@ -131,11 +133,10 @@ Open **[http://localhost:8000](http://localhost:8000)**
 
 ## Running Tests
 
-```bash
-## Running Tests
+### Backend Pest Test Suite (Laravel 11)
 
 ```bash
-# Full test suite (79 tests, 409 assertions)
+# Full backend test suite (96 tests, 491 assertions)
 php artisan test
 # or
 ./vendor/bin/pest
@@ -144,13 +145,16 @@ php artisan test
 ./vendor/bin/pest --verbose
 
 # Run a specific test suite
+./vendor/bin/pest tests/Feature/Api/ActivityApiTest.php
+./vendor/bin/pest tests/Feature/Api/AuthApiTest.php
 ./vendor/bin/pest tests/Feature/DocsPortalTest.php
 ./vendor/bin/pest tests/Feature/OperationalCommunicationsAndPrivilegesTest.php
 ```
 
-Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — no external DB needed.
+Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — zero external DB dependencies.
 
-**Test coverage areas (79 tests / 409 assertions):**
+**Backend test coverage areas (96 tests / 491 assertions):**
+- **Mobile REST API v1**: Complete test coverage for authentication, token revocation, activities CRUD, handovers two-way signoff, war rooms, messaging, system health probes, reports, and security audit trail.
 - **Public SRE Landing Page**: Unauthenticated visitor showcase, 6 capability pillars, architecture walkthrough, pre-seeded test roles, authenticated SRE cockpit CTA
 - **High-Level SRE Documentation Portal**: 5 permanent chapters (`#quickstart`, `#architecture`, `#handover-flow`, `#governance`, `#faq`), verification commands, and interactive FAQ accordion
 - **Authentication & Security**: Login success, failure validation alerts, logout, redirect, session expiration banners
@@ -165,6 +169,28 @@ Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — no 
 - **Multi-Domain Reporting**: Custom date-range activity checks, handover audit reports, and operator work timelines & duty hours
 - **System Health Diagnostics**: Live telemetry streaming, subsystem probes, and availability SLA metrics
 - **Compliance Policies**: SLA 99.98% commitment, SOC2/SIEM audit policy, terms of service, and privacy standards
+
+---
+
+### Mobile Flutter Test Suite (npontu_sre_mobile)
+
+```bash
+cd npontu_sre_mobile
+
+# Run all unit and widget tests (15 passing tests)
+flutter test
+
+# Run static analysis
+flutter analyze
+
+# Verify code formatting
+dart format --output=none --set-exit-if-changed .
+```
+
+**Mobile test coverage areas (15 unit & widget tests):**
+- **Model JSON Deserialization**: `UserModel`, `ActivityModel`, `ShiftHandoverModel`, `ConversationModel`, `MessageModel`, `SystemHealthModel`, and `AuditLogModel`.
+- **UI Components & Badges**: Status badges (`DONE`, `PENDING`, `ACKNOWLEDGED`), Priority badges (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`), Skeleton loaders, and Empty/Error state widgets.
+- **Screen Widget Tests**: `LoginScreen` rendering, input validation, and authenticated session state transitions.
 
 ---
 
@@ -349,15 +375,77 @@ The Blueprint provisions a **1 GB persistent disk** at `/var/data` for the SQLit
 
 ---
 
+## Cross-Platform Mobile Application (Flutter — Android & iOS)
+
+A native Flutter client (`npontu_sre_mobile`) built for site reliability engineers on call, field operators, and team leads managing production operations on Android and iOS devices.
+
+### Architecture & Tech Stack
+- **Framework**: Flutter 3.24+ (Dart 3.5+) on stable channel
+- **Design System**: Material 3 styled with official Npontu Brand Tokens (`#1B6B3A` Forest Green, `#F5C518` Gold Accent, `#E63946` Alert Red, `#0F1A14` Dark Console Slate)
+- **State Management**: Riverpod (`flutter_riverpod: ^2.6.1`) with feature-first modular structure
+- **Networking**: Dio (`dio: ^5.11.1`) with centralized Bearer token interceptor, exponential backoff retries, and comprehensive error normalization (`ApiException`)
+- **Navigation**: Declarative routing via GoRouter (`go_router: ^18.0.1`) with reactive authentication guards and redirection
+- **Security Storage**: `flutter_secure_storage` storing API tokens encrypted in Android KeyStore (AES-GCM) and iOS Keychain (`kSecAttrAccessibleAfterFirstUnlock`)
+
+### Mobile Feature Modules
+1. **SRE Operational Dashboard**: Shift overview metrics (total, pending, done, acknowledged), active system health probes, unread chats, and active incident warnings.
+2. **Daily Shift Activity Board**: Real-time checklist filtered by shift (`morning`, `afternoon`, `night`), status, or priority. Operators can update status inline with required remarks.
+3. **Shift Handover Protocol & Sign-off**: Two-way operational handover lifecycle with outgoing supervisor sign-off and incoming lead acceptance remarks.
+4. **Operations Messaging & War Rooms**: Shift channels (`#general-shift`), 1-on-1 direct operator messaging, active incident war rooms, and file/PDF attachment previews.
+5. **System Health & Diagnostic HUD**: Live status of MySQL database, cache, system memory, background queues, and mail subsystem.
+6. **Reporting & Compliance Metrics**: Real-time KPI summaries, date-range filtering, and SLA compliance statistics.
+7. **Team Directory**: SRE operator directory with engineering tiers (L1–L5), departments, and on-call availability badges.
+8. **Security Audit Trail**: Read-only timeline of all operational mutations with actor snapshots, IP addresses, and JSON before/after state diffs.
+
+### Running the Mobile App Locally
+```bash
+# 1. Navigate to the mobile app directory
+cd npontu_sre_mobile
+
+# 2. Install dependencies
+flutter pub get
+
+# 3. Run against local Laravel backend
+# For Android Emulator (using 10.0.2.2 bridge):
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
+
+# For iOS Simulator:
+flutter run --dart-define=API_BASE_URL=http://localhost:8000/api/v1
+
+# For Physical Device (replace with your machine LAN IP):
+flutter run --dart-define=API_BASE_URL=http://192.168.1.100:8000/api/v1
+```
+
+---
+
+## CI/CD Automation Workflows
+
+Automated GitHub Actions pipelines ensure continuous code quality and release reliability:
+
+| Pipeline | Path | Trigger | Steps |
+|---|---|---|---|
+| **Backend CI** | [`.github/workflows/backend-ci.yml`](.github/workflows/backend-ci.yml) | Push/PR to `main` (`app/`, `tests/`, etc.) | PHP 8.2 setup, Pint PSR-12 linting, SQLite migration & rollback verification, 96 Pest tests |
+| **Mobile CI** | [`.github/workflows/flutter-ci.yml`](.github/workflows/flutter-ci.yml) | Push/PR to `main` (`npontu_sre_mobile/`) | Flutter SDK setup, `dart format` verification, `flutter analyze`, 15 unit/widget tests, debug APK build |
+
+---
+
 ## Documentation Index
 
 | Document | Contents |
 |---|---|
-| [README.md](README.md) | This file — setup, architecture overview |
-| [docs/requirements.md](docs/requirements.md) | Functional requirements + grading rubric |
-| [docs/architecture.md](docs/architecture.md) | ERD, module map, deployment diagram |
-| [docs/context.md](docs/context.md) | Brand guidelines, business context |
-| [docs/FILE_REFERENCE.md](docs/FILE_REFERENCE.md) | Per-file purpose + interview Q&A |
+| [README.md](README.md) | Project overview, web & mobile setup, architecture, and verification commands |
+| [docs/mobile-expansion-audit.md](docs/mobile-expansion-audit.md) | Comprehensive initial architecture audit, database schemas, roles, and API gap analysis |
+| [docs/mobile-api.md](docs/mobile-api.md) | Exhaustive REST API v1 developer reference with request/response envelopes |
+| [docs/api/openapi.yaml](docs/api/openapi.yaml) | Complete OpenAPI 3.0 / Swagger specification covering all 33 endpoints |
+| [docs/security/mobile-threat-model.md](docs/security/mobile-threat-model.md) | STRIDE threat model, mobile security vectors, token revocation, and residual risk mitigations |
+| [docs/deployment/mobile-deployment.md](docs/deployment/mobile-deployment.md) | Backend hosting (Render/Forge), Google Play App Bundle (AAB), and iOS TestFlight procedures |
+| [docs/deployment/store-publishing-guide.md](docs/deployment/store-publishing-guide.md) | Complete step-by-step Google Play Console & Apple App Store Connect submission guide |
+| [docs/mobile-development.md](docs/mobile-development.md) | Mobile developer guide: emulator networking, Riverpod conventions, testing, and debugging |
+| [docs/observability.md](docs/observability.md) | SRE observability, correlation IDs, logging standards, Prometheus/Grafana metrics, and runbooks |
+| [docs/requirements.md](docs/requirements.md) | Functional requirements + original grading rubric |
+| [docs/architecture.md](docs/architecture.md) | Original ERD, module map, and deployment diagram |
+| [docs/context.md](docs/context.md) | Brand guidelines and business context |
+| [docs/FILE_REFERENCE.md](docs/FILE_REFERENCE.md) | Per-file purpose + evaluation interview Q&A |
 
 ---
 

@@ -1,0 +1,666 @@
+openapi: 3.0.3
+info:
+  title: Npontu Technologies SRE Operations Platform API
+  description: >
+    Production-ready versioned RESTful API (v1) serving the Npontu Technologies
+    Site Reliability Engineering operations platform, enabling cross-platform
+    mobile integration (Android/iOS) and web client operations.
+  version: 1.0.0
+  contact:
+    name: SRE Operations & Engineering
+    email: hello@johnokyere.xyz
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local Development Environment
+  - url: https://api-sre.npontu.com/api/v1
+    description: Production Environment
+
+tags:
+  - name: Authentication
+    description: Session token issuance and revocation via Laravel Sanctum
+  - name: Dashboard
+    description: Real-time operational overview and shift health metrics
+  - name: Activities
+    description: Defined recurring checks, append-only checkoffs, and task delegation
+  - name: Shift Handovers
+    description: Formal two-way handover handshake and sign-on protocol
+  - name: Operational Communications
+    description: Channels, 1-on-1 direct chat, incident war rooms, and file attachments
+  - name: System Health & Diagnostics
+    description: SRE telemetry, database/cache latency probes, and subsystem diagnostics
+  - name: Reports & Compliance
+    description: Date-range audit queries, shift metrics, and CSV/print reporting
+  - name: Team Directory
+    description: SRE operator roster, grades, and availability
+  - name: Audit Trail
+    description: Immutable security compliance audit log stream
+
+paths:
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Authenticate operator credentials
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: operator@npontu.com
+                password:
+                  type: string
+                  format: password
+                  example: Secret123!
+                device_name:
+                  type: string
+                  example: Pixel 9 Pro (Flutter)
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Revoke current mobile access token
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /auth/revoke-sessions:
+    post:
+      tags: [Authentication]
+      summary: Revoke all personal access tokens for user across all devices
+      operationId: revokeSessions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All sessions revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /me:
+    get:
+      tags: [Authentication]
+      summary: Retrieve authenticated user profile and permissions
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profile retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { $ref: '#/components/schemas/User' }
+                  message: { type: string }
+
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Retrieve operational overview and daily shift summary
+      operationId: getDashboard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2026-09-16'
+      responses:
+        '200':
+          description: Operational dashboard summary retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    $ref: '#/components/schemas/DashboardData'
+
+  /activities:
+    get:
+      tags: [Activities]
+      summary: List operational check definitions with shift status
+      operationId: listActivities
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          schema: { type: string, format: date }
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, done] }
+        - name: priority
+          in: query
+          schema: { type: string, enum: [critical, high, medium, low] }
+        - name: assigned
+          in: query
+          schema: { type: string, description: "'me', 'pool', or user ID" }
+        - name: search
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Activity' }
+                  meta:
+                    type: object
+    post:
+      tags: [Activities]
+      summary: Provision a new operational check definition
+      operationId: createActivity
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityRequest'
+      responses:
+        '201':
+          description: Operational check created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { $ref: '#/components/schemas/Activity' }
+
+  /activities/{id}:
+    get:
+      tags: [Activities]
+      summary: Get operational check details with update history
+      operationId: getActivity
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Activity details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { $ref: '#/components/schemas/Activity' }
+    put:
+      tags: [Activities]
+      summary: Update operational check definition
+      operationId: updateActivity
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityRequest'
+      responses:
+        '200':
+          description: Operational check updated
+    delete:
+      tags: [Activities]
+      summary: Archive operational check (Admin only)
+      operationId: deleteActivity
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Operational check archived
+
+  /activities/{id}/status:
+    post:
+      tags: [Activities]
+      summary: Record append-only status checkoff event
+      operationId: updateActivityStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [pending, done]
+                remark:
+                  type: string
+                  example: Verified backup integrity against S3 archive
+                date:
+                  type: string
+                  format: date
+                incident_ticket:
+                  type: string
+                  example: INC-4091
+                is_escalated:
+                  type: boolean
+                  example: false
+      responses:
+        '200':
+          description: Status transition recorded
+
+  /activities/bulk-assign:
+    post:
+      tags: [Activities]
+      summary: Bulk delegate operational checks
+      operationId: bulkAssignActivities
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [activity_ids]
+              properties:
+                activity_ids:
+                  type: array
+                  items: { type: integer }
+                assigned_to:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Checks delegated successfully
+
+  /handovers:
+    get:
+      tags: [Shift Handovers]
+      summary: List formal shift handover briefings
+      operationId: listHandovers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Handover briefings retrieved
+    post:
+      tags: [Shift Handovers]
+      summary: Create and sign off outgoing shift handover briefing
+      operationId: createHandover
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHandoverRequest'
+      responses:
+        '201':
+          description: Shift handover briefing created
+
+  /handovers/{id}/accept:
+    post:
+      tags: [Shift Handovers]
+      summary: Acknowledge and accept incoming shift handover (Sign-on)
+      operationId: acceptHandover
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remarks:
+                  type: string
+                  example: Accepted responsibility. Morning alarms inspected and cleared.
+      responses:
+        '200':
+          description: Handover accepted successfully
+
+  /conversations:
+    get:
+      tags: [Operational Communications]
+      summary: List channels, direct messages, and war rooms
+      operationId: listConversations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of conversations
+    post:
+      tags: [Operational Communications]
+      summary: Create team channel, group, or direct message
+      operationId: createConversation
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Conversation created
+
+  /conversations/{id}/messages:
+    get:
+      tags: [Operational Communications]
+      summary: Paginated message stream for conversation
+      operationId: listMessages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Messages retrieved
+    post:
+      tags: [Operational Communications]
+      summary: Post a message with optional base64 attachment
+      operationId: postMessage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostMessageRequest'
+      responses:
+        '201':
+          description: Message posted
+
+  /health:
+    get:
+      tags: [System Health & Diagnostics]
+      summary: Public uptime JSON health probe
+      operationId: getHealthProbe
+      responses:
+        '200':
+          description: System operational
+        '503':
+          description: System degraded
+
+  /health/telemetry:
+    get:
+      tags: [System Health & Diagnostics]
+      summary: Real-time SRE streaming performance telemetry
+      operationId: getTelemetry
+      responses:
+        '200':
+          description: Telemetry data retrieved
+
+  /health/diagnostics:
+    get:
+      tags: [System Health & Diagnostics]
+      summary: Subsystems diagnostics and performance breakdown (Lead/Admin)
+      operationId: getDiagnostics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Diagnostics retrieved
+
+  /reports:
+    get:
+      tags: [Reports & Compliance]
+      summary: Date-range checkoff history and chart distributions
+      operationId: getReports
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, done] }
+      responses:
+        '200':
+          description: Reports retrieved
+
+  /team:
+    get:
+      tags: [Team Directory]
+      summary: List SRE team roster, engineering grades, and contact info
+      operationId: listTeam
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Team directory retrieved
+
+  /audit-logs:
+    get:
+      tags: [Audit Trail]
+      summary: Query immutable security audit log entries
+      operationId: listAuditLogs
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Audit logs retrieved
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data: { type: object }
+        meta: { type: object }
+        message: { type: string }
+
+    ErrorResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        message: { type: string }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+
+    AuthSuccessResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data:
+          type: object
+          properties:
+            token: { type: string, example: '1|NpontuMobileTokenSample...' }
+            token_type: { type: string, example: 'Bearer' }
+            user: { $ref: '#/components/schemas/User' }
+        message: { type: string }
+
+    User:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: 'John Okyere' }
+        email: { type: string, example: 'john@npontu.com' }
+        role: { type: string, enum: [admin, lead, agent], example: 'admin' }
+        grade: { type: string, example: 'L5' }
+        grade_label: { type: string, example: 'L5 — Principal Architect & Enterprise Lead' }
+        department: { type: string, example: 'Core Operations (NOC)' }
+        designation: { type: string, example: 'Enterprise Lead' }
+        phone: { type: string, example: '+233 24 123 4567' }
+        privileges:
+          type: array
+          items: { type: string }
+        unread_messages_count: { type: integer, example: 3 }
+
+    Activity:
+      type: object
+      properties:
+        id: { type: integer, example: 10 }
+        title: { type: string, example: 'Core Payment Gateway Heartbeat' }
+        description: { type: string, example: 'Inspect transaction volume vs log counts' }
+        category: { type: string, example: 'Payment & SMS Gateways' }
+        recurrence: { type: string, example: 'daily' }
+        priority: { type: string, enum: [critical, high, medium, low], example: 'critical' }
+        sla_time: { type: string, example: '08:30 GMT' }
+        is_pinned: { type: boolean, example: true }
+        is_active: { type: boolean, example: true }
+        assigned_to: { type: integer, nullable: true, example: 2 }
+        assignee: { $ref: '#/components/schemas/User' }
+        current_status: { type: string, enum: [pending, done], example: 'pending' }
+        latest_log: { $ref: '#/components/schemas/ActivityLog' }
+
+    ActivityLog:
+      type: object
+      properties:
+        id: { type: integer, example: 105 }
+        activity_id: { type: integer, example: 10 }
+        date: { type: string, format: date, example: '2026-09-16' }
+        status: { type: string, enum: [pending, done], example: 'done' }
+        remark: { type: string, example: 'Replication latency under 20ms' }
+        incident_ticket: { type: string, nullable: true, example: 'INC-2041' }
+        is_escalated: { type: boolean, example: false }
+        actor_name: { type: string, example: 'Ama Serwaa' }
+        actor_role: { type: string, example: 'lead' }
+        created_at: { type: string, format: date-time }
+
+    CreateActivityRequest:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, example: 'Database Backup Verification' }
+        description: { type: string, example: 'Verify automated daily RDS snapshot creation' }
+        category: { type: string, example: 'Database & Storage' }
+        recurrence: { type: string, enum: [daily, weekly, monthly, shift], example: 'daily' }
+        priority: { type: string, enum: [critical, high, medium, low], example: 'high' }
+        sla_time: { type: string, example: '07:00 GMT' }
+        is_pinned: { type: boolean, example: true }
+        assigned_to: { type: integer, nullable: true }
+
+    CreateHandoverRequest:
+      type: object
+      required: [date, shift, summary]
+      properties:
+        date: { type: string, format: date, example: '2026-09-16' }
+        shift: { type: string, enum: [morning, afternoon, night], example: 'morning' }
+        incoming_lead_id: { type: integer, nullable: true }
+        summary: { type: string, example: 'Morning shift operations nominal. All checks signed.' }
+        incidents: { type: string, nullable: true, example: 'None active' }
+        pending_tasks_count: { type: integer, example: 0 }
+        completed_tasks_count: { type: integer, example: 14 }
+
+    PostMessageRequest:
+      type: object
+      properties:
+        body: { type: string, example: 'Grafana latency spike resolved after pod restart.' }
+        attachment_name: { type: string, example: 'grafana_metric.png' }
+        attachment_mime: { type: string, example: 'image/png' }
+        attachment_size: { type: integer, example: 204800 }
+        attachment_blob: { type: string, description: 'Base64 data URI string' }
+
+    DashboardData:
+      type: object
+      properties:
+        date: { type: string, format: date }
+        current_shift: { type: string, enum: [morning, afternoon, night] }
+        metrics:
+          type: object
+          properties:
+            total_checks: { type: integer }
+            completed_checks: { type: integer }
+            pending_checks: { type: integer }
+            completion_rate: { type: number }
+            critical_p1: { type: integer }
+            high_p2: { type: integer }
+            medium_p3: { type: integer }
+            low_p4: { type: integer }
+        personal_queue:
+          type: object
+          properties:
+            total_assigned: { type: integer }
+            pending_assigned: { type: integer }
+            completed_assigned: { type: integer }
+        active_incidents_count: { type: integer }
+        unread_messages_count: { type: integer }
+        system_health:
+          type: object
+          properties:
+            status: { type: string }
+            db_latency_ms: { type: number }
+            uptime_sla: { type: string }
