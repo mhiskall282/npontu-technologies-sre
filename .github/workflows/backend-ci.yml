@@ -62,6 +62,16 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install NPM Dependencies & Build Assets (Vite)
+        run: |
+          npm ci || npm install
+          npm run build
+
       - name: Code Style Check (Laravel Pint)
         run: ./vendor/bin/pint --test
 
