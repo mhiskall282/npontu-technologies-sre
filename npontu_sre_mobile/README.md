@@ -1,6 +1,6 @@
-# Npontu SRE Mobile — Operations Cockpit
+# Opsora SRE Mobile — Operations Cockpit
 
-A production-grade Flutter application for Npontu Technologies SRE engineers. Provides a real-time operational cockpit covering shift checklists, incident escalations, shift handovers, operational messaging, system health diagnostics, compliance reports, and team management.
+A production-grade Flutter application for Opsora SRE engineers. Provides a real-time operational cockpit covering shift checklists, incident escalations, shift handovers, operational messaging, system health diagnostics, compliance reports, and team management.
 
 ---
 
@@ -171,6 +171,7 @@ npontu_sre_mobile/
 
 | Role | Email | Password |
 |---|---|---|
+| Admin (Primary) | `hello@johnokyere.xyz` | `password` |
 | Admin | `admin@npontu.com` | `password` |
 | Shift Lead | `lead@npontu.com` | `password` |
 | SRE Engineer | `engineer@npontu.com` | `password` |

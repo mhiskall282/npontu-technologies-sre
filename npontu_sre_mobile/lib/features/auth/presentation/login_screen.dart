@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/npontu_theme.dart';
+import '../../../shared/widgets/opsora_logo.dart';
 import '../../legal/privacy_policy_sheet.dart';
 import 'auth_controller.dart';
 
@@ -27,11 +28,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _fillPreset(String email, String password) {
-    _emailController.text = email;
-    _passwordController.text = password;
   }
 
   Future<void> _handleLogin() async {
@@ -64,26 +60,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Brand Header
+                    // Brand Logo
                     Center(
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: NpontuColors.green,
-                          borderRadius: BorderRadius.circular(16),
+                          shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: NpontuColors.green.withAlpha(50),
-                              blurRadius: 12,
+                              color: NpontuColors.green.withAlpha(80),
+                              blurRadius: 20,
                               offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.dns_rounded,
-                          size: 40,
-                          color: Colors.white,
-                        ),
+                        child: const OpsoraIcon(size: 64),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -150,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         labelText: 'Operator Email',
-                        hintText: 'admin@npontu.local',
+                        hintText: 'hello@johnokyere.xyz',
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       validator: (val) {
@@ -181,16 +172,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty)
-                          return 'Password is required.';
-                        return null;
-                      },
+                      validator: (val) => (val == null || val.isEmpty)
+                          ? 'Password is required.'
+                          : null,
                     ),
                     const SizedBox(height: 24),
 
-                    // Sign In Button
+                    // Submit Button
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: NpontuColors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                       onPressed: authState.isLoading ? null : _handleLogin,
                       child: authState.isLoading
                           ? const SizedBox(
@@ -201,63 +198,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Authenticate & Enter Cockpit'),
+                          : const Text(
+                              'Authenticate & Enter Cockpit',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                     ),
-                    const SizedBox(height: 28),
-
-                    // 1-Click Quick Credentials Helper (matching web login)
-                    Text(
-                      'QUICK TEST OPERATOR PRESETS',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: isDark
-                            ? NpontuColors.textSecondaryDark
-                            : NpontuColors.textSecondaryLight,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        ActionChip(
-                          avatar: const Icon(
-                            Icons.admin_panel_settings_rounded,
-                            size: 16,
-                            color: NpontuColors.green,
-                          ),
-                          label: const Text('Admin (L5)'),
-                          onPressed: () =>
-                              _fillPreset('admin@npontu.local', 'password'),
-                        ),
-                        ActionChip(
-                          avatar: const Icon(
-                            Icons.supervisor_account_rounded,
-                            size: 16,
-                            color: NpontuColors.goldWarm,
-                          ),
-                          label: const Text('Shift Lead (L4)'),
-                          onPressed: () =>
-                              _fillPreset('lead@npontu.local', 'password'),
-                        ),
-                        ActionChip(
-                          avatar: const Icon(
-                            Icons.engineering_rounded,
-                            size: 16,
-                            color: NpontuColors.greenLight,
-                          ),
-                          label: const Text('SRE Agent (L2)'),
-                          onPressed: () =>
-                              _fillPreset('agent@npontu.local', 'password'),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
 
                     // Privacy & Legal Footer Row (Play Store & App Store requirement)
                     Wrap(

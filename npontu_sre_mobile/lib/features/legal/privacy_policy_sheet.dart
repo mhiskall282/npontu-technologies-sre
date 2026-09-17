@@ -60,7 +60,7 @@ class PrivacyPolicySheet extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             SelectableText(
-              'dpo@npontu.com',
+              'hello@johnokyere.xyz',
               style: TextStyle(
                 color: NpontuColors.goldWarm,
                 fontWeight: FontWeight.bold,
@@ -83,7 +83,7 @@ class PrivacyPolicySheet extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              Clipboard.setData(const ClipboardData(text: 'dpo@npontu.com'));
+              Clipboard.setData(const ClipboardData(text: 'hello@johnokyere.xyz'));
               ScaffoldMessenger.of(ctx).showSnackBar(
                 const SnackBar(
                   content: Text('DPO email copied to clipboard.'),
@@ -227,7 +227,7 @@ class PrivacyPolicySheet extends StatelessWidget {
                           const SizedBox(width: 12),
                           const Expanded(
                             child: Text(
-                              'Production Policy NPT-SRE-POL-01\nGoverned by Ghana Data Protection Act 2012 (Act 843)',
+                              'Production Policy OPS-SRE-POL-01\nGoverned by Ghana Data Protection Act 2012 (Act 843)',
                               style: TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
@@ -246,49 +246,42 @@ class PrivacyPolicySheet extends StatelessWidget {
                       Icons.business_center_rounded,
                     ),
                     const Text(
-                      'The Npontu SRE Mobile Companion application is strictly designed for internal site reliability engineering, daily activity tracking, shift handovers, and real-time operational communications across telecommunications and payment gateway nodes operated by Npontu Technologies Limited.',
+                      'The Opsora SRE Mobile Companion application is strictly designed for internal site reliability engineering, daily activity tracking, shift handovers, and real-time operational communications across telecommunications and payment gateway nodes operated by Opsora SRE.',
                       style: TextStyle(fontSize: 13, height: 1.45),
                     ),
 
                     const SizedBox(height: 18),
 
                     _buildSectionHeader(
-                      '2. Permissions & Data Collected',
+                      '2. Permissions & Data Usage',
                       Icons.security_rounded,
                     ),
-                    _buildPermissionItem(
-                      icon: Icons.notifications_active_rounded,
-                      title: 'Push Notifications',
-                      description: 'Used strictly for real-time P1/P2 incident escalations and shift handover sign-on requests. No promotional notifications are ever sent.',
+                    _buildBullet(
+                      'Local Encrypted Cache',
+                      'Checklists, handovers, and active war room chats are securely stored locally via encrypted storage to guarantee zero-latency launches and offline availability during datacenter blackouts. No personal user data is ever sold or shared with third-party data brokers.',
                     ),
-                    _buildPermissionItem(
-                      icon: Icons.storage_rounded,
-                      title: 'Local Encrypted Storage',
-                      description: 'Caches checklist tasks, shift logs, and active war rooms on-device for offline-first operational resilience.',
+                    _buildBullet(
+                      'Camera & Photo Library (Optional)',
+                      'Only accessed upon your explicit action to attach screenshots, monitoring charts, or log snapshots directly into SRE incident war rooms.',
                     ),
-                    _buildPermissionItem(
-                      icon: Icons.camera_alt_rounded,
-                      title: 'Camera & Gallery (Optional)',
-                      description: 'Requested only when an operator attaches diagnostic logs, error screenshots, or network topology evidence.',
+                    _buildBullet(
+                      'Push Notifications (Optional)',
+                      'Used exclusively for critical operational alerts: P1/P2 production incidents, urgent shift handover requests, and direct @mentions. Zero promotional notifications.',
                     ),
-                    _buildPermissionItem(
-                      icon: Icons.fingerprint_rounded,
-                      title: 'Biometric Authentication',
-                      description: 'Secured locally via Android Keystore and iOS Secure Enclave. Biometric markers never leave your device.',
+                    _buildBullet(
+                      'Telemetry & Performance Probes',
+                      'Measures API latency and database probe ping times to diagnose network bottlenecks. Strictly diagnostic, never linked to personal identities.',
                     ),
 
                     const SizedBox(height: 18),
 
                     _buildSectionHeader(
-                      '3. Zero Third-Party Trackers',
-                      Icons.block_rounded,
+                      '3. Third-Party Disclosures & Trackers',
+                      Icons.policy_rounded,
                     ),
                     const Text(
-                      'We respect your operational privacy. The Npontu SRE Mobile Companion:\n'
-                      '• Contains zero advertising SDKs (no AdMob, Meta, etc.).\n'
-                      '• Does NOT collect or query Advertising IDs (IDFA/AAID).\n'
-                      '• Transmits all payloads over encrypted TLS 1.3 directly to enterprise infrastructure.',
-                      style: TextStyle(fontSize: 13, height: 1.5),
+                      'Zero commercial advertising trackers, third-party analytics SDKs, or data brokers are integrated into this application. All API communications are strictly encrypted in transit via TLS 1.3 and authenticated using Sanctum Bearer tokens.',
+                      style: TextStyle(fontSize: 13, height: 1.45),
                     ),
 
                     const SizedBox(height: 18),
@@ -298,7 +291,7 @@ class PrivacyPolicySheet extends StatelessWidget {
                       Icons.person_remove_rounded,
                     ),
                     const Text(
-                      'You have the statutory right to request deactivation of your account and erasure of personal profile data. Requests are processed within 30 days. To initiate a deletion request, use the button below or email dpo@npontu.com.',
+                      'You have the statutory right to request deactivation of your account and erasure of personal profile data. Requests are processed within 30 days. To initiate a deletion request, use the button below or email hello@johnokyere.xyz.',
                       style: TextStyle(fontSize: 13, height: 1.45),
                     ),
                     const SizedBox(height: 10),
@@ -357,7 +350,7 @@ class PrivacyPolicySheet extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Npontu Technologies Data Protection Office',
+                            'Opsora SRE Data Protection Office',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
@@ -365,7 +358,7 @@ class PrivacyPolicySheet extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Email: dpo@npontu.com · security@npontu.local',
+                            'Email: hello@johnokyere.xyz',
                             style: TextStyle(
                               fontFamily: 'monospace',
                               fontSize: 11,
@@ -412,46 +405,41 @@ class PrivacyPolicySheet extends StatelessWidget {
     );
   }
 
-  Widget _buildPermissionItem({
-    required IconData icon,
-    required String title,
-    required String description,
-  }) {
+  Widget _buildBullet(String title, String description) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: const EdgeInsets.only(top: 2),
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: NpontuColors.green.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(8),
+            margin: const EdgeInsets.only(top: 4),
+            width: 5,
+            height: 5,
+            decoration: const BoxDecoration(
+              color: NpontuColors.gold,
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 16, color: NpontuColors.green),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.5,
-                  ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  height: 1.4,
+                  color: Colors.white70,
                 ),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    color: Colors.grey,
-                    height: 1.35,
+                children: [
+                  TextSpan(
+                    text: '$title: ',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
+                  TextSpan(text: description),
+                ],
+              ),
             ),
           ),
         ],

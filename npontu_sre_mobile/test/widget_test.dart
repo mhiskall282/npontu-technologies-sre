@@ -124,7 +124,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Npontu SRE'), findsOneWidget);
+      expect(find.text('Opsora SRE'), findsOneWidget);
       expect(
         find.text('Site Reliability Engineering Mobile Cockpit'),
         findsOneWidget,

@@ -1,11 +1,11 @@
 {
-    "name": "npontu_sre_mobile",
-    "short_name": "npontu_sre_mobile",
+    "name": "Opsora SRE Operations Platform",
+    "short_name": "Opsora SRE",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0B1911",
+    "theme_color": "#1B6B3A",
+    "description": "Opsora SRE Site Reliability Engineering & Operations Platform.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

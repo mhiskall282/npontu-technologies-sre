@@ -1,12 +1,12 @@
 // lib/core/constants/app_constants.dart
 
 class AppConstants {
-  static const String appName = 'Npontu SRE';
-  static const String appTitle = 'Npontu SRE Support Activity Tracker';
-  static const String version = '1.2.0';
+  static const String appName = 'Opsora SRE';
+  static const String appTitle = 'Opsora SRE Reliability Operations Platform';
+  static const String version = '1.3.0';
 
   // Version info displayed in Settings
-  static const String appVersion = '1.2.0';
+  static const String appVersion = '1.3.0';
   static const String buildNumber = '3';
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',

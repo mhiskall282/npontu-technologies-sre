@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/services/cache_service.dart';
 import '../../core/theme/npontu_theme.dart';
+import '../../shared/widgets/opsora_logo.dart';
 import '../auth/presentation/auth_controller.dart';
 import '../legal/privacy_policy_sheet.dart';
 
@@ -92,56 +93,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: NpontuColors.green,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: NpontuColors.gold,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'N',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'NPONTU SRE',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 13,
-                              letterSpacing: 1.2,
-                              color: NpontuColors.green,
-                            ),
-                          ),
-                          Text(
-                            'Support Activity Tracker',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: isDark
-                                  ? Colors.grey
-                                  : const Color(0xFF6B7280),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  OpsoraLogo(
+                    iconSize: 32,
+                    showSubtext: true,
+                    textColor: isDark ? Colors.white : NpontuColors.green,
                   ),
                   if (!isLastPage)
                     TextButton(
