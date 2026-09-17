@@ -167,15 +167,6 @@ npontu_sre_mobile/
 
 ---
 
-## Test Accounts (seeded)
-
-| Role | Email | Password |
-|---|---|---|
-| Admin (Primary) | `hello@johnokyere.xyz` | `password` |
-| Admin | `admin@npontu.com` | `password` |
-| Shift Lead | `lead@npontu.com` | `password` |
-| SRE Engineer | `engineer@npontu.com` | `password` |
-| SRE Agent | `agent@npontu.com` | `password` |
 
 ---
 
