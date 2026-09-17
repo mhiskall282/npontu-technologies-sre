@@ -1,5 +1,3 @@
-// lib/core/routing/app_router.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +14,9 @@ import '../../features/handovers/handovers_screen.dart';
 import '../../features/health/health_screen.dart';
 import '../../features/messaging/chat_screen.dart';
 import '../../features/messaging/messaging_screen.dart';
+import '../../features/notifications/notifications_screen.dart';
 import '../../features/reports/reports_screen.dart';
+import '../../features/settings/settings_screen.dart';
 import '../../features/team/team_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -106,6 +106,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
       GoRoute(path: '/audit', builder: (context, state) => const AuditScreen()),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       appBar: AppBar(title: const Text('Page Not Found')),

@@ -7,113 +7,261 @@ This guide details the local setup, architectural conventions, state management,
 ## 1. Local Environment Setup
 
 ### 1.1 Prerequisites
-- **Flutter SDK**: Version 3.24+ (Channel stable)
-- **Dart SDK**: Version 3.5+
-- **Platform Tooling**:
-  - **Android**: Android Studio Meerkat / Jellyfish, Android SDK 35, Command-line tools, Android Emulator.
-  - **iOS (macOS only)**: Xcode 15.4+, CocoaPods (`sudo gem install cocoapods`), iOS Simulator.
-- **Backend API**: Running Laravel 11 SRE Operations backend (`php artisan serve --host=0.0.0.0 --port=8000`).
 
-### 1.2 Verifying Installation
+| Tool | Minimum Version | Notes |
+|---|---|---|
+| Flutter SDK | 3.24+ stable | `flutter upgrade` to update |
+| Dart SDK | 3.5+ | Bundled with Flutter |
+| Java JDK | 17 (Temurin) | Set `JAVA_HOME` |
+| Android SDK | API 35 (compile), API 21 (min) | Via Android Studio |
+| Xcode (macOS only) | 15.4+ | iOS/iPadOS builds |
+| CocoaPods (macOS only) | Latest | `sudo gem install cocoapods` |
+
 ```bash
 flutter doctor -v
 ```
 
----
+### 1.2 Install Dependencies
 
-## 2. Running the Mobile Application
-
-### 2.1 Connecting to Local Laravel Backend
-Mobile emulators cannot connect directly to `http://localhost` without special alias addresses:
-- **Android Emulator**: Uses `http://10.0.2.2:8000/api/v1`
-- **iOS Simulator**: Uses `http://localhost:8000/api/v1`
-- **Physical Device**: Uses your workstation's LAN IP (e.g., `http://192.168.1.150:8000/api/v1`)
-
-Run the app with the target API URL:
 ```bash
-# Android Emulator
-flutter run -d emulator-5554 --dart-define=API_URL=http://10.0.2.2:8000/api/v1
-
-# iOS Simulator
-flutter run -d "iPhone 15 Pro" --dart-define=API_URL=http://localhost:8000/api/v1
+cd npontu_sre_mobile
+flutter pub get
 ```
 
-### 2.2 Seed Test Accounts
-The Laravel database seeder provisions standard testing accounts:
-- **Admin**: `admin@npontu.com` / `password` (L4 Principal / Full Privileges)
-- **Shift Lead**: `lead@npontu.com` / `password` (L3 Senior / Shift Management)
-- **SRE Engineer**: `engineer@npontu.com` / `password` (L2 Engineer / Checklists)
-- **SRE Agent**: `agent@npontu.com` / `password` (L1 Support / Basic Execution)
+---
+
+## 2. Running the Application
+
+### 2.1 Connecting to the Backend
+
+| Target | API Base URL |
+|---|---|
+| Android Emulator | `http://10.0.2.2:8000/api/v1` |
+| iOS Simulator | `http://localhost:8000/api/v1` |
+| Physical Device | `http://<YOUR_LAN_IP>:8000/api/v1` |
+| Production | `https://npontu-support-tracker.onrender.com/api/v1` |
+
+```bash
+# Android Emulator
+flutter run -d emulator-5554 \
+  --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
+
+# iOS Simulator
+flutter run -d "iPhone 15 Pro" \
+  --dart-define=API_BASE_URL=http://localhost:8000/api/v1
+```
+
+### 2.2 Test Accounts (seeded by DatabaseSeeder)
+
+| Role | Email | Password | Grade |
+|---|---|---|---|
+| Admin | `admin@npontu.com` | `password` | L4 Principal |
+| Shift Lead | `lead@npontu.com` | `password` | L3 Senior |
+| SRE Engineer | `engineer@npontu.com` | `password` | L2 Engineer |
+| SRE Agent | `agent@npontu.com` | `password` | L1 Support |
 
 ---
 
 ## 3. Architecture & Code Structure
 
-The project strictly follows a **Feature-First Clean Architecture**:
+The project follows **Feature-First Clean Architecture** with Riverpod for state management.
 
 ```
 npontu_sre_mobile/
-├── android/                   # Native Android host configuration
-├── ios/                       # Native iOS host configuration
+├── android/
+│   └── app/
+│       ├── build.gradle.kts     # ABI splits, R8 minification, resource shrinking
+│       └── proguard-rules.pro   # Plugin-safe ProGuard rules
+├── ios/
+│   └── Runner/Info.plist        # Permission usage descriptions + iPad orientations
 ├── lib/
-│   ├── main.dart              # Entrypoint with ProviderScope initialization
-│   ├── app.dart               # MaterialApp.router with Npontu theme definitions
+│   ├── main.dart                # Entrypoint — NotificationService init, ProviderScope
+│   ├── app.dart                 # MaterialApp.router + reactive theme from SettingsController
 │   │
-│   ├── core/                  # Core cross-cutting infrastructure
-│   │   ├── config/            # AppConfig with environment endpoints
-│   │   ├── constants/         # API routes, storage keys, time formats
-│   │   ├── errors/            # ApiException, NetworkException, ServerException
-│   │   ├── network/           # Centralized Dio ApiClient with auth interceptors
-│   │   ├── routing/           # GoRouter with authentication state guards
-│   │   ├── storage/           # Keychain / Keystore secure storage
-│   │   └── theme/             # Material 3 theme & Npontu brand tokens
+│   ├── core/
+│   │   ├── config/              # AppConfig with env-injected API_BASE_URL
+│   │   ├── constants/           # AppConstants (version, buildNumber, routes, keys)
+│   │   ├── errors/              # ApiException hierarchy (401, 403, 404, 422, 5xx)
+│   │   ├── network/             # Dio ApiClient with Sanctum Bearer interceptor
+│   │   ├── routing/             # GoRouter with auth redirect guards
+│   │   ├── services/
+│   │   │   ├── notification_service.dart  # OS push + 30s API polling
+│   │   │   └── permission_service.dart    # Runtime permission gating with rationale dialogs
+│   │   ├── storage/             # SecureStorageService (Keychain/Keystore)
+│   │   ├── theme/               # NpontuTheme (light + dark) + NpontuColors brand tokens
+│   │   └── utils/
+│   │       └── responsive.dart  # Breakpoints: phone < 600dp, tablet 600-1024dp
 │   │
-│   ├── features/              # Feature modules
-│   │   ├── auth/              # Login, token storage, user context
-│   │   ├── dashboard/         # Cockpit overview, SLA metrics, shift tracker
-│   │   ├── activities/        # Operational checklist, check-off modal, audit trail
-│   │   ├── handovers/         # 2-Way shift handover briefings & sign-offs
-│   │   ├── messaging/         # Ops chat channels, war rooms, direct messages
-│   │   ├── health/            # SRE diagnostics, MySQL & Redis probes
-│   │   ├── reports/           # Compliance metrics, date filters, event logs
-│   │   ├── team/              # Operator directory, role filters, grades
-│   │   └── audit/             # Immutable audit log with JSON state diffs
+│   ├── features/
+│   │   ├── auth/                # Login, Sanctum token lifecycle, UserModel
+│   │   ├── dashboard/           # Operations Cockpit — adaptive phone/tablet layout
+│   │   ├── activities/          # Shift checklist, P1-P4 priorities, check-off
+│   │   ├── handovers/           # 2-way shift briefings and sign-offs
+│   │   ├── messaging/           # Ops chat channels, war rooms, direct messages
+│   │   ├── health/              # SRE diagnostics, DB/Redis health probes
+│   │   ├── notifications/       # Notification centre — badge, date groups, swipe dismiss
+│   │   ├── reports/             # Compliance metrics, date-range queries
+│   │   ├── settings/            # Theme, notification prefs, biometric, permissions
+│   │   ├── team/                # Operator directory, role and grade filters
+│   │   └── audit/               # Immutable audit log with before/after JSON diffs
 │   │
-│   └── shared/                # Reusable widgets and domain models
-│       ├── models/            # Strongly-typed models matching OpenAPI 3.0 schema
-│       └── widgets/           # StatusBadge, PriorityBadge, AppDrawer, EmptyState
+│   └── shared/
+│       ├── models/              # Strongly-typed domain models (UserModel, ActivityModel…)
+│       └── widgets/             # AppDrawer (with notification badge), StatusBadge, etc.
 │
-└── test/                      # Automated unit, widget, and integration test suite
+└── test/
+    ├── features/notifications/  # Unit tests: model parsing, badge count provider
+    ├── models_test.dart
+    └── live_render_integration_test.dart
 ```
 
 ---
 
 ## 4. Engineering Disciplines & Best Practices
 
-1. **State Management**:
-   - Use **Riverpod** (`StateNotifierProvider` / `StateNotifier`) for business logic and UI state.
-   - Keep screens purely declarative; never place raw HTTP calls inside Flutter widgets.
-2. **Network Resilience**:
-   - All network requests pass through `ApiClient` which automatically attaches Bearer tokens, correlation IDs, and standard error handling.
-   - Idempotent GET requests may be retried; mutating POST/PUT requests require user intervention on network timeouts.
-3. **Brand Consistency**:
-   - Never use arbitrary hex colors in UI files. Always reference `NpontuColors.green` (`#1B6B3A`), `NpontuColors.gold` (`#F5C518`), and `NpontuColors.danger` (`#E63946`).
-4. **Security Discipline**:
-   - Never store tokens in `SharedPreferences`. Always use `SecureStorageService`.
-   - Never log passwords or authorization tokens in debug consoles.
+### State Management
+- Use **Riverpod** (`AsyncNotifierProvider`, `NotifierProvider`, `StateNotifierProvider`).
+- Controllers handle HTTP and business logic; screens are purely declarative.
+- Use optimistic updates in AsyncNotifiers with automatic revert on API error.
+
+### Network
+- All requests pass through `ApiClient` which attaches the Bearer token.
+- Idempotent GETs may be retried; mutating requests require user confirmation on timeout.
+- API error mapping: 401 → redirect to login; 422 → inline field errors; 5xx → snackbar.
+
+### Notifications
+- `NotificationService` is initialised in `main()` before `runApp()`.
+- The 30-second polling loop runs inside the app's Riverpod scope.
+- `notificationBadgeCountProvider` drives all badge UI (AppBar + AppDrawer).
+
+### Permissions
+- **Never** call `Permission.request()` directly in widgets. Use `PermissionService`.
+- Always show a rationale before the OS dialog.
+- Permanently-denied permissions open App Settings via `openAppSettings()`.
+
+### Responsive Design
+- Use `Responsive.isTabletOrDesktop(context)` (≥ 600 dp) to switch layouts.
+- Dashboard: two-column `Row` on tablets, single `ListView` on phones.
+- AppDrawer uses `NavigationRail` on tablets ≥ 600 dp (via `AdaptiveScaffold`).
+
+### Brand Consistency
+- Never use arbitrary hex colours. Always reference `NpontuColors.*`.
+- Primary: `NpontuColors.green` (`#1B6B3A`)
+- Accent: `NpontuColors.gold` (`#F5C518`)
+- Alert: `NpontuColors.danger` (`#E63946`)
+
+### Security
+- Tokens: `SecureStorageService` only. Never `SharedPreferences`.
+- Do not log passwords or authorization tokens.
+- All screens that require auth are guarded by the GoRouter `redirect`.
 
 ---
 
-## 5. Testing & Quality Gates
+## 5. Building Release Artifacts
+
+### Option A: Split APKs (direct sideload / internal distribution)
+
+```bash
+flutter build apk \
+  --release \
+  --split-per-abi \
+  --obfuscate \
+  --split-debug-info=build/debug-info \
+  --dart-define=API_BASE_URL=https://npontu-support-tracker.onrender.com/api/v1
+```
+
+Output (`build/app/outputs/flutter-apk/`):
+
+| File | ABI | Size |
+|---|---|---|
+| `app-arm64-v8a-release.apk` | Modern Android (2016+) | ~35–50 MB |
+| `app-armeabi-v7a-release.apk` | Older 32-bit devices | ~30–45 MB |
+| `app-x86_64-release.apk` | Emulators | ~40–55 MB |
+
+> **Fat APK comparison**: Without `--split-per-abi`, a single fat APK containing all ABIs is ~150–160 MB. Splitting is the single biggest size reduction.
+
+### Option B: App Bundle (Google Play — recommended for production)
+
+```bash
+flutter build appbundle \
+  --release \
+  --obfuscate \
+  --split-debug-info=build/debug-info \
+  --dart-define=API_BASE_URL=https://npontu-support-tracker.onrender.com/api/v1
+```
+
+Play Store automatically splits the bundle by ABI, density, and language. Users download only what their device needs (~15–25 MB).
+
+### APK Size Optimisations Applied
+
+| Technique | Where | Approximate Saving |
+|---|---|---|
+| `--split-per-abi` | Build command | ~60% (removes bundled unused ABIs) |
+| `isMinifyEnabled = true` (R8) | `build.gradle.kts` | ~20–30% DEX shrink |
+| `isShrinkResources = true` | `build.gradle.kts` | ~5–10% resource strip |
+| `--obfuscate` | Build command | ~3–5% symbol compression |
+| `useLegacyPackaging = false` | `build.gradle.kts` | Efficient .so extraction |
+
+---
+
+## 6. Testing & Quality Gates
 
 Run all checks before submitting changes:
+
 ```bash
-# 1. Format check
+# 1. Format (zero-diff check)
 dart format --output=none --set-exit-if-changed .
 
-# 2. Static analysis
+# 2. Static analysis (zero errors, zero warnings)
 flutter analyze
 
-# 3. Unit and widget test suite
+# 3. Full test suite
 flutter test
 ```
+
+All three gates are enforced by the CI workflow at `.github/workflows/flutter-ci.yml`.
+
+---
+
+## 7. CI/CD Pipeline
+
+The Flutter CI workflow (`.github/workflows/flutter-ci.yml`) runs on every push to `main` that touches `npontu_sre_mobile/`:
+
+1. **Format check** — `dart format --set-exit-if-changed`
+2. **Static analysis** — `flutter analyze`
+3. **Unit tests** — `flutter test --coverage`
+4. **Debug APK** — `--split-per-abi --target-platform android-arm64` (fast CI feedback)
+5. **Release split APKs** — `--split-per-abi --obfuscate` → artifact `npontu-sre-android-split-apks`
+6. **Release AAB** — `--obfuscate` → artifact `npontu-sre-google-play-aab`
+7. **Debug symbols** — Uploaded separately for crash deobfuscation
+
+---
+
+## 8. App Permissions Reference
+
+### Android (`android/app/src/main/AndroidManifest.xml`)
+
+| Permission | Reason |
+|---|---|
+| `INTERNET` | API communication |
+| `ACCESS_NETWORK_STATE` | Connectivity checks |
+| `POST_NOTIFICATIONS` | Push alerts (Android 13+) |
+| `ACCESS_FINE_LOCATION` | On-site check-in tagging |
+| `ACCESS_COARSE_LOCATION` | Fallback location |
+| `CAMERA` | QR scanning, incident photos |
+| `READ_MEDIA_IMAGES` | Photo attachments (Android 13+) |
+| `USE_BIOMETRIC` | Secure sign-in |
+| `USE_FINGERPRINT` | Legacy fingerprint (< Android 9) |
+| `VIBRATE` | Critical alert vibration |
+| `SCHEDULE_EXACT_ALARM` | Precise notification delivery |
+| `RECEIVE_BOOT_COMPLETED` | Re-register notification channels on reboot |
+
+### iOS (`ios/Runner/Info.plist`)
+
+| Key | Reason |
+|---|---|
+| `NSCameraUsageDescription` | Equipment QR / incident photos |
+| `NSPhotoLibraryUsageDescription` | Photo attachments |
+| `NSLocationWhenInUseUsageDescription` | Check-in geolocation |
+| `NSLocationAlwaysAndWhenInUseUsageDescription` | Background shift geofencing |
+| `NSFaceIDUsageDescription` | Biometric authentication |

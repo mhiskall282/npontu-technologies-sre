@@ -5,6 +5,14 @@ class AppConstants {
   static const String appTitle = 'Npontu SRE Support Activity Tracker';
   static const String version = '1.0.0';
 
+  // Version info displayed in Settings
+  static const String appVersion = '1.0.0';
+  static const String buildNumber = '1';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://npontu-support-tracker.onrender.com/api/v1',
+  );
+
   // Storage Keys
   static const String authTokenKey = 'npontu_auth_token';
   static const String userDataKey = 'npontu_user_data';

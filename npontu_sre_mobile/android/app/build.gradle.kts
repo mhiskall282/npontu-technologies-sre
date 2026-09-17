@@ -15,25 +15,68 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.npontu.sre.npontu_sre_mobile"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
-        // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
-        // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
-        // flag during build.
+        // is added automatically by Flutter.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // TODO: Replace with a proper signing config before production release.
+            // Signing with the debug keys for CI/testing. Production releases should
+            // use a keystore-backed signing config.
             signingConfig = signingConfigs.getByName("debug")
+
+            // ── Size Optimisations ──────────────────────────────────────────
+            // R8 full-mode: dead code elimination + bytecode rewriting.
+            // Reduces DEX size by 30–50% for typical Flutter apps.
+            isMinifyEnabled = true
+
+            // Strip unused resources (images, layouts, strings, etc.)
+            // Works together with isMinifyEnabled.
+            isShrinkResources = true
+
+            // ProGuard / R8 rules. Flutter's own rules are bundled via the
+            // Flutter Gradle plugin; we add project-specific additions here.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
+        debug {
+            // No minification in debug — keeps build fast and symbols readable.
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
+    }
+
+    // ── Split APKs by ABI ───────────────────────────────────────────────────
+    // This is the SINGLE BIGGEST SIZE REDUCTION. A fat APK bundles all three
+    // ABI slices (arm64-v8a, armeabi-v7a, x86_64) into one file (~150-160 MB).
+    // Splitting produces one APK per ABI (~35-55 MB each).
+    // For production, prefer AAB (.aab) which Play Store splits per device.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            // Include only the ABIs relevant to real-world Android devices.
+            // x86/x86_64 are only needed for emulators — exclude from production.
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = false // set to true to also emit a fat APK (for testing)
+        }
+    }
+
+    // ── Native Library Packaging ─────────────────────────────────────────────
+    // Extract native .so files at install time (not at runtime from the APK).
+    // Required by Android 6.0+ for efficient loading; reduces installed size.
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 }

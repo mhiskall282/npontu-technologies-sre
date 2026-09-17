@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/services/notification_service.dart';
 import '../../core/theme/npontu_theme.dart';
+import '../../core/utils/responsive.dart';
 import '../../shared/widgets/app_drawer.dart';
 import '../../shared/widgets/error_retry.dart';
 import '../../shared/widgets/priority_badge.dart';
@@ -29,6 +31,43 @@ class DashboardScreen extends ConsumerWidget {
             onPressed: () =>
                 ref.read(dashboardControllerProvider.notifier).loadDashboard(),
           ),
+          Consumer(
+            builder: (ctx, watchRef, _) {
+              final unread = watchRef.watch(notificationBadgeCountProvider);
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_outlined),
+                    tooltip: 'Notifications',
+                    onPressed: () => context.push('/notifications'),
+                  ),
+                  if (unread > 0)
+                    Positioned(
+                      top: 6,
+                      right: 6,
+                      child: Container(
+                        width: 16,
+                        height: 16,
+                        decoration: const BoxDecoration(
+                          color: NpontuColors.danger,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            unread > 9 ? '9+' : '$unread',
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.chat_bubble_outline_rounded),
             tooltip: 'Operational Chat',
@@ -51,31 +90,52 @@ class DashboardScreen extends ConsumerWidget {
               onRefresh: () => ref
                   .read(dashboardControllerProvider.notifier)
                   .loadDashboard(),
-              child: ListView(
-                padding: const EdgeInsets.only(bottom: 24),
-                children: [
-                  // Shift Period & Health Banner
-                  _buildShiftBanner(context, state),
-
-                  // Metric Summary Cards
-                  _buildMetricsGrid(context, state),
-
-                  // Active Incidents Banner (if any active)
-                  if (state.activeIncidentsCount > 0)
-                    _buildIncidentsSection(context, state),
-
-                  // Priority Tiers Breakdown
-                  _buildPriorityBreakdown(context, state),
-
-                  // Personal Queue Section
-                  _buildPersonalQueue(context, state),
-
-                  // Latest Shift Handover Card
-                  if (state.latestHandover != null)
-                    _buildLatestHandoverCard(context, state),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (Responsive.isTabletOrDesktop(context)) {
+                    return _buildTabletLayout(context, state);
+                  }
+                  return _buildPhoneLayout(context, state);
+                },
               ),
             ),
+    );
+  }
+
+  Widget _buildPhoneLayout(BuildContext context, DashboardDataState state) {
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 24),
+      children: [
+        _buildShiftBanner(context, state),
+        _buildMetricsGrid(context, state),
+        if (state.activeIncidentsCount > 0)
+          _buildIncidentsSection(context, state),
+        _buildPriorityBreakdown(context, state),
+        _buildPersonalQueue(context, state),
+        if (state.latestHandover != null)
+          _buildLatestHandoverCard(context, state),
+      ],
+    );
+  }
+
+  Widget _buildTabletLayout(BuildContext context, DashboardDataState state) {
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 24),
+      children: [
+        _buildShiftBanner(context, state),
+        _buildMetricsGrid(context, state),
+        if (state.activeIncidentsCount > 0)
+          _buildIncidentsSection(context, state),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _buildPriorityBreakdown(context, state)),
+            Expanded(child: _buildPersonalQueue(context, state)),
+          ],
+        ),
+        if (state.latestHandover != null)
+          _buildLatestHandoverCard(context, state),
+      ],
     );
   }
 

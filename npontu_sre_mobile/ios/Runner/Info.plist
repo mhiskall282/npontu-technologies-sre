@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Npontu Sre Mobile</string>
+	<string>SRE Operations</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>npontu_sre_mobile</string>
+	<string>SRE Operations</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -26,6 +26,16 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Npontu SRE requires camera access to capture equipment status and incident evidence.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Npontu SRE requires photo library access to attach telemetry screenshots and logs to war rooms.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Npontu SRE verifies your operational site and datacenter presence for secure on-call check-ins.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Npontu SRE uses your location for datacenter geofencing and on-call check-in validation, even in the background during active shifts.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Npontu SRE uses Face ID to securely authenticate on-duty engineers and unlock sensitive audit logs.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

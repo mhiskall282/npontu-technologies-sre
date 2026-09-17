@@ -1,10 +1,9 @@
-// lib/shared/widgets/app_drawer.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/services/notification_service.dart';
 import '../../core/theme/npontu_theme.dart';
 import '../../features/auth/presentation/auth_controller.dart';
 
@@ -190,6 +189,27 @@ class AppDrawer extends ConsumerWidget {
                   icon: Icons.security_rounded,
                   route: '/audit',
                   isSelected: currentRoute == '/audit',
+                ),
+                const Divider(height: 1, indent: 20, endIndent: 20),
+                Consumer(
+                  builder: (ctx, ref, _) {
+                    final unread = ref.watch(notificationBadgeCountProvider);
+                    return _buildDrawerItem(
+                      context,
+                      title: 'Notifications',
+                      icon: Icons.notifications_outlined,
+                      route: '/notifications',
+                      isSelected: currentRoute == '/notifications',
+                      badgeCount: unread,
+                    );
+                  },
+                ),
+                _buildDrawerItem(
+                  context,
+                  title: 'Settings',
+                  icon: Icons.settings_outlined,
+                  route: '/settings',
+                  isSelected: currentRoute == '/settings',
                 ),
               ],
             ),
