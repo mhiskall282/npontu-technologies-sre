@@ -40,16 +40,18 @@ class AuthController extends StateNotifier<AuthState> {
   final ApiClient _apiClient;
   final SecureStorageService _storage;
 
+  bool _isChecking = false;
+
   AuthController({
     required ApiClient apiClient,
     required SecureStorageService storage,
   }) : _apiClient = apiClient,
        _storage = storage,
-       super(const AuthState(isLoading: false)) {
-    checkAuthStatus();
-  }
+       super(const AuthState(isLoading: false));
 
   Future<void> checkAuthStatus() async {
+    if (_isChecking) return;
+    _isChecking = true;
     try {
       final token = await _storage.getAuthToken();
       if (token == null || token.isEmpty) {
@@ -57,8 +59,10 @@ class AuthController extends StateNotifier<AuthState> {
         return;
       }
 
-      // Try fetching current profile from /api/v1/me
-      final response = await _apiClient.get('/me');
+      // Try fetching current profile from /api/v1/me with a timeout
+      final response = await _apiClient
+          .get('/me')
+          .timeout(const Duration(seconds: 4));
       final data = response.data['data'] as Map<String, dynamic>;
       final user = UserModel.fromJson(data);
 
@@ -66,7 +70,7 @@ class AuthController extends StateNotifier<AuthState> {
 
       state = AuthState(user: user, isAuthenticated: true, isLoading: false);
     } catch (_) {
-      // If offline, check if cached user data exists
+      // If offline or unreachable, check if cached user data exists
       final cachedUser = await _storage.getUserData();
       if (cachedUser != null) {
         state = AuthState(
@@ -77,6 +81,8 @@ class AuthController extends StateNotifier<AuthState> {
       } else {
         state = const AuthState(isAuthenticated: false, isLoading: false);
       }
+    } finally {
+      _isChecking = false;
     }
   }
 

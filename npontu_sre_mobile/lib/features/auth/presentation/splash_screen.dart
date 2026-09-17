@@ -51,35 +51,75 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.dispose();
   }
 
-  Future<void> _bootSequence() async {
-    // 1. Initialise local offline cache
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (!mounted) return;
-    setState(() => _statusMessage = 'Hydrating offline telemetry...');
-    await ref.read(cacheServiceProvider).initialise();
+  bool _hasNavigated = false;
 
-    // 2. Check token and credentials
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-    setState(() => _statusMessage = 'Verifying security credentials...');
-    await ref.read(authControllerProvider.notifier).checkAuthStatus();
-
-    // 3. Complete splash presentation
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-    setState(() => _statusMessage = 'Ready.');
+  void _navigateToNextScreen() {
+    if (!mounted || _hasNavigated) return;
+    _hasNavigated = true;
 
     final authState = ref.read(authControllerProvider);
     final cacheService = ref.read(cacheServiceProvider);
-    final hasSeenOnboarding = cacheService.hasSeenOnboarding();
+    bool hasSeenOnboarding = false;
+    try {
+      hasSeenOnboarding = cacheService.hasSeenOnboarding();
+    } catch (_) {
+      hasSeenOnboarding = false;
+    }
 
-    if (mounted) {
-      if (authState.isAuthenticated) {
-        context.go('/');
-      } else if (!hasSeenOnboarding) {
-        context.go('/onboarding');
-      } else {
-        context.go('/login');
+    if (authState.isAuthenticated) {
+      context.go('/');
+    } else if (!hasSeenOnboarding) {
+      context.go('/onboarding');
+    } else {
+      context.go('/login');
+    }
+  }
+
+  Future<void> _bootSequence() async {
+    // Master watchdog: guarantee transition within 3.5 seconds under all conditions
+    Future.delayed(const Duration(milliseconds: 3500), () {
+      if (mounted && !_hasNavigated) {
+        _navigateToNextScreen();
+      }
+    });
+
+    try {
+      // 1. Initialise local offline cache
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (!mounted || _hasNavigated) return;
+      setState(() => _statusMessage = 'Hydrating offline telemetry...');
+      try {
+        await ref
+            .read(cacheServiceProvider)
+            .initialise()
+            .timeout(const Duration(seconds: 2));
+      } catch (e) {
+        debugPrint('Cache init skipped or timed out: $e');
+      }
+
+      // 2. Check token and credentials
+      await Future.delayed(const Duration(milliseconds: 350));
+      if (!mounted || _hasNavigated) return;
+      setState(() => _statusMessage = 'Verifying security credentials...');
+      try {
+        await ref
+            .read(authControllerProvider.notifier)
+            .checkAuthStatus()
+            .timeout(const Duration(seconds: 2));
+      } catch (e) {
+        debugPrint('Auth check skipped or timed out: $e');
+      }
+
+      // 3. Complete splash presentation
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (!mounted || _hasNavigated) return;
+      setState(() => _statusMessage = 'Ready.');
+      await Future.delayed(const Duration(milliseconds: 150));
+    } catch (e) {
+      debugPrint('Boot sequence exception: $e');
+    } finally {
+      if (mounted) {
+        _navigateToNextScreen();
       }
     }
   }

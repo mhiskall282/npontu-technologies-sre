@@ -26,6 +26,8 @@ class NotificationService {
   // ─── Initialisation ────────────────────────────────────────────────────────
 
   Future<void> initialise() async {
+    if (kIsWeb) return;
+
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwinInit = DarwinInitializationSettings(
       requestAlertPermission: false, // We handle this via PermissionService
@@ -66,6 +68,7 @@ class NotificationService {
     String? payload,
     NotificationImportance importance = NotificationImportance.high,
   }) async {
+    if (kIsWeb) return;
     final androidDetails = AndroidNotificationDetails(
       _channelId,
       _channelName,
