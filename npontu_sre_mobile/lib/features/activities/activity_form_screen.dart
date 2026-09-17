@@ -307,25 +307,22 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                       // Build the list of selected-display widgets in the same
                       // order as [items] below: null first, then conditional
                       // current-assignee, then team members.
+                      // Wrap each in Flexible so the InputDecorator row never
+                      // overflows on narrow screens.
+                      Widget _chip(String label) => Flexible(
+                            child: Text(
+                              label,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          );
                       final displayItems = <Widget>[
-                        const Text(
-                          'Unassigned (Shift Pool)',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
+                        _chip('Unassigned (Shift Pool)'),
                         if (_assignedToId != null &&
                             teamMembers.every((u) => u.id != _assignedToId))
-                          Text(
-                            'Current Assignee (ID: $_assignedToId)',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
+                          _chip('Current Assignee (ID: $_assignedToId)'),
                         ...teamMembers.map(
-                          (user) => Text(
-                            '${user.name} (${user.gradeLabel})',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
+                          (user) => _chip('${user.name} (${user.gradeLabel})'),
                         ),
                       ];
                       return displayItems;
@@ -368,7 +365,11 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Pin to top of shift view'),
-                    subtitle: const Text('Highlights critical handover items'),
+                    subtitle: const Text(
+                      'Highlights critical handover items',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
                     value: _isPinned,
                     activeColor: NpontuColors.gold,
                     onChanged: (val) => setState(() => _isPinned = val),
@@ -378,6 +379,8 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                     title: const Text('Active status'),
                     subtitle: const Text(
                       'Inactive items will not appear in daily checklist',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                     value: _isActive,
                     activeColor: NpontuColors.green,
