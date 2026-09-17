@@ -13,11 +13,20 @@ class CacheService {
   static const String keyHandovers = 'sre_cache_handovers';
   static const String keyTeam = 'sre_cache_team';
   static const String keyProfile = 'sre_cache_profile';
+  static const String keyHasSeenOnboarding = 'sre_has_seen_onboarding';
 
   SharedPreferences? _prefs;
 
   Future<void> initialise() async {
     _prefs ??= await SharedPreferences.getInstance();
+  }
+
+  bool hasSeenOnboarding() {
+    return _prefs?.getBool(keyHasSeenOnboarding) ?? false;
+  }
+
+  Future<void> setHasSeenOnboarding(bool value) async {
+    await _requirePrefs.setBool(keyHasSeenOnboarding, value);
   }
 
   SharedPreferences get _requirePrefs {

@@ -28,7 +28,8 @@
         <span class="truncate">Activities</span>
     </a>
 
-    {{-- Reports --}}
+    {{-- Reports (Strictly gated by export_reports or lead/admin) --}}
+    @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isLead() || auth()->user()->hasPrivilege('export_reports')))
     <a href="{{ route('reports.index') }}"
        class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150
               {{ request()->routeIs('reports.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
@@ -37,6 +38,7 @@
         </svg>
         <span class="truncate">Reports</span>
     </a>
+    @endif
 </div>
 
 {{-- Communications --}}
@@ -71,13 +73,14 @@
 </div>
 
 {{-- SRE Management & Supervisory --}}
-@if(auth()->check() && auth()->user()->canManageActivities())
+@if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isLead() || auth()->user()->canManageActivities()))
 <div class="space-y-1 pt-3">
     <div class="px-3 pb-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase font-mono">
         Supervisory
     </div>
 
-    {{-- Admin Console --}}
+    {{-- Admin Console (admin or manage_users/manage_activities) --}}
+    @if(auth()->user()->isAdmin() || auth()->user()->canManageActivities())
     <a href="{{ route('admin.activities.index') }}"
        class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150
               {{ request()->routeIs('admin.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
@@ -86,8 +89,10 @@
         </svg>
         <span class="truncate">Admin</span>
     </a>
+    @endif
 
-    {{-- Monitoring --}}
+    {{-- Monitoring (admin and lead) --}}
+    @if(auth()->user()->isAdmin() || auth()->user()->isLead())
     <a href="{{ route('monitoring.index') }}"
        class="group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150
               {{ request()->routeIs('monitoring.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
@@ -102,6 +107,7 @@
             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
         </span>
     </a>
+    @endif
 </div>
 @endif
 

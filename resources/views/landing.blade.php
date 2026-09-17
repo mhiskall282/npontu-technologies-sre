@@ -55,7 +55,7 @@
                     <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">APK</span>
                 </a>
                 <a href="#telemetry" class="hover:text-[#F5C518] transition-colors">Telemetry</a>
-                <a href="{{ route('docs') }}" class="text-[#F5C518] hover:underline transition-colors font-bold">Docs</a>
+                <a href="{{ route('docs') }}" class="text-[#F5C518] hover:underline transition-colors font-bold">Docs &amp; Guide</a>
             </nav>
 
             {{-- Right CTA Section --}}

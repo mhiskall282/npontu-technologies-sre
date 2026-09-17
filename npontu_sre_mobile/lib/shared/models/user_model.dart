@@ -31,6 +31,46 @@ class UserModel {
   bool get isLead => role == 'lead';
   bool get isAgent => role == 'agent';
 
+  String get roleLabel {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return 'System Administrator';
+      case 'lead':
+        return 'Shift Team Lead';
+      case 'agent':
+      default:
+        return 'Support Engineer (SRE)';
+    }
+  }
+
+  String get seniorityDescription {
+    switch (grade) {
+      case 'L5':
+        return 'Principal Architect & Enterprise Lead. Highest engineering tier overseeing system architecture, reliability governance, and cross-team incidents.';
+      case 'L4':
+        return 'Team Lead & Shift Supervisor. Oversees live shifts, conducts two-way handovers, assigns checks, and supervises operations.';
+      case 'L3':
+        return 'Senior SRE Specialist. Manages complex infrastructure checks, P1/P2 incidents, and root cause investigations.';
+      case 'L2':
+        return 'Support Engineer (SRE). Handles core checklist runs, SLA compliance checks, and real-time incident war rooms.';
+      case 'L1':
+      default:
+        return 'Associate Support Operator. Conducts routine operational checks, verifies telemetry, and escalates anomalies.';
+    }
+  }
+
+  static const Map<String, String> privilegeCatalog = {
+    'manage_activities': 'Manage Activities & Checks',
+    'assign_tasks': 'Delegate & Reassign Tasks',
+    'sign_handovers': 'Sign Shift Handovers',
+    'accept_handovers': 'Accept & Sign-On Handovers',
+    'escalate_incidents': 'Flag Incidents & Escalations',
+    'export_reports': 'Reporting & Data Export',
+    'manage_users': 'User Administration',
+    'view_audit_logs': 'View Security Audit Trails',
+    'create_channels': 'Create Chat Channels',
+  };
+
   bool hasPrivilege(String privilege) {
     if (isAdmin) return true;
     return privileges.contains(privilege);

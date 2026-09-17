@@ -10,6 +10,7 @@ import '../../core/services/cache_service.dart';
 import '../../core/services/permission_service.dart';
 import '../../core/theme/npontu_theme.dart';
 import '../../shared/models/user_model.dart';
+import '../../shared/widgets/user_profile_sheet.dart';
 import '../activities/activities_controller.dart';
 import '../auth/presentation/auth_controller.dart';
 import '../dashboard/dashboard_controller.dart';
@@ -38,6 +39,9 @@ class SettingsScreen extends ConsumerWidget {
             grade: user?.gradeLabel ?? '—',
             designation: user?.designation,
             department: user?.department,
+            onViewProfile: user != null
+                ? () => UserProfileSheet.show(context, user: user)
+                : null,
             onEdit: () => _showEditProfileDialog(context, ref, user),
           ),
 
@@ -200,7 +204,17 @@ class SettingsScreen extends ConsumerWidget {
           const _OfflineStorageTile(),
 
           // ── About ────────────────────────────────────────────────────────
-          _SectionHeader(title: 'About'),
+          _SectionHeader(title: 'About & Introduction'),
+          _SettingsTile(
+            icon: Icons.auto_stories_rounded,
+            title: 'Platform Tour & Features',
+            subtitle: 'Revisit the animated SRE shift operations walkthrough',
+            trailing: const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.grey,
+            ),
+            onTap: () => context.push('/onboarding'),
+          ),
           _SettingsTile(
             icon: Icons.info_outline_rounded,
             title: 'App Version',
@@ -492,6 +506,7 @@ class _ProfileCard extends StatelessWidget {
     required this.grade,
     this.designation,
     this.department,
+    this.onViewProfile,
     this.onEdit,
   });
 
@@ -501,6 +516,7 @@ class _ProfileCard extends StatelessWidget {
   final String grade;
   final String? designation;
   final String? department;
+  final VoidCallback? onViewProfile;
   final VoidCallback? onEdit;
 
   @override
@@ -511,6 +527,7 @@ class _ProfileCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
               radius: 28,
@@ -541,6 +558,7 @@ class _ProfileCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Wrap(
                     spacing: 6,
+                    runSpacing: 4,
                     children: [
                       _RoleBadge(label: role.toUpperCase()),
                       _RoleBadge(label: grade, color: NpontuColors.goldWarm),
@@ -564,27 +582,49 @@ class _ProfileCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (onEdit != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: OutlinedButton.icon(
-                        onPressed: onEdit,
-                        icon: const Icon(Icons.edit_note_rounded, size: 16),
-                        label: const Text(
-                          'Edit Profile & Team',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: NpontuColors.green,
-                          side: const BorderSide(color: NpontuColors.green),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      if (onViewProfile != null)
+                        ElevatedButton.icon(
+                          onPressed: onViewProfile,
+                          icon: const Icon(Icons.badge_outlined, size: 14),
+                          label: const Text(
+                            'View Full Profile',
+                            style: TextStyle(fontSize: 11),
                           ),
-                          visualDensity: VisualDensity.compact,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: NpontuColors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
                         ),
-                      ),
-                    ),
+                      if (onEdit != null)
+                        OutlinedButton.icon(
+                          onPressed: onEdit,
+                          icon: const Icon(Icons.edit_note_rounded, size: 14),
+                          label: const Text(
+                            'Edit Team / Info',
+                            style: TextStyle(fontSize: 11),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: NpontuColors.green,
+                            side: const BorderSide(color: NpontuColors.green),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ),

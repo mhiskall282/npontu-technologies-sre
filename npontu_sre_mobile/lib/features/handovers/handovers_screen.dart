@@ -6,11 +6,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/npontu_theme.dart';
 import '../../shared/models/shift_handover_model.dart';
+import '../../shared/models/user_model.dart';
 import '../../shared/widgets/app_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_retry.dart';
 import '../../shared/widgets/skeleton_loader.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../shared/widgets/user_profile_sheet.dart';
 import '../auth/presentation/auth_controller.dart';
 import 'handovers_controller.dart';
 
@@ -48,16 +50,18 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: NpontuColors.green,
-        foregroundColor: Colors.white,
-        onPressed: () => context.push('/handovers/new'),
-        icon: const Icon(Icons.swap_horiz_rounded),
-        label: const Text(
-          'Initiate Handover',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-      ),
+      floatingActionButton: user?.canSignHandovers == true
+          ? FloatingActionButton.extended(
+              backgroundColor: NpontuColors.green,
+              foregroundColor: Colors.white,
+              onPressed: () => context.push('/handovers/new'),
+              icon: const Icon(Icons.swap_horiz_rounded),
+              label: const Text(
+                'Initiate Handover',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: () => ref
             .read(handoversControllerProvider.notifier)
@@ -157,9 +161,7 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
             ),
 
             // Content Area
-            Expanded(
-              child: _buildBody(context, handoversState, user?.id, isDark),
-            ),
+            Expanded(child: _buildBody(context, handoversState, user, isDark)),
           ],
         ),
       ),
@@ -169,7 +171,7 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
   Widget _buildBody(
     BuildContext context,
     HandoversState state,
-    int? currentUserId,
+    UserModel? user,
     bool isDark,
   ) {
     if (state.isLoading) {
@@ -201,7 +203,7 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
       itemCount: state.handovers.length,
       itemBuilder: (ctx, index) {
         final item = state.handovers[index];
-        return _buildHandoverCard(context, item, currentUserId, isDark);
+        return _buildHandoverCard(context, item, user, isDark);
       },
     );
   }
@@ -209,12 +211,18 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
   Widget _buildHandoverCard(
     BuildContext context,
     ShiftHandoverModel item,
-    int? currentUserId,
+    UserModel? user,
     bool isDark,
   ) {
+    // Strictly gate accept button to authorized users (canAcceptHandovers, admin, or lead)
+    final isAuthorizedToAccept =
+        user?.canAcceptHandovers == true ||
+        user?.isAdmin == true ||
+        user?.isLead == true;
     final canAccept =
         !item.isAcknowledged &&
-        (item.incomingUserId == null || item.incomingUserId == currentUserId);
+        isAuthorizedToAccept &&
+        (item.incomingUserId == null || item.incomingUserId == user?.id);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
@@ -260,7 +268,7 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
             ),
             const SizedBox(height: 12),
 
-            // Operator Handoff Chain: Outgoing -> Incoming
+            // Operator Handoff Chain: Outgoing -> Incoming (Clickable for Profile & Seniority)
             Row(
               children: [
                 Expanded(
@@ -272,15 +280,33 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
                         style: TextStyle(fontSize: 11, color: Colors.grey),
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        item.outgoingUser?.name ??
-                            'Operator #${item.outgoingUserId}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                      InkWell(
+                        onTap: () {
+                          if (item.outgoingUser != null) {
+                            UserProfileSheet.show(
+                              context,
+                              user: item.outgoingUser!,
+                            );
+                          } else if (item.outgoingUserId > 0) {
+                            UserProfileSheet.showById(
+                              context,
+                              userId: item.outgoingUserId,
+                              ref: ref,
+                            );
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(4),
+                        child: Text(
+                          item.outgoingUser?.name ??
+                              'Operator #${item.outgoingUserId}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: NpontuColors.green,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -300,14 +326,34 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
                         style: TextStyle(fontSize: 11, color: Colors.grey),
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        item.incomingUser?.name ?? 'Awaiting Sign-Off',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                      InkWell(
+                        onTap: () {
+                          if (item.incomingUser != null) {
+                            UserProfileSheet.show(
+                              context,
+                              user: item.incomingUser!,
+                            );
+                          } else if (item.incomingUserId != null) {
+                            UserProfileSheet.showById(
+                              context,
+                              userId: item.incomingUserId!,
+                              ref: ref,
+                            );
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(4),
+                        child: Text(
+                          item.incomingUser?.name ?? 'Awaiting Sign-Off',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: item.incomingUser != null
+                                ? NpontuColors.green
+                                : Colors.grey,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

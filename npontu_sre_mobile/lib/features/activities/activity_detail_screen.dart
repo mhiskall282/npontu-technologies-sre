@@ -8,6 +8,7 @@ import '../../core/theme/npontu_theme.dart';
 import '../../shared/models/activity_model.dart';
 import '../../shared/widgets/priority_badge.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../../shared/widgets/user_profile_sheet.dart';
 import '../auth/presentation/auth_controller.dart';
 import 'activities_controller.dart';
 
@@ -244,6 +245,12 @@ class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
                             icon: Icons.account_circle_outlined,
                             label: 'Assigned Operator',
                             value: activity.assignee?.name ?? 'Unassigned Pool',
+                            onTap: activity.assignee != null
+                                ? () => UserProfileSheet.show(
+                                    context,
+                                    user: activity.assignee!,
+                                  )
+                                : null,
                           ),
                         ),
                         Expanded(
@@ -346,8 +353,9 @@ class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
     required IconData icon,
     required String label,
     required String value,
+    VoidCallback? onTap,
   }) {
-    return Row(
+    final content = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 18, color: NpontuColors.green),
@@ -362,12 +370,27 @@ class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
             const SizedBox(height: 2),
             Text(
               value,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: onTap != null ? NpontuColors.green : null,
+                decoration: onTap != null ? TextDecoration.underline : null,
+                decorationStyle: TextDecorationStyle.dotted,
+              ),
             ),
           ],
         ),
       ],
     );
+
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(6),
+        child: content,
+      );
+    }
+    return content;
   }
 
   Widget _buildLogCard(ActivityLogModel log, bool isDark) {
@@ -437,13 +460,24 @@ class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
                       : NpontuColors.textSecondaryLight,
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  'Operator: ${log.actor?.name ?? 'System'}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: isDark
-                        ? NpontuColors.textSecondaryDark
-                        : NpontuColors.textSecondaryLight,
+                InkWell(
+                  onTap: log.actor != null
+                      ? () => UserProfileSheet.show(context, user: log.actor!)
+                      : null,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Text(
+                    'Operator: ${log.actor?.name ?? 'System'}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: log.actor != null
+                          ? NpontuColors.green
+                          : (isDark
+                                ? NpontuColors.textSecondaryDark
+                                : NpontuColors.textSecondaryLight),
+                      fontWeight: log.actor != null
+                          ? FontWeight.w700
+                          : FontWeight.normal,
+                    ),
                   ),
                 ),
                 const Spacer(),

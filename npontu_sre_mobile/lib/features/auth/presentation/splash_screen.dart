@@ -70,9 +70,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     setState(() => _statusMessage = 'Ready.');
 
     final authState = ref.read(authControllerProvider);
+    final cacheService = ref.read(cacheServiceProvider);
+    final hasSeenOnboarding = cacheService.hasSeenOnboarding();
+
     if (mounted) {
       if (authState.isAuthenticated) {
         context.go('/');
+      } else if (!hasSeenOnboarding) {
+        context.go('/onboarding');
       } else {
         context.go('/login');
       }

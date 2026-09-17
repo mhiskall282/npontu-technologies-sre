@@ -117,16 +117,23 @@
             {{-- Mobile Drawer User / Actions --}}
             <div class="p-4 border-t border-[#1A2E22] bg-[#0A120E] shrink-0">
                 @auth
-                <div class="flex items-center justify-between mb-3">
+                <div onclick="openProfileModal()"
+                     class="flex items-center justify-between mb-3 p-1.5 -m-1.5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer group"
+                     title="View SRE Operator Profile">
                     <div class="flex items-center gap-2.5 min-w-0">
-                        <div class="w-8 h-8 rounded-lg bg-[#1B6B3A] border border-[#F5C518]/40 flex items-center justify-center font-bold text-xs text-white shadow-inner shrink-0">
+                        <div class="w-8 h-8 rounded-lg bg-[#1B6B3A] border border-[#F5C518]/40 flex items-center justify-center font-bold text-xs text-white shadow-inner shrink-0 group-hover:border-[#F5C518] transition-colors">
                             {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-xs font-semibold text-white truncate leading-tight">{{ auth()->user()->name }}</p>
-                            <p class="text-[10px] text-green-300 capitalize">{{ auth()->user()->role }}</p>
+                            <p class="text-xs font-semibold text-white truncate leading-tight group-hover:text-emerald-300 transition-colors">{{ auth()->user()->name }}</p>
+                            <p class="text-[10px] text-green-300 capitalize flex items-center gap-1">
+                                <span>{{ auth()->user()->role }}</span>
+                                <span class="text-white/40">•</span>
+                                <span class="text-[#F5C518] font-semibold">{{ auth()->user()->grade ?? 'L1' }}</span>
+                            </p>
                         </div>
                     </div>
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </div>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('settings.edit') }}" class="flex-1 text-center py-1.5 px-2 bg-white/5 hover:bg-white/10 text-xs text-gray-300 rounded-lg transition-colors border border-white/5">
@@ -188,21 +195,27 @@
             {{-- User Profile & Bottom Action Footer --}}
             <div class="p-3 border-t border-[#1A2E22] bg-[#0A120E] shrink-0">
                 @auth
-                <div class="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-white/5 mb-2">
-                    <div class="w-9 h-9 rounded-lg bg-[#1B6B3A] border border-[#F5C518]/40 flex items-center justify-center font-bold text-xs text-white shadow-inner shrink-0">
+                <div onclick="openProfileModal()"
+                     class="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[#F5C518]/30 mb-2 cursor-pointer transition-all group"
+                     title="Click to view detailed SRE profile and permissions">
+                    <div class="w-9 h-9 rounded-lg bg-[#1B6B3A] border border-[#F5C518]/40 flex items-center justify-center font-bold text-xs text-white shadow-inner shrink-0 group-hover:scale-105 transition-transform">
                         {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="text-xs font-semibold text-white truncate leading-tight">{{ auth()->user()->name }}</p>
+                        <p class="text-xs font-semibold text-white truncate leading-tight group-hover:text-emerald-300 transition-colors">{{ auth()->user()->name }}</p>
                         <div class="flex items-center gap-1.5 mt-0.5">
                             <span class="px-1.5 py-0.2 rounded text-[10px] font-medium bg-[#1B6B3A]/60 text-green-200 capitalize">
                                 {{ auth()->user()->role }}
                             </span>
+                            <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-[#F5C518]/20 text-[#F5C518] border border-[#F5C518]/30">
+                                {{ auth()->user()->grade ?? 'L1' }}
+                            </span>
                             @if(auth()->user()->department)
-                            <span class="text-[10px] text-gray-400 truncate">{{ auth()->user()->department }}</span>
+                            <span class="text-[10px] text-gray-400 truncate max-w-[80px]">{{ auth()->user()->department }}</span>
                             @endif
                         </div>
                     </div>
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-[#F5C518] transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </div>
                 <div class="flex items-center gap-1.5">
                     <a href="{{ route('settings.edit') }}"
@@ -379,9 +392,32 @@
             }
         }
 
+        function openProfileModal() {
+            const backdrop = document.getElementById('operator-profile-modal-backdrop');
+            const content = document.getElementById('operator-profile-modal-content');
+            if (backdrop && content) {
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                backdrop.classList.add('opacity-100', 'pointer-events-auto');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }
+        }
+
+        function closeProfileModal() {
+            const backdrop = document.getElementById('operator-profile-modal-backdrop');
+            const content = document.getElementById('operator-profile-modal-content');
+            if (backdrop && content) {
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+                content.classList.add('scale-95');
+                content.classList.remove('scale-100');
+            }
+        }
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeMobileSidebar();
+                closeProfileModal();
             }
         });
 
@@ -418,6 +454,134 @@
         })();
     </script>
     @endif
+
+    {{-- ── SRE Operator Profile Modal ────────────────────────────────────── --}}
+    @php
+        $authUser = auth()->user();
+        $userGrade = $authUser->grade ?? 'L1';
+        $userGradeLabel = \App\Models\User::GRADES[$userGrade] ?? $userGrade;
+        $userPrivileges = $authUser->privileges ?? [];
+    @endphp
+    <div id="operator-profile-modal-backdrop"
+         class="fixed inset-0 bg-black/60 z-50 opacity-0 pointer-events-none transition-opacity duration-200 backdrop-blur-xs flex items-center justify-center p-4 no-print"
+         onclick="closeProfileModal()">
+        <div id="operator-profile-modal-content"
+             class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-gray-100 transform scale-95 transition-all duration-200 text-gray-800"
+             onclick="event.stopPropagation()">
+            {{-- Modal Top Green Banner --}}
+            <div class="bg-gradient-to-r from-[#113820] to-[#1B6B3A] p-6 text-white relative">
+                <button type="button" onclick="closeProfileModal()"
+                        class="absolute top-4 right-4 p-1.5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-2xl bg-white/10 border-2 border-[#F5C518] flex items-center justify-center font-extrabold text-2xl text-white shadow-lg shrink-0">
+                        {{ strtoupper(substr($authUser->name, 0, 2)) }}
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#F5C518] text-gray-900 shadow-xs">
+                                {{ strtoupper($authUser->role) }}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-white/15 text-emerald-200 border border-white/20">
+                                {{ $userGrade }}
+                            </span>
+                        </div>
+                        <h2 class="text-xl font-bold text-white mt-1 truncate">{{ $authUser->name }}</h2>
+                        <p class="text-xs text-emerald-100 truncate">{{ $authUser->email }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Modal Body --}}
+            <div class="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+                {{-- SRE Seniority Level --}}
+                <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-start gap-3">
+                    <div class="p-2 rounded-lg bg-[#1B6B3A] text-white shrink-0">
+                        <svg class="w-5 h-5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-mono uppercase tracking-wider text-gray-500 font-bold">Engineering Seniority Grade</div>
+                        <div class="text-sm font-extrabold text-[#1B6B3A]">{{ $userGradeLabel }}</div>
+                        <div class="text-xs text-gray-600 mt-0.5">
+                            @if($userGrade === 'L5')
+                                Principal Architect & Enterprise Lead. Directs cross-team incident resolution and system-wide reliability architecture.
+                            @elseif($userGrade === 'L4')
+                                Team Lead & Shift Supervisor. Oversees shift handovers, task assignment, and operational coordination.
+                            @elseif($userGrade === 'L3')
+                                Senior SRE Specialist. Deep infrastructure triage, P1/P2 investigations, and SLA root-cause analyses.
+                            @elseif($userGrade === 'L2')
+                                Core SRE Support Engineer. Executes scheduled checkoffs, war room collaboration, and status verifications.
+                            @else
+                                Associate Support Operator. Conducts standard baseline checks and operational shift monitoring.
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Operational Attributes --}}
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <span class="text-gray-400 font-medium block">Department / Pod</span>
+                        <span class="font-bold text-gray-900 mt-0.5 block">{{ $authUser->department ?? 'Core Operations (NOC)' }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <span class="text-gray-400 font-medium block">Official Designation</span>
+                        <span class="font-bold text-gray-900 mt-0.5 block">{{ $authUser->designation ?? 'Site Reliability Engineer' }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <span class="text-gray-400 font-medium block">Operational Hotline</span>
+                        <span class="font-bold text-gray-900 mt-0.5 block font-mono">{{ $authUser->phone ?? 'Unregistered' }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <span class="text-gray-400 font-medium block">Account Created</span>
+                        <span class="font-bold text-gray-900 mt-0.5 block font-mono">{{ $authUser->created_at?->format('d M Y') }}</span>
+                    </div>
+                </div>
+
+                {{-- Granular Privileges & Clearances --}}
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold">System Privileges & Clearances</span>
+                        <span class="text-[10px] font-bold text-[#1B6B3A]">
+                            {{ $authUser->isAdmin() ? 'ROOT CLEARANCE' : count($userPrivileges) . ' GRANTED' }}
+                        </span>
+                    </div>
+                    @if($authUser->isAdmin())
+                    <div class="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-900 text-xs font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4 text-red-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944z" clip-rule="evenodd"/></svg>
+                        Full Administrator credentials enabled. All supervisory and audit privileges active.
+                    </div>
+                    @else
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach(\App\Models\User::ALL_PRIVILEGES as $pKey => $pMeta)
+                            @if($authUser->hasPrivilege($pKey))
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-[#1B6B3A] border border-emerald-200">
+                                <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                {{ $pMeta['label'] }}
+                            </span>
+                            @endif
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="pt-2 flex items-center gap-2 border-t border-gray-100">
+                    <a href="{{ route('settings.edit') }}"
+                       class="flex-1 py-2 text-center text-xs font-bold text-white bg-[#1B6B3A] hover:bg-[#14532D] rounded-xl transition-colors shadow-sm">
+                        Edit Account & Team Profile
+                    </a>
+                    <button type="button" onclick="closeProfileModal()"
+                            class="px-4 py-2 text-center text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     @endauth
 </body>
 </html>

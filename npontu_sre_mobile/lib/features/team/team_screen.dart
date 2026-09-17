@@ -10,6 +10,7 @@ import '../../shared/widgets/app_drawer.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_retry.dart';
 import '../../shared/widgets/skeleton_loader.dart';
+import '../../shared/widgets/user_profile_sheet.dart';
 import 'team_controller.dart';
 
 class TeamScreen extends ConsumerStatefulWidget {
@@ -191,96 +192,100 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
   Widget _buildMemberCard(BuildContext context, UserModel member, bool isDark) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 22,
-              backgroundColor: NpontuColors.green,
-              child: Text(
-                member.name.isNotEmpty ? member.name[0].toUpperCase() : 'U',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  fontSize: 18,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => UserProfileSheet.show(context, user: member),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: NpontuColors.green,
+                child: Text(
+                  member.name.isNotEmpty ? member.name[0].toUpperCase() : 'U',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    member.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      member.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    member.email,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: NpontuColors.gold,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          member.role.toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1F2937),
+                    const SizedBox(height: 2),
+                    Text(
+                      member.email,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: NpontuColors.gold,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            member.role.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1F2937),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? NpontuColors.surfaceMid
-                              : const Color(0xFFE5E7EB),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          member.gradeLabel,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? NpontuColors.surfaceMid
+                                : const Color(0xFFE5E7EB),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            member.gradeLabel,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.chat_bubble_outline_rounded,
-                color: NpontuColors.green,
+              IconButton(
+                icon: const Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  color: NpontuColors.green,
+                ),
+                tooltip: 'Message Operator',
+                onPressed: () {
+                  context.push('/messaging');
+                },
               ),
-              tooltip: 'Message Operator',
-              onPressed: () {
-                context.push('/messaging');
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

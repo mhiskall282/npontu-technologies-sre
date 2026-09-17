@@ -6,6 +6,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/services/notification_service.dart';
 import '../../core/theme/npontu_theme.dart';
 import '../../features/auth/presentation/auth_controller.dart';
+import 'user_profile_sheet.dart';
 
 class AppDrawer extends ConsumerWidget {
   final String currentRoute;
@@ -22,109 +23,124 @@ class AppDrawer extends ConsumerWidget {
       backgroundColor: isDark ? NpontuColors.surfaceDark : Colors.white,
       child: Column(
         children: [
-          // Operator Bio Header
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 20,
-              bottom: 20,
-              left: 20,
-              right: 20,
-            ),
-            decoration: const BoxDecoration(color: NpontuColors.green),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          // Operator Bio Header (Clickable to view Profile & Seniority)
+          Material(
+            color: NpontuColors.green,
+            child: InkWell(
+              onTap: user != null
+                  ? () {
+                      Navigator.pop(context);
+                      UserProfileSheet.show(context, user: user);
+                    }
+                  : null,
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 20,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Colors.white,
-                      child: Text(
-                        (user?.name.isNotEmpty == true)
-                            ? user!.name[0].toUpperCase()
-                            : 'S',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: NpontuColors.green,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user?.name ?? 'SRE Operator',
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.white,
+                          child: Text(
+                            (user?.name.isNotEmpty == true)
+                                ? user!.name[0].toUpperCase()
+                                : 'S',
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: NpontuColors.green,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                user?.name ?? 'SRE Operator',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                user?.email ?? '',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white.withAlpha(200),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          color: Colors.white70,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: NpontuColors.gold,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            user?.role.toUpperCase() ?? 'OPERATOR',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1F2937),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(50),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            user?.gradeLabel ?? 'L1 Support',
+                            style: const TextStyle(
+                              fontSize: 10,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            user?.email ?? '',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withAlpha(200),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: NpontuColors.gold,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        user?.role.toUpperCase() ?? 'OPERATOR',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF1F2937),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(50),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        user?.gradeLabel ?? 'L1 Support',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
 
@@ -169,13 +185,17 @@ class AppDrawer extends ConsumerWidget {
                   route: '/health',
                   isSelected: currentRoute == '/health',
                 ),
-                _buildDrawerItem(
-                  context,
-                  title: 'Compliance Reports',
-                  icon: Icons.analytics_rounded,
-                  route: '/reports',
-                  isSelected: currentRoute == '/reports',
-                ),
+                // Compliance Reports (only visible to users with export_reports or lead/admin)
+                if (user?.canExportReports == true ||
+                    user?.isAdmin == true ||
+                    user?.isLead == true)
+                  _buildDrawerItem(
+                    context,
+                    title: 'Compliance Reports',
+                    icon: Icons.analytics_rounded,
+                    route: '/reports',
+                    isSelected: currentRoute == '/reports',
+                  ),
                 _buildDrawerItem(
                   context,
                   title: 'Team Directory',
@@ -183,13 +203,15 @@ class AppDrawer extends ConsumerWidget {
                   route: '/team',
                   isSelected: currentRoute == '/team',
                 ),
-                _buildDrawerItem(
-                  context,
-                  title: 'Security Audit Trail',
-                  icon: Icons.security_rounded,
-                  route: '/audit',
-                  isSelected: currentRoute == '/audit',
-                ),
+                // Security Audit Trail (strictly gated to view_audit_logs / admin)
+                if (user?.canViewAuditLogs == true || user?.isAdmin == true)
+                  _buildDrawerItem(
+                    context,
+                    title: 'Security Audit Trail',
+                    icon: Icons.security_rounded,
+                    route: '/audit',
+                    isSelected: currentRoute == '/audit',
+                  ),
                 const Divider(height: 1, indent: 20, endIndent: 20),
                 Consumer(
                   builder: (ctx, ref, _) {

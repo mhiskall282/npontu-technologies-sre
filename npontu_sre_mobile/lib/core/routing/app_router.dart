@@ -16,6 +16,7 @@ import '../../features/health/health_screen.dart';
 import '../../features/messaging/chat_screen.dart';
 import '../../features/messaging/messaging_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
+import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/reports/reports_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/team/team_screen.dart';
@@ -29,6 +30,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isSplash = state.matchedLocation == '/splash';
       if (isSplash) return null;
 
+      final isOnboarding = state.matchedLocation == '/onboarding';
+      if (isOnboarding) return null;
+
       final isLoggingIn = state.matchedLocation == '/login';
       final isLoggedIn = authState.isAuthenticated;
 
@@ -41,7 +45,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/login';
       }
 
-      if (isLoggedIn && isLoggingIn) {
+      if (isLoggedIn && (isLoggingIn || isOnboarding)) {
         return '/';
       }
 
@@ -51,6 +55,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(path: '/', builder: (context, state) => const DashboardScreen()),
