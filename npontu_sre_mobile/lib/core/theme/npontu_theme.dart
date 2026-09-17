@@ -64,11 +64,13 @@ class NpontuTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
+        titleSpacing: 0,
         titleTextStyle: TextStyle(
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w700,
           color: Colors.white,
           letterSpacing: -0.3,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       cardTheme: CardThemeData(
@@ -186,11 +188,13 @@ class NpontuTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
+        titleSpacing: 0,
         titleTextStyle: TextStyle(
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w700,
           color: Colors.white,
           letterSpacing: -0.3,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       cardTheme: CardThemeData(
