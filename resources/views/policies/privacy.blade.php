@@ -151,11 +151,61 @@
         </ul>
     </div>
 
-    {{-- Section 6: Contact & DPO --}}
+    {{-- Section 6: Mobile Application & App Store / Play Store Compliance --}}
+    <div id="mobile-privacy">
+        <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-emerald-900/50 border border-emerald-700/50 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">6</span>
+            <span>Mobile Companion Application &amp; App Store / Play Store Disclosures</span>
+        </h2>
+        <p>
+            The <strong>Npontu SRE Mobile Companion</strong> (available for Android and iOS) adheres strictly to Google Play User Data Policies and Apple App Store Review Guidelines (specifically Guideline 5.1.1 on Data Collection and Storage):
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <p class="text-xs font-bold text-[#F5C518] uppercase tracking-wider font-mono">Mobile OS Permissions Requested</p>
+                <ul class="mt-2 space-y-1.5 text-xs text-gray-400">
+                    <li><strong class="text-white">Push Notifications:</strong> Used exclusively for real-time P1/P2 incident escalations and shift handover transfer requests. No promotional or marketing notifications are ever sent.</li>
+                    <li><strong class="text-white">Local Encrypted Storage:</strong> Encrypted shared preferences cache operational checklists, handover history, and active war rooms for offline resilience.</li>
+                    <li><strong class="text-white">Camera / Photo Library:</strong> Strictly optional; used only if an operator chooses to attach an error screenshot or topology diagram to an operational chat or activity log.</li>
+                    <li><strong class="text-white">Biometrics (FaceID / Fingerprint):</strong> Handled locally on-device by OS Secure Enclave / Keystore; biometric vectors are never transmitted to Npontu servers.</li>
+                </ul>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <p class="text-xs font-bold text-[#F5C518] uppercase tracking-wider font-mono">Zero Third-Party Trackers or Data Brokers</p>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+                    The mobile application does NOT include Google AdMob, Meta Audience Network, Firebase Analytics, or any third-party behavioral tracking SDKs. No Advertising ID (IDFA / AAID) is ever accessed or collected. All telemetry connects directly to authorized Npontu enterprise endpoints via TLS 1.3 encryption with certificate pinning capabilities.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {{-- Section 7: Account Deletion & User Rights (Apple Guideline 5.1.1(v) & GDPR) --}}
+    <div id="account-deletion" class="p-5 rounded-xl bg-black/40 border border-emerald-900/50">
+        <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-emerald-900/50 border border-emerald-700/50 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">7</span>
+            <span>Account Deletion &amp; Data Subject Rights</span>
+        </h2>
+        <p class="text-xs text-gray-300 leading-relaxed">
+            In compliance with <strong>Apple App Store Guideline 5.1.1(v)</strong>, <strong>Google Play User Data Policy</strong>, and the <strong>Ghana Data Protection Act (Act 843)</strong>, any registered operator or authorized user possesses the right to request the deletion or deactivation of their account and the extraction of their personal information:
+        </p>
+        <div class="mt-3 space-y-2 text-xs text-gray-400">
+            <p>
+                <strong class="text-white">How to initiate account deletion:</strong> Users can request account deletion directly within the mobile application under <em>Settings &rarr; Legal, Privacy &amp; Compliance &rarr; Account Deletion</em>, or by submitting an email to our Data Protection Office at <a href="mailto:dpo@npontu.com" class="text-[#F5C518] hover:underline font-mono">dpo@npontu.com</a> with the subject line <code>"Account Deletion Request - [Employee ID/Email]"</code>.
+            </p>
+            <p>
+                <strong class="text-white">Processing &amp; SLA:</strong> Deletion requests are acknowledged within 48 hours and processed within 30 days. Personal profile identifiers, direct message channels, and active authentication credentials will be permanently erased or cryptographically pseudonymized.
+            </p>
+            <p class="text-gray-500 italic">
+                * Note on Statutory Compliance: In accordance with PCI-DSS v4.0 Requirement 10 and ISO 27001 Control A.8.15, historic immutable audit trail logs and formal shift handover custody records associated with past system mutations are retained in immutable cold storage for the statutory retention period (7 years) to satisfy regulatory non-repudiation requirements.
+            </p>
+        </div>
+    </div>
+
+    {{-- Section 8: Contact & DPO --}}
     <div id="dpo-contact" class="p-5 rounded-xl bg-gradient-to-r from-emerald-950/40 via-black/40 to-transparent border border-emerald-800/40">
         <h3 class="text-base font-bold text-white">Governance & Data Protection Inquiries</h3>
         <p class="text-xs text-gray-400 mt-1">
-            For inquiries regarding compliance, forensic audit data extraction, or access requests, contact the Npontu Technologies Data Protection Office and SRE Security Lead:
+            For inquiries regarding compliance, forensic audit data extraction, or account deletion requests, contact the Npontu Technologies Data Protection Office and SRE Security Lead:
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 font-mono text-xs">
             <div>

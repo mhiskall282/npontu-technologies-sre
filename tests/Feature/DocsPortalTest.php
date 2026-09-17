@@ -72,3 +72,15 @@ test('docs portal permanently renders all 5 chapters and section anchor IDs', fu
     $response->assertSee('#governance');
     $response->assertSee('#faq');
 });
+
+test('docs portal presents mobile companion and local emulator setup guide', function () {
+    $response = $this->get(route('docs'));
+
+    $response->assertStatus(200);
+    $response->assertSee('id="mobile-setup"', false);
+    $response->assertSee('#mobile-setup');
+    $response->assertSee('Mobile Companion &amp; Local Emulator Setup Guide', false);
+    $response->assertSee('flutter run -d windows');
+    $response->assertSee('10.0.2.2:8000');
+    $response->assertSee('flutter test');
+});

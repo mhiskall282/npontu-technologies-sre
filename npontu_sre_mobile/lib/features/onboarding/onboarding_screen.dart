@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/services/cache_service.dart';
 import '../../core/theme/npontu_theme.dart';
 import '../auth/presentation/auth_controller.dart';
+import '../legal/privacy_policy_sheet.dart';
 
 /// Interactive, animated introduction onboarding screen showcasing
 /// 24/7 shift operations, zero-loss handovers, war rooms, and offline sync.
@@ -280,6 +281,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         ),
                       ),
                     ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Statutory App Store / Play Store Privacy Assurance
+                  InkWell(
+                    onTap: () => PrivacyPolicySheet.show(context),
+                    borderRadius: BorderRadius.circular(6),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      child: Text(
+                        'By continuing, you agree to Npontu SRE Operational Policies & Privacy Terms.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.white38 : Colors.grey.shade500,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

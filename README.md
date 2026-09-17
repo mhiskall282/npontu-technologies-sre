@@ -6,8 +6,8 @@
 
 🌐 **Production Deployment**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)
 
-[![Backend Tests](https://img.shields.io/badge/backend%20tests-96%20passing%20(491%20assertions)-brightgreen)](tests/)
-[![Mobile Tests](https://img.shields.io/badge/mobile%20tests-15%20passing-brightgreen)](npontu_sre_mobile/test/)
+[![Backend Tests](https://img.shields.io/badge/backend%20tests-109%20passing%20(541%20assertions)-brightgreen)](tests/)
+[![Mobile Tests](https://img.shields.io/badge/mobile%20tests-22%20passing-brightgreen)](npontu_sre_mobile/test/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
 [![Flutter](https://img.shields.io/badge/Flutter-3.24+-02569B?logo=flutter)](npontu_sre_mobile/)
@@ -22,17 +22,20 @@ Support teams managing live production systems need a lightweight, auditable too
 | Feature | Description |
 |---|---|
 | **Public SRE Landing Page** | High-impact overview of Npontu's SRE platform (`GET /`): capability matrix, 4-step handover lifecycle, live telemetry probes, and 1-click test roles |
-| **High-Level SRE Docs Portal** | High-level platform guide (`GET /docs`): 5 permanent chapters with smooth anchor scrolling (`#quickstart`, `#architecture`, `#handover-flow`, `#governance`, `#faq`) for technical, non-technical, and executive stakeholders |
-| **SRE Left Sidebar Console** | Dark cockpit navigation (`bg-[#0F1A14]`) with responsive drawer, real-time UTC clock, and SRE status indicators |
+| **High-Level SRE Docs Portal** | High-level platform guide (`GET /docs`): 6 permanent chapters (`#quickstart`, `#architecture`, `#handover-flow`, `#mobile-setup`, `#governance`, `#faq`) for technical, non-technical, and executive stakeholders |
+| **Mobile SRE Companion App** | Flutter 3.24+ mobile client for Android/iOS/Windows: offline-first local cache, zero-latency startup, active 3s chat sync, and animated onboarding walkthrough |
+| **SRE Profile Inspection Modals** | Clickable operator cards across web & mobile displaying SRE seniority tiers (`L1` to `L5`), department/pod, designation, contact info, and active clearances |
+| **Strict Role-Based UI Pruning** | Zero disabled clutter: buttons and navigation links a user lacks clearance for are completely removed from the DOM/screen |
+| **Squeezed Collapsible Sidebar** | Sleek collapsible submenus (Operations, Comms, Supervisory, Docs) with subtle uptime indicator in footer |
 | **Daily Shift Board** | Live checklist of today's activities — pending items glow amber, done items fade green, with task delegation |
 | **Two-Way Shift Handshake** | Outgoing lead formal sign-off paired with incoming lead sign-on and verification acceptance remarks |
 | **SRE Operations Comms** | Live team messaging hub: 1-on-1 direct chat, team channels (`#general-shift`), war rooms, Base64 PDF/image attachments, and `@mention` email alerts |
 | **1-Click Email Reply Bridge** | Cryptographically signed HMAC SHA256 reply tokens allowing engineers to post to shift channels directly via email or 1-click web composer (`POST /api/webhooks/inbound-email`) |
 | **Automated SRE Reports** | Scheduled automated daily, weekly, and monthly email digests (`php artisan reports:send-automated`) with SLA metrics and shift health KPIs |
 | **System Health & Telemetry** | Multi-service probes (DB, cache, memory, mail), live 3s HUD streaming, 24h heartbeat, and public JSON API (`GET /health`) |
+| **Play Store & App Store Compliance** | Full legal disclosures, mobile permissions audit, and Apple Guideline 5.1.1(v) account deletion request workflow |
 | **Granular Privileges & Grades** | 9 configurable access checkboxes per user and L1–L5 SRE operational tiers |
 | **Branded Error Pages & Security** | Custom SRE 419 (Session Expired), 404 (Route Not Found), 403 (Forbidden), 500 (Runtime Exception), and 503 (Maintenance) with zero mobile overflow, Livewire 419 interceptor, and redesigned operator sign-in with 1-click test credentials |
-| **Role-Based Dashboards** | Admins, Leads, and Agents each see a tailored interface with relevant quick-action buttons |
 | **Status Updates & Escalations** | Mark activities Done or Pending with a remark, flag incident tickets (`INC-1042`), and trigger alert pings |
 | **Immutable Audit Trail** | Every state mutation is logged with actor identity, IP address, and before/after JSON diff values |
 | **Multi-Domain SRE Reports** | Date-range checkoff history, shift handover compliance KPIs, and operator work timelines & duty hours |
@@ -177,20 +180,92 @@ Tests use an **in-memory SQLite** database (configured in `phpunit.xml`) — zer
 ```bash
 cd npontu_sre_mobile
 
-# Run all unit and widget tests (15 passing tests)
+# Run all unit and widget tests (22 passing tests)
 flutter test
 
-# Run static analysis
+# Run static analysis (0 warnings)
 flutter analyze
 
 # Verify code formatting
 dart format --output=none --set-exit-if-changed .
 ```
 
-**Mobile test coverage areas (15 unit & widget tests):**
-- **Model JSON Deserialization**: `UserModel`, `ActivityModel`, `ShiftHandoverModel`, `ConversationModel`, `MessageModel`, `SystemHealthModel`, and `AuditLogModel`.
+**Mobile test coverage areas (22 unit & widget tests):**
+- **Model JSON Deserialization**: `UserModel`, `ActivityModel`, `ShiftHandoverModel`, `ConversationModel`, `MessageModel`, `SystemHealthModel`, `AuditLogModel`, and `NotificationModel`.
+- **Notification & Badge Counting**: Unit tests validating unread count badges, read transitions, and state copyWith.
 - **UI Components & Badges**: Status badges (`DONE`, `PENDING`, `ACKNOWLEDGED`), Priority badges (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`), Skeleton loaders, and Empty/Error state widgets.
-- **Screen Widget Tests**: `LoginScreen` rendering, input validation, and authenticated session state transitions.
+- **Screen Widget Tests**: `LoginScreen` rendering, input validation, authenticated session state transitions, and legal footer links.
+- **Production Render Probes**: Connectivity and health probe validation against live endpoints.
+
+---
+
+## Local PC Testing & Android Emulator Guide
+
+### 1. Testing the Web Backend on PC
+
+```bash
+# 1. Start local development server
+php artisan serve --host=0.0.0.0 --port=8000
+
+# 2. In a separate terminal, compile assets with hot reload
+npm run dev
+
+# 3. Access in browser: http://localhost:8000
+# Log in with any pre-seeded persona: admin@npontu.local / lead@npontu.local / agent@npontu.local (password: password)
+```
+
+### 2. Testing the Mobile App on PC (3 Options)
+
+#### Option A: Native Windows Desktop (Fastest — Zero Emulator Required)
+```bash
+cd npontu_sre_mobile
+flutter run -d windows
+```
+*Compiles directly into a Windows native executable window on your PC. Connects to `http://localhost:8000/api/v1`.*
+
+#### Option B: Android Studio Emulator (AVD Virtual Device)
+1. In Android Studio, open **Virtual Device Manager** (`Tools` &rarr; `Device Manager`).
+2. Create a virtual device: **Pixel 8**, system image: **API 34 (UpsideDownCake)** x86_64 with Google Play.
+3. Start the emulator via GUI or command line:
+   ```bash
+   emulator -avd Pixel_8_API_34
+   ```
+4. Run the Flutter app targeting the emulator:
+   ```bash
+   cd npontu_sre_mobile
+   flutter run -d emulator-5554
+   ```
+   > 💡 **Networking Note**: Inside the Android emulator, `http://localhost:8000` refers to the Android device itself. Android provides a loopback alias: **`http://10.0.2.2:8000/api/v1`** maps directly to your PC's `127.0.0.1:8000`.
+
+#### Option C: Google Chrome Web Browser
+```bash
+cd npontu_sre_mobile
+flutter run -d chrome
+```
+
+### 3. Installing Pre-Built Universal APK via ADB
+
+Pre-built Universal Release APKs are automatically generated on every commit by our GitHub Actions CI workflow:
+
+1. Download [`app-release.apk`](https://github.com/mhiskall282/npontu-technologies-sre/releases/latest/download/app-release.apk) from the latest release.
+2. Connect your physical Android phone (with USB Debugging enabled) or start your emulator.
+3. Install instantly via ADB:
+   ```bash
+   adb install -r app-release.apk
+   ```
+
+---
+
+## Legal, Privacy Policy & App Store Compliance
+
+The platform and companion mobile apps comply with:
+- **Google Play User Data Policy**: Explicit disclosure of permissions, zero advertising SDKs, and transparent offline cache handling.
+- **Apple App Store Review Guideline 5.1.1(v)**: Full account deletion and data extraction request support.
+- **Ghana Data Protection Act 2012 (Act 843)** & **ISO 27001 / PCI-DSS v4.0**:
+  - Web Privacy Policy: Accessible at [`/privacy-policy`](https://npontu-support-tracker.onrender.com/privacy-policy).
+  - In-App Mobile Privacy Sheet: Accessible via `Settings` &rarr; `Privacy Policy & Data Handling` or on `LoginScreen`.
+  - Account Deletion Requests: Submit in-app via *Request Account Deletion* or email to Data Protection Officer at `dpo@npontu.com` (48hr acknowledgment, 30-day SLA).
+  - Statutory 7-year cold-storage retention for immutable audit logs.
 
 ---
 

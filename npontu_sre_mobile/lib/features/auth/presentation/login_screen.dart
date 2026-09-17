@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/npontu_theme.dart';
+import '../../legal/privacy_policy_sheet.dart';
 import 'auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -252,6 +253,65 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           label: const Text('SRE Agent (L2)'),
                           onPressed: () =>
                               _fillPreset('agent@npontu.com', 'password'),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Privacy & Legal Footer Row (Play Store & App Store requirement)
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () => PrivacyPolicySheet.show(context),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Privacy & Data Policy',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isDark
+                                  ? Colors.white60
+                                  : Colors.grey.shade600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '•',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: isDark
+                                ? Colors.white38
+                                : Colors.grey.shade400,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.push('/onboarding'),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            'Platform Tour',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: NpontuColors.green,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ],
                     ),

@@ -15,6 +15,7 @@ import '../activities/activities_controller.dart';
 import '../auth/presentation/auth_controller.dart';
 import '../dashboard/dashboard_controller.dart';
 import '../handovers/handovers_controller.dart';
+import '../legal/privacy_policy_sheet.dart';
 import 'settings_controller.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -230,6 +231,29 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.business_rounded,
             title: 'Organisation',
             subtitle: 'Npontu Technologies · SRE Operations',
+          ),
+
+          // ── Legal, Privacy & Compliance ─────────────────────────────────
+          _SectionHeader(title: 'Legal, Privacy & Compliance'),
+          _SettingsTile(
+            icon: Icons.privacy_tip_rounded,
+            title: 'Privacy Policy & Data Handling',
+            subtitle: 'Play Store & App Store statutory disclosures',
+            trailing: const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.grey,
+            ),
+            onTap: () => PrivacyPolicySheet.show(context),
+          ),
+          _SettingsTile(
+            icon: Icons.person_remove_rounded,
+            title: 'Account Deletion & Data Rights',
+            subtitle: 'Apple Guideline 5.1.1(v) & Act 843 compliance',
+            trailing: const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.grey,
+            ),
+            onTap: () => PrivacyPolicySheet.showAccountDeletionDialog(context),
           ),
 
           // ── Sign Out ─────────────────────────────────────────────────────

@@ -207,16 +207,13 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between text-xs text-gray-500 mt-4 px-2">
-                    <a href="{{ route('health') }}" class="hover:text-gray-700 font-medium flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <div class="flex items-center justify-center flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-gray-400 mt-5 pt-3 border-t border-gray-100">
+                    <a href="{{ route('docs') }}" class="text-[#1B6B3A] hover:underline font-bold">Docs &amp; Guide</a>
+                    <span>&bull;</span>
+                    <a href="{{ route('health') }}" class="hover:text-[#1B6B3A] transition-colors flex items-center gap-1 font-medium">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         <span>System Health & Diagnostics</span>
                     </a>
-                    <span>SRE SLA: 99.98%</span>
-                </div>
-
-                <div class="flex items-center justify-center gap-3 text-[11px] text-gray-400 mt-3 pt-3 border-t border-gray-100">
-                    <a href="{{ route('docs') }}" class="text-[#1B6B3A] hover:underline font-bold">Docs &amp; Guide</a>
                     <span>&bull;</span>
                     <a href="{{ route('policy.privacy') }}" class="hover:text-gray-600 transition-colors">Privacy</a>
                     <span>&bull;</span>

@@ -59,6 +59,7 @@
                 <a href="#quickstart" class="hover:text-[#F5C518] transition-colors">Quickstart</a>
                 <a href="#architecture" class="hover:text-[#F5C518] transition-colors">Architecture</a>
                 <a href="#handover-flow" class="hover:text-[#F5C518] transition-colors">Handover Protocol</a>
+                <a href="#mobile-setup" class="hover:text-[#F5C518] transition-colors">Mobile &amp; Emulator</a>
                 <a href="#governance" class="hover:text-[#F5C518] transition-colors">Governance</a>
                 <a href="#faq" class="hover:text-[#F5C518] transition-colors">Comprehensive FAQ</a>
                 <a href="{{ route('health') }}" class="hover:text-[#F5C518] transition-colors">Telemetry HUD</a>
@@ -200,6 +201,12 @@
                class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
                 <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 <span>Governance &amp; SLA</span>
+            </a>
+
+            <a href="#mobile-setup"
+               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                <span>Mobile &amp; Emulator</span>
             </a>
 
             <a href="#faq"
@@ -487,6 +494,142 @@
                         <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
                             <p class="font-bold text-white font-mono text-blue-400">Monthly SLA Executive Audit</p>
                             <p class="text-gray-400 mt-1">Dispatched on the 28th providing formal 99.98% uptime SLA compliance stamps and audit trail volumes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── CHAPTER 05: MOBILE COMPANION & LOCAL EMULATOR SETUP GUIDE ──────── --}}
+            <div id="mobile-setup" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-6">
+                    <div>
+                        <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 05 &bull; MOBILE COMPANION &amp; LOCAL PC TESTING</span>
+                        <h2 class="text-2xl font-black text-white mt-1">Mobile Companion &amp; Local Emulator Setup Guide</h2>
+                        <p class="text-xs text-gray-400 mt-1">Comprehensive developer guide for executing, testing, and sideloading the Flutter SRE mobile companion on PC, Android Studio emulators, and local backend.</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Flutter 3.24+ &bull; Dart 3.5+
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Testing Matrix Cards --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {{-- Target 1: Windows Desktop --}}
+                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-[#F5C518] font-bold text-xs font-mono uppercase">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                <span>Target 1: Windows Desktop</span>
+                            </div>
+                            <p class="text-xs text-gray-200 mt-2 font-semibold">Native PC Desktop Execution</p>
+                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Fastest local testing method on your PC. No emulator needed; compiles and launches directly as a desktop window.</p>
+                        </div>
+                        <pre class="mt-3 p-2.5 rounded-lg bg-black/70 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">cd npontu_sre_mobile
+flutter run -d windows</pre>
+                    </div>
+
+                    {{-- Target 2: Android Studio Emulator --}}
+                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs font-mono uppercase">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                <span>Target 2: Android Emulator (AVD)</span>
+                            </div>
+                            <p class="text-xs text-gray-200 mt-2 font-semibold">Pixel 8 / API 34 Virtual Device</p>
+                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Full mobile phone simulation including soft keyboard insets, biometrics, offline airplane mode, and push notifications.</p>
+                        </div>
+                        <pre class="mt-3 p-2.5 rounded-lg bg-black/70 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">emulator -avd Pixel_8_API_34
+flutter run -d emulator-5554</pre>
+                    </div>
+
+                    {{-- Target 3: Pre-Built Universal APK --}}
+                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-blue-400 font-bold text-xs font-mono uppercase">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <span>Target 3: Pre-Built Universal APK</span>
+                            </div>
+                            <p class="text-xs text-gray-200 mt-2 font-semibold">Direct ADB Sideloading</p>
+                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Download the release artifact directly from GitHub CI and install immediately onto any physical device or emulator.</p>
+                        </div>
+                        <pre class="mt-3 p-2.5 rounded-lg bg-black/70 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">adb install -r app-release.apk</pre>
+                    </div>
+                </div>
+
+                {{-- Detailed Execution Workflows --}}
+                <div class="space-y-4 text-xs sm:text-sm">
+                    {{-- 1. Local PC Backend Setup --}}
+                    <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-[#F5C518] text-gray-950 flex items-center justify-center text-[10px] font-bold font-mono">1</span>
+                            <span>Local Backend &amp; Database Setup (Windows PC)</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1.5 leading-relaxed">
+                            Run the Laravel backend API locally on your PC before connecting the mobile companion:
+                        </p>
+                        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-mono">
+                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
+                                <span class="text-gray-500 block mb-1"># Step A: Seed Database &amp; Personas</span>
+                                <span class="text-[#F5C518]">php artisan migrate:fresh --seed</span>
+                            </div>
+                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
+                                <span class="text-gray-500 block mb-1"># Step B: Run 108 Automated Tests</span>
+                                <span class="text-[#F5C518]">php artisan test</span>
+                            </div>
+                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
+                                <span class="text-gray-500 block mb-1"># Step C: Verify PSR-12 Style</span>
+                                <span class="text-[#F5C518]">vendor\bin\pint --test</span>
+                            </div>
+                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
+                                <span class="text-gray-500 block mb-1"># Step D: Serve on 0.0.0.0 (Accessible to Emulators)</span>
+                                <span class="text-emerald-400">php artisan serve --host=0.0.0.0 --port=8000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 2. Android Emulator Networking (10.0.2.2) --}}
+                    <div class="p-5 rounded-xl bg-emerald-950/20 border border-emerald-800/40">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-emerald-500 text-gray-950 flex items-center justify-center text-[10px] font-bold font-mono">2</span>
+                            <span>Android Emulator Networking &amp; Loopback (10.0.2.2)</span>
+                        </h3>
+                        <div class="mt-2 text-xs text-gray-300 space-y-2 leading-relaxed">
+                            <p>
+                                <strong>Why 10.0.2.2?</strong> Android Studio emulators run inside a virtual network sandbox. If the mobile app requests <code class="text-emerald-300 font-mono">http://localhost:8000</code> inside the emulator, it reaches the Android device itself. Android's official virtual router assigns <code class="text-[#F5C518] font-mono">http://10.0.2.2:8000/api/v1</code> as the alias to reach your host PC's <code class="text-emerald-300 font-mono">127.0.0.1:8000</code>.
+                            </p>
+                            <p>
+                                <strong>Windows Desktop / Chrome:</strong> Set <code class="text-emerald-300 font-mono">BASE_URL=http://localhost:8000/api/v1</code> in <code class="text-emerald-300 font-mono">npontu_sre_mobile/lib/core/constants/app_constants.dart</code> or pass via <code class="text-emerald-300 font-mono">--dart-define=BASE_URL=...</code>.
+                            </p>
+                            <p>
+                                <strong>Production Render Cloud:</strong> Default production endpoint is <code class="text-emerald-300 font-mono">https://npontu-technologies-sre.onrender.com/api/v1</code>.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- 3. Mobile Quality Gates & Tests --}}
+                    <div class="p-5 rounded-xl bg-black/30 border border-white/10">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold font-mono">3</span>
+                            <span>Mobile Automated Verification Commands</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1.5 leading-relaxed">
+                            Run these three quality commands to ensure zero compiler warnings, zero UI overflows, and full offline sync coverage:
+                        </p>
+                        <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
+                                <span class="text-gray-500 block mb-1"># 1. Widget &amp; Unit Tests (22 tests)</span>
+                                <span class="text-emerald-400">flutter test</span>
+                            </div>
+                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
+                                <span class="text-gray-500 block mb-1"># 2. Static Analyzer (0 errors)</span>
+                                <span class="text-emerald-400">flutter analyze</span>
+                            </div>
+                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
+                                <span class="text-gray-500 block mb-1"># 3. Code Formatting Gate</span>
+                                <span class="text-emerald-400">dart format --set-exit-if-changed .</span>
+                            </div>
                         </div>
                     </div>
                 </div>

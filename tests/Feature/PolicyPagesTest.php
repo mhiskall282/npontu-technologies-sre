@@ -11,6 +11,8 @@ test('it renders the operational privacy and data governance policy page with 20
     $response->assertSee('Ghana Data Protection Act, 2012 (Act 843)');
     $response->assertSee('dpo@npontu.com');
     $response->assertSee('7 Years (Statutory)');
+    $response->assertSee('Mobile Companion Application &amp; App Store / Play Store Disclosures', false);
+    $response->assertSee('Account Deletion &amp; Data Subject Rights', false);
 });
 
 test('it renders the SRE terms of service and acceptable use policy page with 200 ok', function () {
