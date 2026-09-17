@@ -122,12 +122,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        // Always show back button on chat detail screen
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Go Back',
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               conversation?.title ?? 'Chat Room #${widget.conversationId}',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
               conversation?.type == 'war_room'
@@ -202,9 +210,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
             ),
 
-            // Message input bar
+            // Message input bar — uses bottom padding from MediaQuery
+            // to stay above system navigation gestures and keyboard
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.only(
+                left: 12,
+                right: 12,
+                top: 8,
+                // Extra bottom padding ensures the input never hides
+                // behind bottom nav gestures on modern Android/iOS
+                bottom: 8 + MediaQuery.of(context).padding.bottom,
+              ),
               decoration: BoxDecoration(
                 color: isDark ? NpontuColors.surfaceMid : Colors.white,
                 boxShadow: [
@@ -238,6 +254,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       controller: _messageController,
                       focusNode: _focusNode,
                       textInputAction: TextInputAction.send,
+                      maxLines: 4,
+                      minLines: 1,
                       onSubmitted: (_) => _send(),
                       decoration: InputDecoration(
                         hintText: 'Type an ops update or paste logs...',

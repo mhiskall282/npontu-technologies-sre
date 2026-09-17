@@ -101,16 +101,23 @@ class _ActivitiesScreenState extends ConsumerState<ActivitiesScreen> {
                       ),
                       const SizedBox(height: 8),
                       SegmentedButton<String>(
+                        showSelectedIcon: false,
                         segments: const [
                           ButtonSegment(
                             value: 'done',
-                            label: Text('Mark as Done'),
-                            icon: Icon(Icons.check_circle_rounded),
+                            label: Text(
+                              'Done',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            icon: Icon(Icons.check_circle_rounded, size: 18),
                           ),
                           ButtonSegment(
                             value: 'pending',
-                            label: Text('Keep Pending'),
-                            icon: Icon(Icons.pending_actions_rounded),
+                            label: Text(
+                              'Pending',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            icon: Icon(Icons.pending_actions_rounded, size: 18),
                           ),
                         ],
                         selected: {selectedStatus},
@@ -206,6 +213,14 @@ class _ActivitiesScreenState extends ConsumerState<ActivitiesScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        // Show back arrow when push-navigated; drawer icon otherwise
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                tooltip: 'Go Back',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('Shift Checklist'),
         actions: [
           IconButton(
@@ -227,7 +242,8 @@ class _ActivitiesScreenState extends ConsumerState<ActivitiesScreen> {
               onPressed: () => context.push('/activities/new'),
             )
           : null,
-      body: Column(
+      body: SafeArea(
+        child: Column(
         children: [
           // Filter Tabs (All, Pending, Done, Mine)
           Container(
@@ -318,6 +334,7 @@ class _ActivitiesScreenState extends ConsumerState<ActivitiesScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -369,48 +386,57 @@ class _ActivitiesScreenState extends ConsumerState<ActivitiesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Row: Pinned Star + Priority + SLA Time + Status Badge
-              Row(
+              // Top Row: Pinned Star + Priority + SLA Time + Status Badge (Responsive Wrap)
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  if (activity.isPinned) ...[
-                    const Icon(
-                      Icons.star_rounded,
-                      color: NpontuColors.gold,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  PriorityBadge(priority: activity.priority),
-                  if (activity.slaTime != null) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? NpontuColors.surfaceMid
-                            : const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.alarm_rounded, size: 12),
-                          const SizedBox(width: 3),
-                          Text(
-                            activity.slaTime!,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (activity.isPinned) ...[
+                        const Icon(
+                          Icons.star_rounded,
+                          color: NpontuColors.gold,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      PriorityBadge(priority: activity.priority, compact: true),
+                      if (activity.slaTime != null) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 3,
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
-                  StatusBadge(status: activity.currentStatus),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? NpontuColors.surfaceMid
+                                : const Color(0xFFF3F4F6),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.alarm_rounded, size: 12),
+                              const SizedBox(width: 3),
+                              Text(
+                                activity.slaTime!,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  StatusBadge(status: activity.currentStatus, compact: true),
                 ],
               ),
               const SizedBox(height: 10),

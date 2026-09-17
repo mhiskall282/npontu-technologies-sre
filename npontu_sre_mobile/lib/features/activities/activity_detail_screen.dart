@@ -177,10 +177,14 @@ class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             if (activity.isPinned) ...[
                               const Icon(
@@ -190,10 +194,10 @@ class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
                               ),
                               const SizedBox(width: 6),
                             ],
-                            PriorityBadge(priority: activity.priority),
+                            PriorityBadge(priority: activity.priority, compact: true),
                           ],
                         ),
-                        StatusBadge(status: activity.currentStatus),
+                        StatusBadge(status: activity.currentStatus, compact: true),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -546,25 +550,38 @@ class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: selectedStatus,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Target Status',
                       ),
                       items: const [
                         DropdownMenuItem(
                           value: 'done',
-                          child: Text('COMPLETED / VERIFIED'),
+                          child: Text(
+                            'COMPLETED / VERIFIED',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'pending',
-                          child: Text('PENDING / NOT STARTED'),
+                          child: Text(
+                            'PENDING / NOT STARTED',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'in_progress',
-                          child: Text('IN PROGRESS'),
+                          child: Text(
+                            'IN PROGRESS',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'skipped',
-                          child: Text('SKIPPED / DEFERRED'),
+                          child: Text(
+                            'SKIPPED / DEFERRED',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                       onChanged: (val) {

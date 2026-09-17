@@ -20,6 +20,14 @@ class HealthScreen extends ConsumerWidget {
     return Scaffold(
       drawer: const AppDrawer(currentRoute: '/health'),
       appBar: AppBar(
+        // Show back arrow when push-navigated; drawer icon otherwise
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                tooltip: 'Go Back',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('SRE Diagnostics & Health'),
         actions: [
           IconButton(
@@ -30,10 +38,12 @@ class HealthScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () =>
-            ref.read(healthControllerProvider.notifier).loadHealth(),
-        child: _buildContent(context, ref, healthState, isDark),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () =>
+              ref.read(healthControllerProvider.notifier).loadHealth(),
+          child: _buildContent(context, ref, healthState, isDark),
+        ),
       ),
     );
   }

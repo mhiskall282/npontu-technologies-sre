@@ -56,6 +56,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen>
                 children: [
                   DropdownButtonFormField<String>(
                     value: type,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Channel Type',
                     ),
@@ -93,6 +94,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen>
                   ] else ...[
                     DropdownButtonFormField<int?>(
                       value: participantId,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Select Teammate',
                       ),
@@ -100,7 +102,10 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen>
                           .map(
                             (m) => DropdownMenuItem(
                               value: m.id,
-                              child: Text('${m.name} (${m.gradeLabel})'),
+                              child: Text(
+                                '${m.name} (${m.gradeLabel})',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                           .toList(),
@@ -147,6 +152,14 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen>
     return Scaffold(
       drawer: const AppDrawer(currentRoute: '/messaging'),
       appBar: AppBar(
+        // Show back arrow when push-navigated; drawer icon otherwise
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                tooltip: 'Go Back',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('Ops Communications'),
         bottom: TabBar(
           controller: _tabController,

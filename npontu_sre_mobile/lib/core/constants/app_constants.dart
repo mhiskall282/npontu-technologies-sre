@@ -3,11 +3,11 @@
 class AppConstants {
   static const String appName = 'Npontu SRE';
   static const String appTitle = 'Npontu SRE Support Activity Tracker';
-  static const String version = '1.1.0';
+  static const String version = '1.2.0';
 
   // Version info displayed in Settings
-  static const String appVersion = '1.1.0';
-  static const String buildNumber = '2';
+  static const String appVersion = '1.2.0';
+  static const String buildNumber = '3';
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: 'https://npontu-support-tracker.onrender.com/api/v1',

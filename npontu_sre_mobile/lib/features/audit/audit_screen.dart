@@ -31,6 +31,13 @@ class _AuditScreenState extends ConsumerState<AuditScreen> {
     return Scaffold(
       drawer: const AppDrawer(currentRoute: '/audit'),
       appBar: AppBar(
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                tooltip: 'Go Back',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('Compliance Audit Trail'),
         actions: [
           IconButton(
@@ -44,36 +51,38 @@ class _AuditScreenState extends ConsumerState<AuditScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => ref
-            .read(auditControllerProvider.notifier)
-            .loadAuditLogs(
-              event: _selectedEvent.isEmpty ? null : _selectedEvent,
-            ),
-        child: Column(
-          children: [
-            // Filter Bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: isDark ? NpontuColors.surfaceMid : const Color(0xFFF3F4F6),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildEventChip('All Events', ''),
-                    _buildEventChip('Created', 'created'),
-                    _buildEventChip('Updated', 'updated'),
-                    _buildEventChip('Status Changed', 'status_changed'),
-                    _buildEventChip('Deleted', 'deleted'),
-                    _buildEventChip('Accepted', 'accepted'),
-                  ],
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () => ref
+              .read(auditControllerProvider.notifier)
+              .loadAuditLogs(
+                event: _selectedEvent.isEmpty ? null : _selectedEvent,
+              ),
+          child: Column(
+            children: [
+              // Filter Bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: isDark ? NpontuColors.surfaceMid : const Color(0xFFF3F4F6),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildEventChip('All Events', ''),
+                      _buildEventChip('Created', 'created'),
+                      _buildEventChip('Updated', 'updated'),
+                      _buildEventChip('Status Changed', 'status_changed'),
+                      _buildEventChip('Deleted', 'deleted'),
+                      _buildEventChip('Accepted', 'accepted'),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Content
-            Expanded(child: _buildBody(context, auditState, isDark)),
-          ],
+              // Content
+              Expanded(child: _buildBody(context, auditState, isDark)),
+            ],
+          ),
         ),
       ),
     );

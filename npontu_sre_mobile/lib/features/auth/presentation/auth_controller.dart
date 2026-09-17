@@ -59,18 +59,22 @@ class AuthController extends StateNotifier<AuthState> {
         return;
       }
 
-      // Try fetching current profile from /api/v1/me with a timeout
+      // Try fetching current profile from /api/v1/me with a reasonable timeout
       final response = await _apiClient
           .get('/me')
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 10));
       final data = response.data['data'] as Map<String, dynamic>;
       final user = UserModel.fromJson(data);
 
       await _storage.saveUserData(user.toJson());
 
       state = AuthState(user: user, isAuthenticated: true, isLoading: false);
+    } on UnauthorizedException {
+      // Token is invalid/expired — clear stored credentials and prompt login
+      await _storage.clearAuth();
+      state = const AuthState(isAuthenticated: false, isLoading: false);
     } catch (_) {
-      // If offline or unreachable, check if cached user data exists
+      // If network offline or unreachable, check if cached user data exists
       final cachedUser = await _storage.getUserData();
       if (cachedUser != null) {
         state = AuthState(

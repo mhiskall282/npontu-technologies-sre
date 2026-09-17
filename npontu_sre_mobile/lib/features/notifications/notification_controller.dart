@@ -22,7 +22,7 @@ class NotificationController extends AsyncNotifier<List<NotificationModel>> {
   Future<List<NotificationModel>> _fetchNotifications() async {
     final client = ref.read(apiClientProvider);
     final response = await client.get<Map<String, dynamic>>(
-      '/api/v1/notifications',
+      '/notifications',
     );
 
     final rawList = response.data?['data'] as List<dynamic>? ?? [];
@@ -54,7 +54,7 @@ class NotificationController extends AsyncNotifier<List<NotificationModel>> {
     );
 
     try {
-      await client.post<void>('/api/v1/notifications/$notificationId/read');
+      await client.post<void>('/notifications/$notificationId/read');
     } catch (_) {
       // Revert on failure by re-fetching
       state = AsyncLoading();
@@ -73,7 +73,7 @@ class NotificationController extends AsyncNotifier<List<NotificationModel>> {
     );
 
     try {
-      await client.post<void>('/api/v1/notifications/read-all');
+      await client.post<void>('/notifications/read-all');
     } catch (_) {
       state = AsyncLoading();
       state = await AsyncValue.guard(_fetchNotifications);
@@ -89,7 +89,7 @@ class NotificationController extends AsyncNotifier<List<NotificationModel>> {
     );
 
     try {
-      await client.delete<void>('/api/v1/notifications/$notificationId');
+      await client.delete<void>('/notifications/$notificationId');
     } catch (_) {
       state = AsyncLoading();
       state = await AsyncValue.guard(_fetchNotifications);

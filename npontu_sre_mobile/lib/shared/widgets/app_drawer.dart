@@ -286,15 +286,19 @@ class AppDrawer extends ConsumerWidget {
             },
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 16, top: 4),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 16,
+              top: 4,
+            ),
             child: Text(
-              '${AppConstants.appName} Mobile • v${AppConstants.version}',
+              '${AppConstants.appName} Mobile • v${AppConstants.appVersion}',
               style: TextStyle(
                 fontSize: 11,
                 color: isDark
                     ? NpontuColors.textSecondaryDark
                     : NpontuColors.textSecondaryLight,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -346,7 +350,14 @@ class AppDrawer extends ConsumerWidget {
       onTap: () {
         Navigator.pop(context); // close drawer
         if (!isSelected) {
-          context.go(route);
+          // Use push navigation for sub-sections so that the
+          // back button works correctly in their AppBars.
+          // Main sections (dashboard) use go() for root navigation.
+          if (route == '/') {
+            context.go(route);
+          } else {
+            context.push(route);
+          }
         }
       },
     );

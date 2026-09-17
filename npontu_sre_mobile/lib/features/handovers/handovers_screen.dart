@@ -125,19 +125,31 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
                         items: const [
                           DropdownMenuItem(
                             value: '',
-                            child: Text('All Statuses'),
+                            child: Text(
+                              'All Statuses',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'initiated',
-                            child: Text('Initiated (Pending)'),
+                            child: Text(
+                              'Initiated (Pending)',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'acknowledged',
-                            child: Text('Acknowledged'),
+                            child: Text(
+                              'Acknowledged',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'rejected',
-                            child: Text('Rejected'),
+                            child: Text(
+                              'Rejected',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                         onChanged: (val) {
@@ -232,8 +244,12 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Row: Shift Badge + Date + Status
-            Row(
+            // Top Row: Shift Badge + Date + Status (Responsive Wrap)
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -253,7 +269,6 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
                 Text(
                   item.handoverDate,
                   style: const TextStyle(
@@ -262,8 +277,7 @@ class _HandoversScreenState extends ConsumerState<HandoversScreen> {
                     color: Colors.grey,
                   ),
                 ),
-                const Spacer(),
-                StatusBadge(status: item.status),
+                StatusBadge(status: item.status, compact: true),
               ],
             ),
             const SizedBox(height: 12),

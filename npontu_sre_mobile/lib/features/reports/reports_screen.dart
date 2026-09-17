@@ -1,4 +1,8 @@
 // lib/features/reports/reports_screen.dart
+//
+// Compliance Reports screen with date-filtered operational SLA logs.
+// Uses NestedScrollView to keep the date filter pinned while the
+// report body scrolls freely — fixing the "can't scroll" bug on mobile.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +31,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     return Scaffold(
       drawer: const AppDrawer(currentRoute: '/reports'),
       appBar: AppBar(
+        leading: _buildBackOrMenuButton(context),
         title: const Text('Compliance Reports'),
         actions: [
           IconButton(
@@ -50,76 +55,37 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () =>
-            ref.read(reportsControllerProvider.notifier).loadReports(),
-        child: Column(
-          children: [
-            // Date Filter Strip
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              color: isDark ? NpontuColors.surfaceMid : const Color(0xFFF3F4F6),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.date_range_rounded,
-                    size: 18,
-                    color: NpontuColors.green,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${reportsState.from}  →  ${reportsState.to}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const Spacer(),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    onPressed: () async {
-                      final range = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime.now().subtract(
-                          const Duration(days: 90),
-                        ),
-                        lastDate: DateTime.now(),
-                      );
-                      if (range != null) {
-                        ref
-                            .read(reportsControllerProvider.notifier)
-                            .loadReports(
-                              from: range.start.toIso8601String().substring(
-                                0,
-                                10,
-                              ),
-                              to: range.end.toIso8601String().substring(0, 10),
-                            );
-                      }
-                    },
-                    icon: const Icon(
-                      Icons.filter_list_rounded,
-                      size: 16,
-                      color: NpontuColors.green,
-                    ),
-                    label: const Text(
-                      'Change Date',
-                      style: TextStyle(color: NpontuColors.green, fontSize: 12),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Main Body
-            Expanded(child: _buildBody(context, reportsState, isDark)),
-          ],
+      // SafeArea ensures content is not clipped by system UI
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () =>
+              ref.read(reportsControllerProvider.notifier).loadReports(),
+          // Use a single scrollable ListView for the entire page so
+          // the date filter, KPI cards, and log list all scroll together.
+          child: _buildScrollableBody(context, reportsState, isDark),
         ),
       ),
     );
   }
 
-  Widget _buildBody(BuildContext context, ReportsState state, bool isDark) {
+  /// Smart leading button: shows back arrow when push-navigated,
+  /// or the hamburger menu when reached via drawer.
+  Widget? _buildBackOrMenuButton(BuildContext context) {
+    if (Navigator.of(context).canPop()) {
+      return IconButton(
+        icon: const Icon(Icons.arrow_back_rounded),
+        tooltip: 'Go Back',
+        onPressed: () => Navigator.of(context).pop(),
+      );
+    }
+    return null; // Let Flutter show the default drawer hamburger
+  }
+
+  Widget _buildScrollableBody(
+    BuildContext context,
+    ReportsState state,
+    bool isDark,
+  ) {
     if (state.isLoading) {
       return const SkeletonListPlaceholder(count: 4);
     }
@@ -138,50 +104,109 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     final escalations = state.logs.where((l) => l.isEscalated).length;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(bottom: 24),
       children: [
-        // Summary KPI Cards
-        Row(
-          children: [
-            Expanded(
-              child: _buildKpiCard(
-                title: 'Total Executions',
-                value: '$total',
-                icon: Icons.checklist_rounded,
+        // ── Date Filter Strip (scrolls with content) ─────────────────────
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          color: isDark ? NpontuColors.surfaceMid : const Color(0xFFF3F4F6),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.date_range_rounded,
+                size: 18,
                 color: NpontuColors.green,
-                isDark: isDark,
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildKpiCard(
-                title: 'Completion Rate',
-                value: '$completionRate%',
-                icon: Icons.pie_chart_rounded,
-                color: completionRate >= 80
-                    ? NpontuColors.green
-                    : NpontuColors.gold,
-                isDark: isDark,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${state.from}  →  ${state.to}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildKpiCard(
-                title: 'Escalations',
-                value: '$escalations',
-                icon: Icons.warning_rounded,
-                color: escalations > 0
-                    ? NpontuColors.danger
-                    : NpontuColors.green,
-                isDark: isDark,
+              TextButton.icon(
+                style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                onPressed: () async {
+                  final range = await showDateRangePicker(
+                    context: context,
+                    firstDate: DateTime.now().subtract(
+                      const Duration(days: 90),
+                    ),
+                    lastDate: DateTime.now(),
+                  );
+                  if (range != null) {
+                    ref
+                        .read(reportsControllerProvider.notifier)
+                        .loadReports(
+                          from: range.start.toIso8601String().substring(0, 10),
+                          to: range.end.toIso8601String().substring(0, 10),
+                        );
+                  }
+                },
+                icon: const Icon(
+                  Icons.filter_list_rounded,
+                  size: 16,
+                  color: NpontuColors.green,
+                ),
+                label: const Text(
+                  'Change Date',
+                  style: TextStyle(color: NpontuColors.green, fontSize: 12),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+        ),
+
+        // ── Summary KPI Cards ────────────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildKpiCard(
+                  title: 'Total Executions',
+                  value: '$total',
+                  icon: Icons.checklist_rounded,
+                  color: NpontuColors.green,
+                  isDark: isDark,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildKpiCard(
+                  title: 'Completion Rate',
+                  value: '$completionRate%',
+                  icon: Icons.pie_chart_rounded,
+                  color: completionRate >= 80
+                      ? NpontuColors.green
+                      : NpontuColors.gold,
+                  isDark: isDark,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildKpiCard(
+                  title: 'Escalations',
+                  value: '$escalations',
+                  icon: Icons.warning_rounded,
+                  color: escalations > 0
+                      ? NpontuColors.danger
+                      : NpontuColors.green,
+                  isDark: isDark,
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
 
-        // Compliance Progress Bar
+        // ── Compliance Progress Bar ──────────────────────────────────────
         Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -193,11 +218,14 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'SLA Compliance Progress',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
+                    const Flexible(
+                      child: Text(
+                        'SLA Compliance Progress',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Text(
@@ -231,32 +259,42 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         ),
         const SizedBox(height: 20),
 
-        // Execution History Logs
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Audited Execution Events',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-            ),
-            Text(
-              '${state.logs.length} logged',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
+        // ── Execution History Logs ───────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Flexible(
+                child: Text(
+                  'Audited Execution Events',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                '${state.logs.length} logged',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 10),
 
         if (state.logs.isEmpty)
-          const EmptyStateWidget(
-            icon: Icons.assessment_outlined,
-            title: 'No Logs for Range',
-            subtitle: 'Try adjusting the date filter to view past operational performance.',
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: EmptyStateWidget(
+              icon: Icons.assessment_outlined,
+              title: 'No Logs for Range',
+              subtitle:
+                  'Try adjusting the date filter to view past operational performance.',
+            ),
           )
         else
           ...state.logs.map(
             (log) => Card(
-              margin: const EdgeInsets.only(bottom: 8),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: ListTile(
                 title: Text(
                   'Activity Checklist Item #${log.activityId}',
@@ -276,7 +314,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                trailing: StatusBadge(status: log.status),
+                trailing: StatusBadge(status: log.status, compact: true),
               ),
             ),
           ),
@@ -292,6 +330,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     required bool isDark,
   }) {
     return Card(
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -313,6 +352,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               title,
               style: const TextStyle(fontSize: 10, color: Colors.grey),
               maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

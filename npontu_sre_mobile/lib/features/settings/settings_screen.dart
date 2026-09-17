@@ -28,259 +28,271 @@ class SettingsScreen extends ConsumerWidget {
     final user = authState.user;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
-        children: [
-          // ── Profile Section ──────────────────────────────────────────────
-          _SectionHeader(title: 'Profile & Operational Team'),
-          _ProfileCard(
-            name: user?.name ?? '—',
-            email: user?.email ?? '—',
-            role: user?.role ?? '—',
-            grade: user?.gradeLabel ?? '—',
-            designation: user?.designation,
-            department: user?.department,
-            onViewProfile: user != null
-                ? () => UserProfileSheet.show(context, user: user)
-                : null,
-            onEdit: () => _showEditProfileDialog(context, ref, user),
-          ),
+      appBar: AppBar(
+        // Show back arrow when push-navigated; default drawer icon otherwise
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                tooltip: 'Go Back',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
+        title: const Text('Settings'),
+      ),
+      body: SafeArea(
+        child: ListView(
+          children: [
+            // ── Profile Section ──────────────────────────────────────────────
+            _SectionHeader(title: 'Profile & Operational Team'),
+            _ProfileCard(
+              name: user?.name ?? '—',
+              email: user?.email ?? '—',
+              role: user?.role ?? '—',
+              grade: user?.gradeLabel ?? '—',
+              designation: user?.designation,
+              department: user?.department,
+              onViewProfile: user != null
+                  ? () => UserProfileSheet.show(context, user: user)
+                  : null,
+              onEdit: () => _showEditProfileDialog(context, ref, user),
+            ),
 
-          // ── Appearance ──────────────────────────────────────────────────
-          _SectionHeader(title: 'Appearance'),
-          _SettingsTile(
-            icon: Icons.brightness_6_rounded,
-            title: 'Theme',
-            subtitle: _themeLabel(settings.themeMode),
-            trailing: DropdownButton<ThemeMode>(
-              value: settings.themeMode,
-              underline: const SizedBox.shrink(),
-              items: const [
-                DropdownMenuItem(
-                  value: ThemeMode.system,
-                  child: Text('System'),
-                ),
-                DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
-                DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
-              ],
-              onChanged: (mode) {
-                if (mode != null) {
+            // ── Appearance ──────────────────────────────────────────────────
+            _SectionHeader(title: 'Appearance'),
+            _SettingsTile(
+              icon: Icons.brightness_6_rounded,
+              title: 'Theme',
+              subtitle: _themeLabel(settings.themeMode),
+              trailing: DropdownButton<ThemeMode>(
+                value: settings.themeMode,
+                underline: const SizedBox.shrink(),
+                items: const [
+                  DropdownMenuItem(
+                    value: ThemeMode.system,
+                    child: Text('System'),
+                  ),
+                  DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+                  DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+                ],
+                onChanged: (mode) {
+                  if (mode != null) {
+                    ref
+                        .read(settingsControllerProvider.notifier)
+                        .setThemeMode(mode);
+                  }
+                },
+              ),
+            ),
+
+            // ── Notifications ────────────────────────────────────────────────
+            _SectionHeader(title: 'Notifications'),
+            _SettingsSwitchTile(
+              icon: Icons.notifications_rounded,
+              title: 'Enable Notifications',
+              subtitle: 'Receive push alerts from the SRE platform',
+              value: settings.notificationsEnabled,
+              onChanged: (v) async {
+                if (v) {
+                  final svc = ref.read(permissionServiceProvider);
+                  final result = await svc.requestNotificationPermission(context);
+                  if (result == PermissionResult.granted) {
+                    ref
+                        .read(settingsControllerProvider.notifier)
+                        .setNotificationsEnabled(true);
+                  }
+                } else {
                   ref
                       .read(settingsControllerProvider.notifier)
-                      .setThemeMode(mode);
+                      .setNotificationsEnabled(false);
                 }
               },
             ),
-          ),
+            if (settings.notificationsEnabled) ...[
+              _SettingsSwitchTile(
+                icon: Icons.warning_amber_rounded,
+                title: 'Incident Alerts',
+                subtitle: 'P1/P2 incidents and escalations',
+                value: settings.notifyIncidents,
+                onChanged: (v) => ref
+                    .read(settingsControllerProvider.notifier)
+                    .setNotifyIncidents(v),
+                iconColor: NpontuColors.criticalP1,
+                indent: true,
+              ),
+              _SettingsSwitchTile(
+                icon: Icons.swap_horiz_rounded,
+                title: 'Shift Handovers',
+                subtitle: 'Handover sign-on requests',
+                value: settings.notifyHandovers,
+                onChanged: (v) => ref
+                    .read(settingsControllerProvider.notifier)
+                    .setNotifyHandovers(v),
+                iconColor: NpontuColors.goldWarm,
+                indent: true,
+              ),
+              _SettingsSwitchTile(
+                icon: Icons.assignment_ind_rounded,
+                title: 'Task Assignments',
+                subtitle: 'When a task is assigned to you',
+                value: settings.notifyAssignments,
+                onChanged: (v) => ref
+                    .read(settingsControllerProvider.notifier)
+                    .setNotifyAssignments(v),
+                iconColor: NpontuColors.greenLight,
+                indent: true,
+              ),
+            ],
 
-          // ── Notifications ────────────────────────────────────────────────
-          _SectionHeader(title: 'Notifications'),
-          _SettingsSwitchTile(
-            icon: Icons.notifications_rounded,
-            title: 'Enable Notifications',
-            subtitle: 'Receive push alerts from the SRE platform',
-            value: settings.notificationsEnabled,
-            onChanged: (v) async {
-              if (v) {
-                final svc = ref.read(permissionServiceProvider);
-                final result = await svc.requestNotificationPermission(context);
-                if (result == PermissionResult.granted) {
-                  ref
-                      .read(settingsControllerProvider.notifier)
-                      .setNotificationsEnabled(true);
+            // ── Security ─────────────────────────────────────────────────────
+            _SectionHeader(title: 'Security'),
+            _SettingsSwitchTile(
+              icon: Icons.fingerprint_rounded,
+              title: 'Biometric Sign-in',
+              subtitle: 'Use fingerprint or Face ID to authenticate',
+              value: settings.biometricEnabled,
+              onChanged: (v) async {
+                if (v) {
+                  // Verify device actually supports biometrics before enabling
+                  final localAuth = LocalAuthentication();
+                  final canCheck = await localAuth.canCheckBiometrics;
+                  final isSupported = await localAuth.isDeviceSupported();
+
+                  if (!canCheck || !isSupported) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Biometric authentication is not available on this device.',
+                          ),
+                        ),
+                      );
+                    }
+                    return;
+                  }
+
+                  // Biometric is gated by local_auth — no separate OS permission call needed.
                 }
-              } else {
+
                 ref
                     .read(settingsControllerProvider.notifier)
-                    .setNotificationsEnabled(false);
-              }
-            },
-          ),
-          if (settings.notificationsEnabled) ...[
-            _SettingsSwitchTile(
-              icon: Icons.warning_amber_rounded,
-              title: 'Incident Alerts',
-              subtitle: 'P1/P2 incidents and escalations',
-              value: settings.notifyIncidents,
-              onChanged: (v) => ref
-                  .read(settingsControllerProvider.notifier)
-                  .setNotifyIncidents(v),
-              iconColor: NpontuColors.criticalP1,
-              indent: true,
+                    .setBiometricEnabled(v);
+              },
             ),
-            _SettingsSwitchTile(
-              icon: Icons.swap_horiz_rounded,
-              title: 'Shift Handovers',
-              subtitle: 'Handover sign-on requests',
-              value: settings.notifyHandovers,
-              onChanged: (v) => ref
-                  .read(settingsControllerProvider.notifier)
-                  .setNotifyHandovers(v),
-              iconColor: NpontuColors.goldWarm,
-              indent: true,
-            ),
-            _SettingsSwitchTile(
-              icon: Icons.assignment_ind_rounded,
-              title: 'Task Assignments',
-              subtitle: 'When a task is assigned to you',
-              value: settings.notifyAssignments,
-              onChanged: (v) => ref
-                  .read(settingsControllerProvider.notifier)
-                  .setNotifyAssignments(v),
-              iconColor: NpontuColors.greenLight,
-              indent: true,
-            ),
-          ],
-
-          // ── Security ─────────────────────────────────────────────────────
-          _SectionHeader(title: 'Security'),
-          _SettingsSwitchTile(
-            icon: Icons.fingerprint_rounded,
-            title: 'Biometric Sign-in',
-            subtitle: 'Use fingerprint or Face ID to authenticate',
-            value: settings.biometricEnabled,
-            onChanged: (v) async {
-              if (v) {
-                // Verify device actually supports biometrics before enabling
-                final localAuth = LocalAuthentication();
-                final canCheck = await localAuth.canCheckBiometrics;
-                final isSupported = await localAuth.isDeviceSupported();
-
-                if (!canCheck || !isSupported) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Biometric authentication is not available on this device.',
-                        ),
-                      ),
-                    );
-                  }
-                  return;
+            _SettingsTile(
+              icon: Icons.location_on_rounded,
+              title: 'Location Access',
+              subtitle: 'Used for on-site check-in tagging',
+              onTap: () async {
+                final svc = ref.read(permissionServiceProvider);
+                final result = await svc.requestLocationPermission(context);
+                if (context.mounted) {
+                  final msg = result == PermissionResult.granted
+                      ? 'Location permission granted.'
+                      : 'Location permission not granted.';
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(msg)));
                 }
-
-                // Biometric is gated by local_auth — no separate OS permission call needed.
-              }
-
-              ref
-                  .read(settingsControllerProvider.notifier)
-                  .setBiometricEnabled(v);
-            },
-          ),
-          _SettingsTile(
-            icon: Icons.location_on_rounded,
-            title: 'Location Access',
-            subtitle: 'Used for on-site check-in tagging',
-            onTap: () async {
-              final svc = ref.read(permissionServiceProvider);
-              final result = await svc.requestLocationPermission(context);
-              if (context.mounted) {
-                final msg = result == PermissionResult.granted
-                    ? 'Location permission granted.'
-                    : 'Location permission not granted.';
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text(msg)));
-              }
-            },
-          ),
-          _SettingsTile(
-            icon: Icons.camera_alt_rounded,
-            title: 'Camera Access',
-            subtitle: 'QR scanning and photographic evidence',
-            onTap: () async {
-              final svc = ref.read(permissionServiceProvider);
-              final result = await svc.requestCameraPermission(context);
-              if (context.mounted) {
-                final msg = result == PermissionResult.granted
-                    ? 'Camera permission granted.'
-                    : 'Camera permission not granted.';
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text(msg)));
-              }
-            },
-          ),
-
-          // ── Offline Telemetry & Storage ──────────────────────────────────
-          _SectionHeader(title: 'Offline Telemetry & Local Cache'),
-          const _OfflineStorageTile(),
-
-          // ── About ────────────────────────────────────────────────────────
-          _SectionHeader(title: 'About & Introduction'),
-          _SettingsTile(
-            icon: Icons.auto_stories_rounded,
-            title: 'Platform Tour & Features',
-            subtitle: 'Revisit the animated SRE shift operations walkthrough',
-            trailing: const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.grey,
+              },
             ),
-            onTap: () => context.push('/onboarding'),
-          ),
-          _SettingsTile(
-            icon: Icons.info_outline_rounded,
-            title: 'App Version',
-            subtitle:
-                '${AppConstants.appVersion} (Build ${AppConstants.buildNumber})',
-          ),
-          _SettingsTile(
-            icon: Icons.cloud_rounded,
-            title: 'API Endpoint',
-            subtitle: AppConstants.baseUrl,
-          ),
-          _SettingsTile(
-            icon: Icons.business_rounded,
-            title: 'Organisation',
-            subtitle: 'Npontu Technologies · SRE Operations',
-          ),
-
-          // ── Legal, Privacy & Compliance ─────────────────────────────────
-          _SectionHeader(title: 'Legal, Privacy & Compliance'),
-          _SettingsTile(
-            icon: Icons.privacy_tip_rounded,
-            title: 'Privacy Policy & Data Handling',
-            subtitle: 'Play Store & App Store statutory disclosures',
-            trailing: const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.grey,
+            _SettingsTile(
+              icon: Icons.camera_alt_rounded,
+              title: 'Camera Access',
+              subtitle: 'QR scanning and photographic evidence',
+              onTap: () async {
+                final svc = ref.read(permissionServiceProvider);
+                final result = await svc.requestCameraPermission(context);
+                if (context.mounted) {
+                  final msg = result == PermissionResult.granted
+                      ? 'Camera permission granted.'
+                      : 'Camera permission not granted.';
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(msg)));
+                }
+              },
             ),
-            onTap: () => PrivacyPolicySheet.show(context),
-          ),
-          _SettingsTile(
-            icon: Icons.person_remove_rounded,
-            title: 'Account Deletion & Data Rights',
-            subtitle: 'Apple Guideline 5.1.1(v) & Act 843 compliance',
-            trailing: const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.grey,
-            ),
-            onTap: () => PrivacyPolicySheet.showAccountDeletionDialog(context),
-          ),
 
-          // ── Sign Out ─────────────────────────────────────────────────────
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: OutlinedButton.icon(
-              onPressed: () => _confirmSignOut(context, ref),
-              icon: const Icon(
-                Icons.logout_rounded,
-                color: NpontuColors.danger,
+            // ── Offline Telemetry & Storage ──────────────────────────────────
+            _SectionHeader(title: 'Offline Telemetry & Local Cache'),
+            const _OfflineStorageTile(),
+
+            // ── About ────────────────────────────────────────────────────────
+            _SectionHeader(title: 'About & Introduction'),
+            _SettingsTile(
+              icon: Icons.auto_stories_rounded,
+              title: 'Platform Tour & Features',
+              subtitle: 'Revisit the animated SRE shift operations walkthrough',
+              trailing: const Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.grey,
               ),
-              label: const Text(
-                'Sign Out',
-                style: TextStyle(
+              onTap: () => context.push('/onboarding'),
+            ),
+            _SettingsTile(
+              icon: Icons.info_outline_rounded,
+              title: 'App Version',
+              subtitle:
+                  '${AppConstants.appVersion} (Build ${AppConstants.buildNumber})',
+            ),
+            _SettingsTile(
+              icon: Icons.cloud_rounded,
+              title: 'API Endpoint',
+              subtitle: AppConstants.baseUrl,
+            ),
+            _SettingsTile(
+              icon: Icons.business_rounded,
+              title: 'Organisation',
+              subtitle: 'Npontu Technologies · SRE Operations',
+            ),
+
+            // ── Legal, Privacy & Compliance ─────────────────────────────────
+            _SectionHeader(title: 'Legal, Privacy & Compliance'),
+            _SettingsTile(
+              icon: Icons.privacy_tip_rounded,
+              title: 'Privacy Policy & Data Handling',
+              subtitle: 'Play Store & App Store statutory disclosures',
+              trailing: const Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.grey,
+              ),
+              onTap: () => PrivacyPolicySheet.show(context),
+            ),
+            _SettingsTile(
+              icon: Icons.person_remove_rounded,
+              title: 'Account Deletion & Data Rights',
+              subtitle: 'Apple Guideline 5.1.1(v) & Act 843 compliance',
+              trailing: const Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.grey,
+              ),
+              onTap: () => PrivacyPolicySheet.showAccountDeletionDialog(context),
+            ),
+
+            // ── Sign Out ─────────────────────────────────────────────────────
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: OutlinedButton.icon(
+                onPressed: () => _confirmSignOut(context, ref),
+                icon: const Icon(
+                  Icons.logout_rounded,
                   color: NpontuColors.danger,
-                  fontWeight: FontWeight.w600,
+                ),
+                label: const Text(
+                  'Sign Out',
+                  style: TextStyle(
+                    color: NpontuColors.danger,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: NpontuColors.danger),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: NpontuColors.danger),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
             ),
-          ),
-          const SizedBox(height: 40),
-        ],
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
@@ -400,13 +412,20 @@ class SettingsScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: dept,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Operational Department / Team *',
                         prefixIcon: Icon(Icons.corporate_fare_rounded),
                       ),
                       items: departments
                           .map(
-                            (d) => DropdownMenuItem(value: d, child: Text(d)),
+                            (d) => DropdownMenuItem(
+                              value: d,
+                              child: Text(
+                                d,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           )
                           .toList(),
                       onChanged: (v) {

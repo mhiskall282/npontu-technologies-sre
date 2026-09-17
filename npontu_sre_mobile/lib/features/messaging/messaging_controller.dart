@@ -1,5 +1,7 @@
 // lib/features/messaging/messaging_controller.dart
 
+import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/errors/api_exception.dart';
@@ -82,7 +84,20 @@ class MessagingController extends StateNotifier<MessagingState> {
         'sre_cache_conversations',
         convs.map((c) => c.toJson()).toList(),
       );
+    } on UnauthorizedException {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Session expired. Please log in again.',
+      );
+      developer.log(
+        'MessagingController: 401 Unauthorized loading conversations',
+        name: 'messaging',
+      );
     } catch (e) {
+      developer.log(
+        'MessagingController: loadConversations error: $e',
+        name: 'messaging',
+      );
       state = state.copyWith(
         isLoading: false,
         errorMessage: state.conversations.isEmpty
@@ -136,7 +151,17 @@ class MessagingController extends StateNotifier<MessagingState> {
         'sre_cache_conv_msgs_$conversationId',
         msgs.map((m) => m.toJson()).toList(),
       );
-    } catch (_) {}
+    } on UnauthorizedException {
+      developer.log(
+        'MessagingController: 401 Unauthorized polling messages',
+        name: 'messaging',
+      );
+    } catch (e) {
+      developer.log(
+        'MessagingController: pollMessages error: $e',
+        name: 'messaging',
+      );
+    }
   }
 
   Future<bool> sendMessage({

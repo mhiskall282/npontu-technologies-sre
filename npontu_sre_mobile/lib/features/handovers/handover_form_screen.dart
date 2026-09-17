@@ -104,6 +104,7 @@ class _HandoverFormScreenState extends ConsumerState<HandoverFormScreen> {
             // Shift selector
             DropdownButtonFormField<String>(
               value: _shift,
+              isExpanded: true,
               decoration: const InputDecoration(
                 labelText: 'Ending Shift *',
                 prefixIcon: Icon(Icons.access_time_rounded),
@@ -166,6 +167,7 @@ class _HandoverFormScreenState extends ConsumerState<HandoverFormScreen> {
             // Incoming Operator
             DropdownButtonFormField<int?>(
               value: _incomingUserId,
+              isExpanded: true,
               decoration: const InputDecoration(
                 labelText: 'Incoming SRE Operator (Receiver)',
                 prefixIcon: Icon(Icons.person_add_alt_1_rounded),
@@ -173,12 +175,18 @@ class _HandoverFormScreenState extends ConsumerState<HandoverFormScreen> {
               items: [
                 const DropdownMenuItem<int?>(
                   value: null,
-                  child: Text('Open / Next Available Operator'),
+                  child: Text(
+                    'Open / Next Available Operator',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 ...teamMembers.map(
                   (user) => DropdownMenuItem<int?>(
                     value: user.id,
-                    child: Text('${user.name} (${user.gradeLabel})'),
+                    child: Text(
+                      '${user.name} (${user.gradeLabel})',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],

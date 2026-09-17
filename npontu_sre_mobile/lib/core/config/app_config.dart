@@ -17,9 +17,9 @@ class AppConfig {
 
   static String baseUrl = configuredUrl;
 
-  static const Duration connectTimeout = Duration(seconds: 15);
-  static const Duration receiveTimeout = Duration(seconds: 20);
-  static const Duration sendTimeout = Duration(seconds: 20);
+  static const Duration connectTimeout = Duration(seconds: 35);
+  static const Duration receiveTimeout = Duration(seconds: 35);
+  static const Duration sendTimeout = Duration(seconds: 30);
 
   static void setBaseUrl(String url) {
     if (url.isNotEmpty) {

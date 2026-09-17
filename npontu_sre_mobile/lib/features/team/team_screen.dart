@@ -38,6 +38,14 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
     return Scaffold(
       drawer: const AppDrawer(currentRoute: '/team'),
       appBar: AppBar(
+        // Show back arrow when push-navigated; drawer icon otherwise
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                tooltip: 'Go Back',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('SRE Operations Team'),
         actions: [
           IconButton(
@@ -54,70 +62,71 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => ref
-            .read(teamControllerProvider.notifier)
-            .loadTeam(
-              role: _selectedRole.isEmpty ? null : _selectedRole,
-              search: _searchController.text.trim().isEmpty
-                  ? null
-                  : _searchController.text.trim(),
-            ),
-        child: Column(
-          children: [
-            // Search & Filter Box
-            Container(
-              padding: const EdgeInsets.all(12),
-              color: isDark ? NpontuColors.surfaceMid : const Color(0xFFF3F4F6),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _searchController,
-                    onChanged: (val) {
-                      ref
-                          .read(teamControllerProvider.notifier)
-                          .loadTeam(
-                            role: _selectedRole.isEmpty ? null : _selectedRole,
-                            search: val.trim().isEmpty ? null : val.trim(),
-                          );
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search by operator name or email...',
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: isDark
-                          ? NpontuColors.surfaceDark
-                          : Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildFilterChip('All Members', ''),
-                        _buildFilterChip('Admins', 'admin'),
-                        _buildFilterChip('Leads', 'lead'),
-                        _buildFilterChip('Engineers', 'engineer'),
-                        _buildFilterChip('Agents', 'agent'),
-                      ],
-                    ),
-                  ),
-                ],
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () => ref
+              .read(teamControllerProvider.notifier)
+              .loadTeam(
+                role: _selectedRole.isEmpty ? null : _selectedRole,
+                search: _searchController.text.trim().isEmpty
+                    ? null
+                    : _searchController.text.trim(),
               ),
-            ),
+          child: Column(
+            children: [
+              // Search & Filter Box
+              Container(
+                padding: const EdgeInsets.all(12),
+                color: isDark ? NpontuColors.surfaceMid : const Color(0xFFF3F4F6),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      onChanged: (val) {
+                        ref
+                            .read(teamControllerProvider.notifier)
+                            .loadTeam(
+                              role: _selectedRole.isEmpty ? null : _selectedRole,
+                              search: val.trim().isEmpty ? null : val.trim(),
+                            );
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search by operator name or email...',
+                        prefixIcon: const Icon(Icons.search_rounded),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: isDark
+                            ? NpontuColors.surfaceDark
+                            : Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildFilterChip('All Members', ''),
+                          _buildFilterChip('Admins', 'admin'),
+                          _buildFilterChip('Engineers', 'engineer'),
+                          _buildFilterChip('Leads', 'lead'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
-            // Main List
-            Expanded(child: _buildBody(context, teamState, isDark)),
-          ],
+              // Main List
+              Expanded(child: _buildBody(context, teamState, isDark)),
+            ],
+          ),
         ),
       ),
     );

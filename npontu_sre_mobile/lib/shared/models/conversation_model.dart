@@ -86,7 +86,12 @@ class MessageModel {
 
 class ConversationModel {
   final int id;
-  final String type; // 'direct' | 'team' | 'group'
+  /// Normalised conversation type used by the mobile UI tabs.
+  /// The backend may return 'team', 'group', 'direct', etc.
+  /// [_normalizeType] maps backend values to the UI-expected
+  /// 'channel' | 'war_room' | 'direct' taxonomy so that the
+  /// messaging tabs always display the correct conversations.
+  final String type;
   final String title;
   final String? rawTitle;
   final String? description;
@@ -122,17 +127,42 @@ class ConversationModel {
             ? '${updatedAt!.hour.toString().padLeft(2, '0')}:${updatedAt!.minute.toString().padLeft(2, '0')}'
             : null);
 
+  /// Maps backend conversation types to the mobile UI taxonomy.
+  ///
+  /// The Laravel backend uses 'team' for public group conversations and
+  /// 'direct' for 1-on-1 DMs. The mobile MessagingScreen tabs expect
+  /// 'channel', 'war_room', or 'direct'. This method bridges the gap.
+  static String _normalizeType(String? raw) {
+    switch (raw) {
+      case 'team':
+      case 'group':
+      case 'channel':
+      case 'public':
+        return 'channel';
+      case 'war_room':
+      case 'incident':
+        return 'war_room';
+      case 'direct':
+      case 'dm':
+        return 'direct';
+      default:
+        // Fallback: treat unknown types as channels so they remain visible
+        return 'channel';
+    }
+  }
+
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
+    final rawType = json['type'] as String? ?? 'team';
     return ConversationModel(
       id: json['id'] is int
           ? json['id'] as int
           : int.parse(json['id'].toString()),
-      type: json['type'] as String? ?? 'team',
+      type: _normalizeType(rawType),
       title: json['title'] as String? ?? 'Channel',
       rawTitle: json['raw_title'] as String?,
       description: json['description'] as String?,
       isPrivate: json['is_private'] == true,
-      isDirect: json['is_direct'] == true || json['type'] == 'direct',
+      isDirect: json['is_direct'] == true || rawType == 'direct',
       createdBy: json['created_by'] as int?,
       unreadCount: json['unread_count'] as int? ?? 0,
       latestMessage: json['latest_message'] is Map<String, dynamic>

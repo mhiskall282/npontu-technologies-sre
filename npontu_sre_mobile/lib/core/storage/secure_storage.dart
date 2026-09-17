@@ -137,4 +137,6 @@ class SecureStorageService {
       await prefs.remove(AppConstants.userDataKey);
     } catch (_) {}
   }
+
+  Future<void> clearAuth() => clearAll();
 }

@@ -76,29 +76,31 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
       drawer: const AppDrawer(currentRoute: '/'),
-      body: state.isLoading
-          ? const SkeletonListPlaceholder(count: 3)
-          : state.errorMessage != null
-          ? ErrorRetryWidget(
-              message: state.errorMessage!,
-              onRetry: () => ref
-                  .read(dashboardControllerProvider.notifier)
-                  .loadDashboard(),
-            )
-          : RefreshIndicator(
-              color: NpontuColors.green,
-              onRefresh: () => ref
-                  .read(dashboardControllerProvider.notifier)
-                  .loadDashboard(),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  if (Responsive.isTabletOrDesktop(context)) {
-                    return _buildTabletLayout(context, state);
-                  }
-                  return _buildPhoneLayout(context, state);
-                },
+      body: SafeArea(
+        child: state.isLoading
+            ? const SkeletonListPlaceholder(count: 3)
+            : state.errorMessage != null
+            ? ErrorRetryWidget(
+                message: state.errorMessage!,
+                onRetry: () => ref
+                    .read(dashboardControllerProvider.notifier)
+                    .loadDashboard(),
+              )
+            : RefreshIndicator(
+                color: NpontuColors.green,
+                onRefresh: () => ref
+                    .read(dashboardControllerProvider.notifier)
+                    .loadDashboard(),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (Responsive.isTabletOrDesktop(context)) {
+                      return _buildTabletLayout(context, state);
+                    }
+                    return _buildPhoneLayout(context, state);
+                  },
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -205,13 +207,16 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      '${state.currentShift.toUpperCase()} SHIFT',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        letterSpacing: 0.5,
+                    Flexible(
+                      child: Text(
+                        '${state.currentShift.toUpperCase()} SHIFT',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          letterSpacing: 0.5,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -246,10 +251,12 @@ class DashboardScreen extends ConsumerWidget {
                     color: Colors.white.withAlpha(210),
                     fontSize: 12,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
+          const SizedBox(width: 8),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: NpontuColors.gold,

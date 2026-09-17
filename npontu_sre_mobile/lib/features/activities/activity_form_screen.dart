@@ -192,6 +192,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           value: _shift,
+                          isExpanded: true,
                           decoration: const InputDecoration(
                             labelText: 'Shift *',
                           ),
@@ -218,6 +219,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           value: _priority,
+                          isExpanded: true,
                           decoration: const InputDecoration(
                             labelText: 'Priority *',
                           ),
@@ -262,6 +264,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           value: _recurrence,
+                          isExpanded: true,
                           decoration: const InputDecoration(
                             labelText: 'Cadence *',
                           ),
@@ -295,6 +298,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                   // Assignee
                   DropdownButtonFormField<int?>(
                     value: _assignedToId,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Assigned Operator',
                       prefixIcon: Icon(Icons.person_outline_rounded),
@@ -302,18 +306,27 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                     items: [
                       const DropdownMenuItem<int?>(
                         value: null,
-                        child: Text('Unassigned (Shift Pool)'),
+                        child: Text(
+                          'Unassigned (Shift Pool)',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       if (_assignedToId != null &&
                           teamMembers.every((u) => u.id != _assignedToId))
                         DropdownMenuItem<int?>(
                           value: _assignedToId,
-                          child: Text('Current Assignee (ID: $_assignedToId)'),
+                          child: Text(
+                            'Current Assignee (ID: $_assignedToId)',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ...teamMembers.map(
                         (user) => DropdownMenuItem<int?>(
                           value: user.id,
-                          child: Text('${user.name} (${user.gradeLabel})'),
+                          child: Text(
+                            '${user.name} (${user.gradeLabel})',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ],
@@ -323,6 +336,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
 
                   // Switches
                   SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
                     title: const Text('Pin to top of shift view'),
                     subtitle: const Text('Highlights critical handover items'),
                     value: _isPinned,
@@ -330,6 +344,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                     onChanged: (val) => setState(() => _isPinned = val),
                   ),
                   SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
                     title: const Text('Active status'),
                     subtitle: const Text(
                       'Inactive items will not appear in daily checklist',

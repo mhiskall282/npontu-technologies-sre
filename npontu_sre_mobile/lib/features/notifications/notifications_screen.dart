@@ -23,6 +23,14 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        // Show back arrow when push-navigated; default drawer icon otherwise
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                tooltip: 'Go Back',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -54,52 +62,54 @@ class NotificationsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: state.when(
-        loading: () => const SkeletonListPlaceholder(count: 6),
-        error: (e, _) => ErrorRetryWidget(
-          message: e.toString(),
-          onRetry: () => ref.invalidate(notificationControllerProvider),
-        ),
-        data: (notifications) {
-          if (notifications.isEmpty) {
-            return const EmptyStateWidget(
-              icon: Icons.notifications_off_outlined,
-              title: 'All Clear',
-              subtitle:
-                  'No notifications at the moment. '
-                  'Operational alerts will appear here in real time.',
+      body: SafeArea(
+        child: state.when(
+          loading: () => const SkeletonListPlaceholder(count: 6),
+          error: (e, _) => ErrorRetryWidget(
+            message: e.toString(),
+            onRetry: () => ref.invalidate(notificationControllerProvider),
+          ),
+          data: (notifications) {
+            if (notifications.isEmpty) {
+              return const EmptyStateWidget(
+                icon: Icons.notifications_off_outlined,
+                title: 'All Clear',
+                subtitle:
+                    'No notifications at the moment. '
+                    'Operational alerts will appear here in real time.',
+              );
+            }
+
+            // Group by date
+            final grouped = _groupByDate(notifications);
+
+            return RefreshIndicator(
+              color: NpontuColors.green,
+              onRefresh: () async =>
+                  ref.invalidate(notificationControllerProvider),
+              child: ListView.builder(
+                itemCount: _countItems(grouped),
+                itemBuilder: (ctx, index) {
+                  final (isHeader, date, notification) = _itemAt(grouped, index);
+
+                  if (isHeader) {
+                    return _DateSeparator(label: date!);
+                  }
+
+                  return NotificationTile(
+                    notification: notification!,
+                    onMarkRead: () => ref
+                        .read(notificationControllerProvider.notifier)
+                        .markRead(notification.id),
+                    onDelete: () => ref
+                        .read(notificationControllerProvider.notifier)
+                        .deleteNotification(notification.id),
+                  );
+                },
+              ),
             );
-          }
-
-          // Group by date
-          final grouped = _groupByDate(notifications);
-
-          return RefreshIndicator(
-            color: NpontuColors.green,
-            onRefresh: () async =>
-                ref.invalidate(notificationControllerProvider),
-            child: ListView.builder(
-              itemCount: _countItems(grouped),
-              itemBuilder: (ctx, index) {
-                final (isHeader, date, notification) = _itemAt(grouped, index);
-
-                if (isHeader) {
-                  return _DateSeparator(label: date!);
-                }
-
-                return NotificationTile(
-                  notification: notification!,
-                  onMarkRead: () => ref
-                      .read(notificationControllerProvider.notifier)
-                      .markRead(notification.id),
-                  onDelete: () => ref
-                      .read(notificationControllerProvider.notifier)
-                      .deleteNotification(notification.id),
-                );
-              },
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }

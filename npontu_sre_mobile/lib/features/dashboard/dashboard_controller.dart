@@ -2,12 +2,14 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/errors/api_exception.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/api_client_provider.dart';
 import '../../core/services/cache_service.dart';
 import '../../core/services/connectivity_service.dart';
 import '../../shared/models/activity_model.dart';
 import '../../shared/models/shift_handover_model.dart';
+import '../auth/presentation/auth_controller.dart';
 
 class DashboardDataState {
   final String date;
@@ -197,10 +199,8 @@ class DashboardController extends StateNotifier<DashboardDataState> {
   }
 
   Future<void> loadDashboard({String? date}) async {
-    // Only show full loading spinner if we don't already have data to display
-    if (state.date.isEmpty) {
-      state = state.copyWith(isLoading: true, errorMessage: null);
-    }
+    // Clear any previous error message and show loading state
+    state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
       final response = await _apiClient.get(
@@ -214,6 +214,9 @@ class DashboardController extends StateNotifier<DashboardDataState> {
       _ref.read(connectivityServiceProvider.notifier).markOnline();
 
       state = _parseData(data).copyWith(isLoading: false, isOffline: false);
+    } on UnauthorizedException {
+      // 401 Unauthorized: Session is expired, force re-authentication
+      _ref.read(authControllerProvider.notifier).logout();
     } catch (e) {
       _ref.read(connectivityServiceProvider.notifier).markOffline();
 
@@ -221,9 +224,12 @@ class DashboardController extends StateNotifier<DashboardDataState> {
         // We have cached data, keep displaying it and indicate offline mode
         state = state.copyWith(isLoading: false, isOffline: true);
       } else {
+        final message = (e is ApiException)
+            ? e.message
+            : 'Failed to load SRE dashboard. Tap retry.';
         state = state.copyWith(
           isLoading: false,
-          errorMessage: 'Failed to load SRE dashboard. Tap retry.',
+          errorMessage: message,
         );
       }
     }
