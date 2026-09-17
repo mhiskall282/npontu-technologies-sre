@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="Npontu Technologies — Support Activity Tracker for operational shift management">
-    <title>@yield('title', config('app.name', 'Support Tracker')) — Npontu Technologies</title>
+    <meta name="description" content="Opsora SRE — Site Reliability Engineering & Shift Operations Platform">
+    <title>@yield('title', config('app.name', 'Opsora SRE')) — Opsora SRE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,42 +13,76 @@
     @livewireStyles
 </head>
 <body class="min-h-full bg-[#F4F7F5] font-sans antialiased text-gray-900">
-    {{-- Splash Screen Loader for App (Snappy 200ms transition) --}}
-    <div id="app-splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0F1A14] transition-opacity duration-300 pointer-events-auto">
-        <div class="flex flex-col items-center gap-4 text-center">
-            <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/20 shadow-2xl">
-                <svg class="w-8 h-8 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                    <polygon points="16,3 30,27 2,27"/>
-                </svg>
+    {{-- Splash Screen Loader for App (Smooth slide-in, glowing emblem, and progress animatic) --}}
+    <div id="app-splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0B1911] transition-all duration-500 pointer-events-auto select-none">
+        <style>
+            @keyframes opsoraSlideUp {
+                0% { opacity: 0; transform: translateY(24px) scale(0.95); }
+                100% { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes opsoraPulseGlow {
+                0%, 100% { filter: drop-shadow(0 0 12px rgba(245, 197, 24, 0.45)); }
+                50% { filter: drop-shadow(0 0 28px rgba(245, 197, 24, 0.85)); }
+            }
+            @keyframes opsoraLoadBar {
+                0% { width: 0%; }
+                50% { width: 72%; }
+                100% { width: 100%; }
+            }
+            .opsora-splash-card {
+                animation: opsoraSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            .opsora-emblem-glow {
+                animation: opsoraPulseGlow 2.2s infinite ease-in-out;
+            }
+            .opsora-progress-fill {
+                animation: opsoraLoadBar 0.8s ease-in-out forwards;
+            }
+        </style>
+        <div class="opsora-splash-card flex flex-col items-center gap-5 text-center px-6 max-w-xs">
+            <div class="opsora-emblem-glow relative flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-950/80 to-black/80 border border-[#F5C518]/40 shadow-2xl p-2.5">
+                <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-full h-full object-contain">
             </div>
             <div>
-                <h1 class="text-lg font-bold text-white tracking-tight">Support Tracker</h1>
-                <p class="text-[11px] text-[#F5C518] font-mono tracking-widest uppercase mt-0.5 font-semibold">Npontu Technologies</p>
+                <div class="flex items-center justify-center gap-2">
+                    <h1 class="text-2xl font-black text-white tracking-wider font-mono">OPSORA</h1>
+                    <span class="px-1.5 py-0.5 rounded bg-[#F5C518]/20 border border-[#F5C518]/60 text-[#F5C518] text-xs font-black tracking-widest font-mono">SRE</span>
+                </div>
+                <p class="text-[10px] text-emerald-300/80 font-mono tracking-widest uppercase mt-1 font-semibold">Reliability Operations Platform</p>
             </div>
-            <div class="flex items-center gap-1.5 mt-1">
-                <div class="w-2 h-2 rounded-full bg-[#1B6B3A] animate-ping"></div>
-                <span class="text-xs text-gray-400 font-medium">Loading SRE Console...</span>
+            <!-- Animated Loading Progress Bar -->
+            <div class="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden border border-white/5 mt-1">
+                <div class="opsora-progress-fill h-full bg-gradient-to-r from-[#1B6B3A] via-[#F5C518] to-[#1B6B3A] rounded-full"></div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#1B6B3A] animate-ping"></span>
+                <span class="text-xs text-gray-400 font-mono" id="splash-status-text">Initializing telemetry nodes...</span>
             </div>
         </div>
     </div>
     <script>
         (function() {
+            const statusEl = document.getElementById('splash-status-text');
+            if (statusEl) {
+                setTimeout(() => { if (statusEl) statusEl.textContent = 'Verifying security credentials...'; }, 250);
+                setTimeout(() => { if (statusEl) statusEl.textContent = 'Opsora SRE Ready.'; }, 550);
+            }
             function dismissSplash() {
                 const splash = document.getElementById('app-splash-screen');
                 if (splash && !splash.dataset.dismissed) {
                     splash.dataset.dismissed = 'true';
                     splash.style.pointerEvents = 'none';
                     splash.style.opacity = '0';
-                    setTimeout(() => splash.remove(), 300);
+                    splash.style.transform = 'scale(1.02)';
+                    setTimeout(() => splash.remove(), 350);
                 }
             }
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                setTimeout(dismissSplash, 200);
+            if (document.readyState === 'complete') {
+                setTimeout(dismissSplash, 600);
             } else {
-                document.addEventListener('DOMContentLoaded', () => setTimeout(dismissSplash, 200));
-                window.addEventListener('load', () => setTimeout(dismissSplash, 100));
+                window.addEventListener('load', () => setTimeout(dismissSplash, 600));
             }
-            setTimeout(dismissSplash, 500);
+            setTimeout(dismissSplash, 1200);
         })();
     </script>
 
@@ -64,9 +98,12 @@
                         aria-label="Open sidebar menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
-                <a href="{{ route('activities.daily') }}" class="flex items-center gap-2">
-                    <svg class="w-6 h-6 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor"><polygon points="16,3 30,27 2,27"/></svg>
-                    <span class="font-bold text-sm tracking-tight text-white">Support Tracker</span>
+                <a href="{{ route('activities.daily') }}" class="flex items-center gap-2.5">
+                    <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-7 h-7">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-black text-sm tracking-wide text-white">OPSORA</span>
+                        <span class="px-1 py-0.2 rounded bg-[#F5C518]/20 border border-[#F5C518]/50 text-[#F5C518] text-[10px] font-bold font-mono">SRE</span>
+                    </div>
                 </a>
             </div>
             <div class="flex items-center gap-2">
@@ -98,10 +135,13 @@
             {{-- Mobile Drawer Brand Header --}}
             <div class="h-16 px-4 border-b border-[#1A2E22] flex items-center justify-between shrink-0">
                 <a href="{{ route('activities.daily') }}" class="flex items-center gap-2.5">
-                    <svg class="w-7 h-7 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor"><polygon points="16,3 30,27 2,27"/></svg>
+                    <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-7 h-7">
                     <div>
-                        <span class="font-bold text-sm tracking-tight text-white block leading-none">Support Tracker</span>
-                        <span class="text-[9px] text-[#F5C518] font-mono tracking-widest uppercase">NPONTU TECHNOLOGIES</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-black text-sm tracking-wide text-white block leading-none">OPSORA</span>
+                            <span class="px-1 py-0.2 rounded bg-[#F5C518]/20 border border-[#F5C518]/50 text-[#F5C518] text-[9px] font-bold font-mono">SRE</span>
+                        </div>
+                        <span class="text-[8px] text-gray-400 font-mono tracking-widest uppercase block mt-0.5">Reliability Operations</span>
                     </div>
                 </a>
                 <button type="button" onclick="closeMobileSidebar()" class="p-1.5 text-gray-400 hover:text-white rounded-lg cursor-pointer">
@@ -159,17 +199,20 @@
             {{-- Brand Section --}}
             <div class="h-16 px-5 border-b border-[#1A2E22] flex items-center justify-between shrink-0">
                 <a href="{{ route('activities.daily') }}" class="flex items-center gap-3 group">
-                    <div class="relative flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 group-hover:border-[#F5C518]/50 transition-colors shadow-sm">
-                        <svg class="w-5 h-5 text-[#F5C518] group-hover:scale-105 transition-transform" viewBox="0 0 32 32" fill="currentColor">
-                            <polygon points="16,3 30,27 2,27"/>
-                        </svg>
+                    <div class="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-950/60 to-black/60 border border-white/10 group-hover:border-[#F5C518]/60 transition-all shadow-sm p-1">
+                        <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-full h-full object-contain group-hover:scale-105 transition-transform">
                     </div>
                     <div>
-                        <span class="font-bold text-sm tracking-tight text-white block leading-none group-hover:text-green-300 transition-colors">
-                            Support Tracker
-                        </span>
-                        <span class="block text-[#F5C518] text-[9px] font-mono tracking-widest uppercase mt-0.5 font-semibold">
-                            NPONTU TECHNOLOGIES
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-black text-sm tracking-wide text-white block leading-none group-hover:text-emerald-300 transition-colors">
+                                OPSORA
+                            </span>
+                            <span class="px-1 py-0.5 rounded bg-[#F5C518]/20 border border-[#F5C518]/50 text-[#F5C518] text-[10px] font-black font-mono leading-none">
+                                SRE
+                            </span>
+                        </div>
+                        <span class="block text-emerald-400/80 text-[9px] font-mono tracking-wider uppercase mt-1 font-semibold">
+                            Operations Platform
                         </span>
                     </div>
                 </a>
@@ -259,7 +302,7 @@
 
                     {{-- Breadcrumb trail --}}
                     <div class="flex items-center gap-2 text-xs text-gray-500">
-                        <span class="font-medium text-gray-600 hidden sm:inline">Support Tracker</span>
+                        <span class="font-medium text-gray-600 hidden sm:inline">Opsora SRE</span>
                         <span class="hidden sm:inline">/</span>
                         <span class="text-gray-900 font-bold capitalize">
                             @if(request()->routeIs('activities.daily'))
@@ -445,7 +488,7 @@
     <script>
         (function() {
             const originalDocTitle = document.title;
-            const alertDocTitle = '🔔 ({{ $unreadForTitle }}) New Comms Alert! — Support Tracker';
+            const alertDocTitle = '🔔 ({{ $unreadForTitle }}) New Comms Alert! — Opsora SRE';
             let toggleAlert = false;
             setInterval(function() {
                 document.title = toggleAlert ? alertDocTitle : originalDocTitle;

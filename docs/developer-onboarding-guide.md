@@ -1,6 +1,6 @@
 # SRE Engineering & Developer Onboarding Guide
 
-> **Platform**: Npontu Technologies Support Activity Tracker (Enterprise SRE Release)  
+> **Platform**: Opsora SRE Operations Platform (Enterprise SRE Release)  
 > **Repository**: `npontu-technologies-sre`  
 > **Target Audience**: Incoming Backend Developers, Flutter Mobile Engineers, SRE Shift Supervisors, and Security Auditors.
 
@@ -8,7 +8,7 @@
 
 ## 1. Architectural Overview & System Stack
 
-The Npontu SRE Operations Platform is engineered for 24/7 mission-critical shift operations, continuous checklist verifications, zero-loss dual handovers, and forensic security auditing.
+The Opsora SRE Operations Platform is engineered for 24/7 mission-critical shift operations, continuous checklist verifications, zero-loss dual handovers, and forensic security auditing.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

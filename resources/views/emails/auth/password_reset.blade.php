@@ -26,8 +26,8 @@
                                                     </div>
                                                 </td>
                                                 <td style="vertical-align: middle;">
-                                                    <span style="font-size: 16px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; display: block;">Support Tracker</span>
-                                                    <span style="font-size: 9px; font-family: monospace; color: #F5C518; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; display: block; margin-top: 2px;">NPONTU TECHNOLOGIES</span>
+                                                    <span style="font-size: 16px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; display: block;">Opsora SRE</span>
+                                                    <span style="font-size: 9px; font-family: monospace; color: #F5C518; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; display: block; margin-top: 2px;">OPSORA SRE OPERATIONS</span>
                                                 </td>
                                             </tr>
                                         </table>
@@ -85,10 +85,10 @@
                     <tr>
                         <td style="background-color: #050B07; padding: 20px 30px; border-top: 1px solid #14261B; text-align: center; font-size: 11px; color: #64748B; font-family: monospace;">
                             <p style="margin: 0 0 4px 0;">
-                                Emergency NOC Security Desk: <span style="color: #F5C518;">security@npontu.local</span>
+                                Emergency NOC Security Desk: <span style="color: #F5C518;">hello@johnokyere.xyz</span>
                             </p>
                             <p style="margin: 0;">
-                                &copy; {{ date('Y') }} Npontu Technologies Limited &bull; Accra, Ghana.
+                                &copy; {{ date('Y') }} Opsora SRE &bull; All Rights Reserved.
                             </p>
                         </td>
                     </tr>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Support Activity Tracker — Npontu Technologies SRE Operations</title>
+    <title>Opsora SRE — Reliability Operations Platform</title>
     <meta name="description" content="Mission-critical SRE operations platform for 24/7 engineering teams. Eliminating blindspots through verifiable two-way handovers, ops war rooms, and immutable compliance audit trails.">
 
     <!-- Brand Typography: Inter & JetBrains Mono -->
@@ -33,14 +33,15 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             {{-- Brand Logo --}}
             <a href="{{ route('landing') }}" class="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1B6B3A] to-[#0F1A14] border border-[#F5C518]/30 flex items-center justify-center shadow-lg group-hover:border-[#F5C518] transition-colors shrink-0">
-                    <svg class="w-5 h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                        <polygon points="16,3 30,27 2,27"/>
-                    </svg>
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-950/80 to-black/80 border border-[#F5C518]/30 flex items-center justify-center shadow-lg group-hover:border-[#F5C518] transition-all shrink-0 p-1">
+                    <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-full h-full object-contain group-hover:scale-105 transition-transform">
                 </div>
                 <div class="min-w-0">
-                    <span class="font-extrabold text-sm sm:text-base tracking-tight text-white block leading-none truncate">Support Tracker</span>
-                    <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">NPONTU TECHNOLOGIES</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-extrabold text-sm sm:text-base tracking-tight text-white block leading-none truncate">OPSORA</span>
+                        <span class="px-1 py-0.2 rounded bg-[#F5C518]/20 border border-[#F5C518]/50 text-[#F5C518] text-[9px] font-bold font-mono">SRE</span>
+                    </div>
+                    <span class="block text-emerald-400 text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">OPERATIONS PLATFORM</span>
                 </div>
             </a>
 
@@ -181,7 +182,7 @@
 
                     {{-- Narrative Subtitle --}}
                     <p class="text-xs sm:text-sm text-green-50/90 mt-2.5 sm:mt-3 leading-relaxed font-normal max-w-2xl mx-auto">
-                        Engineered for the Site Reliability Engineers and Operations teams powering Npontu Technologies. We replaced fragmented chat messages and forgotten sticky notes with a mathematically verifiable, two-way operational custody handshake.
+                        Engineered for the Site Reliability Engineers and Operations teams running 24/7 mission-critical services. We replaced fragmented chat messages and forgotten sticky notes with a mathematically verifiable, two-way operational custody handshake.
                     </p>
 
                     {{-- Primary CTAs (Centered & Prominently Positioned) --}}
@@ -288,10 +289,10 @@
                         </ul>
                     </div>
 
-                    {{-- The Npontu Standard --}}
+                    {{-- The Opsora SRE Standard --}}
                     <div class="p-6 rounded-2xl bg-[#0F1A14] border border-[#1B6B3A]/50 space-y-4 shadow-xl">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">The Npontu Standard</span>
+                            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">The Opsora SRE Standard</span>
                             <span class="text-lg">🛡️</span>
                         </div>
                         <h3 class="text-base font-bold text-white">Verifiable Operational Calm</h3>
@@ -695,8 +696,8 @@
                     <div class="p-6 rounded-3xl bg-gradient-to-br from-[#0F1A14] to-[#14261B] border border-[#1B6B3A]/60 space-y-4 shadow-xl">
                         <div class="flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-mono font-bold text-[#F5C518] uppercase tracking-wider">Release Distribution &bull; Version 1.1.0 (Build 2)</span>
-                                <h3 class="text-base font-bold text-white mt-0.5">Download Npontu SRE Android Client</h3>
+                                <span class="text-xs font-mono font-bold text-[#F5C518] uppercase tracking-wider">Release Distribution &bull; Version 1.3.0 (Build 3)</span>
+                                <h3 class="text-base font-bold text-white mt-0.5">Download Opsora SRE Android Client</h3>
                             </div>
                             <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold border border-emerald-500/30">
                                 Ready for Testing
@@ -741,10 +742,8 @@
                             {{-- Mock Mobile App Bar --}}
                             <div class="flex items-center justify-between pb-3 border-b border-[#14261B]">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-6 h-6 rounded-lg bg-[#1B6B3A] flex items-center justify-center text-[10px] text-[#F5C518] font-bold">
-                                        ▲
-                                    </div>
-                                    <span class="text-xs font-extrabold tracking-wider">NPONTU SRE</span>
+                                    <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-5 h-5">
+                                    <span class="text-xs font-extrabold tracking-wider">OPSORA SRE</span>
                                 </div>
                                 <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">ONLINE</span>
                             </div>
@@ -941,7 +940,7 @@
                 </h2>
 
                 <p class="text-base text-gray-400 max-w-xl mx-auto leading-relaxed">
-                    Join Npontu's on-duty Site Reliability Engineers and Lead Architects. Experience verified custody and zero blindspots.
+                    Join Opsora's on-duty Site Reliability Engineers and Lead Architects. Experience verified custody and zero blindspots.
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">

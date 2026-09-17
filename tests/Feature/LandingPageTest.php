@@ -13,8 +13,8 @@ it('renders the public storytelling landing page with 200 ok for unauthenticated
     $response = $this->get('/');
 
     $response->assertOk();
-    $response->assertSee('Support Tracker');
-    $response->assertSee('NPONTU TECHNOLOGIES');
+    $response->assertSee('OPSORA');
+    $response->assertSee('SRE');
     $response->assertSee('When critical infrastructure runs 24/7');
     $response->assertSee('Launch Shift Console');
     $response->assertSee('Inspect Telemetry HUD');
@@ -62,14 +62,14 @@ it('maintains strict authentication guards on protected operational routes', fun
     }
 });
 
-it('hides quick operator access helper on mobile in the login interface', function () {
+it('provides clean production operator authentication interface without test helper buttons', function () {
     $response = $this->get('/login');
 
     $response->assertOk();
-    // Verify that quick access test accounts container is explicitly hidden on mobile (<sm)
-    $response->assertSee('hidden sm:block mt-6 pt-5 border-t border-gray-100', false);
-    $response->assertSee('Quick Operator Access (Test Accounts):');
-    $response->assertSee('admin@npontu.local');
+    $response->assertSee('Operator Sign-In');
+    $response->assertSee('Opsora SRE');
+    $response->assertSee('hello@johnokyere.xyz');
+    $response->assertDontSee('Quick Operator Access (Test Accounts):');
 });
 
 it('provides collapsible mobile navigation drawer on public pages', function () {

@@ -59,8 +59,8 @@
                                                     </div>
                                                 </td>
                                                 <td style="vertical-align: middle;">
-                                                    <span style="font-size: 16px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; display: block; line-height: 1.1;">Support Tracker</span>
-                                                    <span style="font-size: 9px; font-family: -apple-system, monospace; color: #F5C518; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; display: block; margin-top: 3px;">NPONTU TECHNOLOGIES</span>
+                                                    <span style="font-size: 16px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.3px; display: block; line-height: 1.1;">Opsora SRE</span>
+                                                    <span style="font-size: 9px; font-family: -apple-system, monospace; color: #F5C518; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; display: block; margin-top: 3px;">OPSORA SRE OPERATIONS</span>
                                                 </td>
                                             </tr>
                                         </table>
@@ -272,7 +272,7 @@
                     <tr>
                         <td style="background-color: #0A1810; padding: 22px 28px; border-top: 1px solid #1B6B3A; text-align: center; font-size: 11px; color: #94A3B8; font-family: -apple-system, monospace;">
                             <p style="margin: 0 0 6px 0; color: #E2E8F0; font-weight: 600;">
-                                &copy; {{ date('Y') }} Npontu Technologies Limited &bull; Accra, Ghana.
+                                &copy; {{ date('Y') }} Opsora SRE &bull; All Rights Reserved.
                             </p>
                             <p style="margin: 0 0 8px 0; color: #64748B;">
                                 Automated SRE reporting daemon. All mutations recorded under ISO 27001 & Ghana Act 843 compliance.

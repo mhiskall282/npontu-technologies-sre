@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="@yield('meta_description', 'Npontu Technologies Support Activity Tracker - Operational Policies, Compliance, and SRE Standards')">
-    <title>@yield('title', 'Legal & Operational Standards') — Support Tracker — Npontu Technologies</title>
+    <meta name="description" content="@yield('meta_description', 'Opsora SRE - Operational Policies, Compliance, and Reliability Standards')">
+    <title>@yield('title', 'Legal & Operational Standards') — Opsora SRE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -40,14 +40,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ route('landing') }}" class="flex items-center gap-2.5 group">
-                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-sm group-hover:border-[#F5C518]/50 transition-colors shrink-0">
-                        <svg class="w-5 h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                            <polygon points="16,3 30,27 2,27"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 p-1 shadow-sm group-hover:border-[#F5C518]/50 transition-colors shrink-0 object-contain">
                     <div class="min-w-0">
-                        <span class="font-extrabold text-sm tracking-tight text-white block leading-none truncate">Support Tracker</span>
-                        <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">NPONTU TECHNOLOGIES</span>
+                        <span class="font-extrabold text-sm tracking-tight text-white block leading-none truncate">Opsora SRE</span>
+                        <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">OPSORA SRE OPERATIONS</span>
                     </div>
                 </a>
             </div>

@@ -1,7 +1,7 @@
 @extends('policies.layout')
 
 @section('title', 'Service Level Agreement (SLA 99.98%) & Incident Escalation')
-@section('meta_description', '99.98% SLA Uptime Commitment, Incident Response Times, and Escalation Matrix for Npontu Support Tracker')
+@section('meta_description', '99.98% SLA Uptime Commitment, Incident Response Times, and Escalation Matrix for Opsora SRE')
 @section('breadcrumb_current', 'SLA & Escalation')
 @section('page_heading', 'Service Level Agreement (SLA 99.98%) & Incident Escalation')
 

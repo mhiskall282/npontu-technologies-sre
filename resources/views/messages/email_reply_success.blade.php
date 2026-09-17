@@ -16,14 +16,10 @@
 <body class="min-h-full bg-[#0A140E] text-white flex flex-col justify-between antialiased selection:bg-[#F5C518] selection:text-gray-900">
     <header class="border-b border-[#1A2E22] px-6 py-3.5 flex items-center justify-between bg-[#0A120E]/90">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-sm">
-                <svg class="w-4 h-4 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                    <polygon points="16,3 30,27 2,27"/>
-                </svg>
-            </div>
+            <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 p-1 shadow-sm object-contain">
             <div>
-                <span class="font-bold text-xs sm:text-sm tracking-tight text-white block leading-none">Support Tracker</span>
-                <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-semibold">NPONTU TECHNOLOGIES</span>
+                <span class="font-bold text-xs sm:text-sm tracking-tight text-white block leading-none">Opsora SRE</span>
+                <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-semibold">OPSORA SRE OPERATIONS</span>
             </div>
         </a>
     </header>

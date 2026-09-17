@@ -12,14 +12,10 @@
 
             <div>
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-lg">
-                        <svg class="w-7 h-7 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                            <polygon points="16,3 30,27 2,27"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-11 h-11 rounded-2xl bg-black/20 border border-white/20 p-1.5 shadow-lg object-contain">
                     <div>
-                        <p class="font-extrabold text-white text-xl tracking-tight leading-none">Support Tracker</p>
-                        <p class="text-[#F5C518] text-[10px] font-mono tracking-widest uppercase mt-0.5 font-semibold">NPONTU TECHNOLOGIES</p>
+                        <p class="font-extrabold text-white text-xl tracking-tight leading-none">Opsora SRE</p>
+                        <p class="text-[#F5C518] text-[10px] font-mono tracking-widest uppercase mt-0.5 font-semibold">OPSORA SRE OPERATIONS</p>
                     </div>
                 </div>
             </div>
@@ -70,14 +66,10 @@
                 {{-- Mobile Brand Header --}}
                 <div class="lg:hidden flex items-center justify-between gap-3 mb-6">
                     <a href="{{ route('landing') }}" class="flex items-center gap-3 group">
-                        <div class="w-10 h-10 rounded-xl bg-[#1B6B3A] flex items-center justify-center shadow-md group-hover:bg-[#2A8F52] transition-colors">
-                            <svg class="w-6 h-6 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                                <polygon points="16,3 30,27 2,27"/>
-                            </svg>
-                        </div>
+                        <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-10 h-10 rounded-xl bg-[#1B6B3A] p-1.5 shadow-md group-hover:bg-[#2A8F52] transition-colors object-contain">
                         <div>
-                            <p class="font-extrabold text-gray-900 text-lg leading-none">Support Tracker</p>
-                            <p class="text-[#1B6B3A] text-[10px] font-mono tracking-widest uppercase mt-0.5 font-bold">NPONTU TECHNOLOGIES</p>
+                            <p class="font-extrabold text-gray-900 text-lg leading-none">Opsora SRE</p>
+                            <p class="text-[#1B6B3A] text-[10px] font-mono tracking-widest uppercase mt-0.5 font-bold">OPSORA SRE OPERATIONS</p>
                         </div>
                     </a>
                     <a href="{{ route('landing') }}" class="text-xs font-semibold text-gray-500 hover:text-gray-900 flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-lg shadow-2xs">
@@ -141,7 +133,7 @@
                                    required
                                    autofocus
                                    autocomplete="username"
-                                   placeholder="operator@npontu.local"
+                                   placeholder="hello@johnokyere.xyz"
                                    class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-[#1B6B3A] focus:border-[#1B6B3A] transition-colors @error('email') border-[#E63946] ring-1 ring-[#E63946] @enderror">
                         </div>
 
@@ -179,32 +171,6 @@
                         </button>
                     </form>
 
-                    {{-- ── Quick Operator Credentials Helper (Hidden on Mobile) ─────────────────────── --}}
-                    <div class="hidden sm:block mt-6 pt-5 border-t border-gray-100">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">
-                            Quick Operator Access (Test Accounts):
-                        </p>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button type="button"
-                                    onclick="fillCredentials('admin@npontu.local', 'password')"
-                                    class="px-2 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold text-center transition-colors border border-gray-200 cursor-pointer">
-                                <span class="block text-[10px] text-gray-500 font-mono">Admin</span>
-                                <span>Kwame</span>
-                            </button>
-                            <button type="button"
-                                    onclick="fillCredentials('lead@npontu.local', 'password')"
-                                    class="px-2 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold text-center transition-colors border border-gray-200 cursor-pointer">
-                                <span class="block text-[10px] text-gray-500 font-mono">Lead</span>
-                                <span>Abena</span>
-                            </button>
-                            <button type="button"
-                                    onclick="fillCredentials('agent@npontu.local', 'password')"
-                                    class="px-2 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold text-center transition-colors border border-gray-200 cursor-pointer">
-                                <span class="block text-[10px] text-gray-500 font-mono">Agent</span>
-                                <span>Kofi</span>
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="flex items-center justify-center flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-gray-400 mt-5 pt-3 border-t border-gray-100">
@@ -225,15 +191,4 @@
         </div>
     </div>
 
-    <script>
-        function fillCredentials(email, password) {
-            const emailInput = document.getElementById('email');
-            const passInput = document.getElementById('password');
-            if (emailInput && passInput) {
-                emailInput.value = email;
-                passInput.value = password;
-                emailInput.focus();
-            }
-        }
-    </script>
 </x-guest-layout>

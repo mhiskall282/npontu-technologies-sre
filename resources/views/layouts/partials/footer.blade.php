@@ -38,26 +38,27 @@
             {{-- Column 1: Identity & Corporate Mission (2 cols on md) --}}
             <div class="lg:col-span-2 space-y-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-sm">
-                        <svg class="w-5 h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                            <polygon points="16,3 30,27 2,27"/>
-                        </svg>
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-950/80 to-black/80 border border-white/10 flex items-center justify-center shadow-sm p-1">
+                        <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <p class="font-extrabold text-white text-base leading-none">Support Tracker</p>
-                        <p class="text-[#F5C518] text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold">NPONTU TECHNOLOGIES</p>
+                        <div class="flex items-center gap-1.5">
+                            <p class="font-extrabold text-white text-base leading-none">OPSORA</p>
+                            <span class="px-1 py-0.2 rounded bg-[#F5C518]/20 border border-[#F5C518]/50 text-[#F5C518] text-[10px] font-bold font-mono">SRE</span>
+                        </div>
+                        <p class="text-emerald-400 text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold">OPERATIONS PLATFORM</p>
                     </div>
                 </div>
 
                 <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
-                    The mission-critical Site Reliability Engineering and Operational Custody platform powering Npontu Technologies. Built to ensure zero unacknowledged shift handovers, verifiable checklists, and mathematical audit accountability across telecommunications and fintech infrastructure.
+                    The mission-critical Site Reliability Engineering and Operational Custody platform. Built to ensure zero unacknowledged shift handovers, verifiable checklists, and mathematical audit accountability across telecommunications and fintech infrastructure.
                 </p>
 
                 <div class="pt-2">
                     <p class="text-[11px] font-bold text-gray-300 uppercase tracking-wider font-mono">Corporate Headquarters</p>
-                    <p class="text-xs text-gray-400 mt-1">Npontu Technologies Limited</p>
+                    <p class="text-xs text-gray-400 mt-1">Opsora SRE Operations</p>
                     <p class="text-xs text-gray-500">Greater Accra Region, Ghana</p>
-                    <p class="text-xs text-[#F5C518] mt-1 font-mono">ops@npontu.com &bull; +233 (0) 30 200 0000</p>
+                    <p class="text-xs text-[#F5C518] mt-1 font-mono"><a href="mailto:hello@johnokyere.xyz" class="hover:underline">hello@johnokyere.xyz</a> &bull; +233 (0) 30 200 0000</p>
                 </div>
 
                 <div class="flex items-center gap-2 pt-1 text-[11px] text-gray-500 font-mono">
@@ -162,7 +163,7 @@
                     </li>
                     <li class="pt-2">
                         <p class="text-[11px] font-mono text-gray-400 font-bold uppercase">Emergency Incident NOC</p>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Hotline: <span class="text-[#F5C518] font-mono">sre-emergency@npontu.local</span></p>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Hotline: <span class="text-[#F5C518] font-mono">hello@johnokyere.xyz</span></p>
                     </li>
                     <li class="pt-1">
                         <a href="https://github.com/mhiskall282/npontu-technologies-sre" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-xs border border-white/10 transition-colors">
@@ -205,8 +206,8 @@
 
         {{-- Bottom Copyright & Security Notice --}}
         <div class="mt-6 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-gray-500">
-            <p>&copy; {{ date('Y') }} Npontu Technologies Limited. All rights reserved. &bull; <em>"Making you free to achieve."</em></p>
-            <p class="font-mono text-gray-500 text-center sm:text-right">Support Activity Tracker v1.4.0 (Enterprise SRE Release) &bull; SHA-256 Audit Seal</p>
+            <p>&copy; {{ date('Y') }} Opsora SRE Operations. All rights reserved. &bull; <em>"Zero-Loss Operational Continuity."</em></p>
+            <p class="font-mono text-gray-500 text-center sm:text-right">Opsora SRE Platform v1.4.0 (Enterprise SRE Release) &bull; SHA-256 Audit Seal</p>
         </div>
     </div>
 </footer>

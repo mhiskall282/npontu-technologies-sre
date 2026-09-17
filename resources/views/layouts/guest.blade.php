@@ -4,27 +4,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Support Tracker') }} — Sign In</title>
+    <title>{{ config('app.name', 'Opsora SRE') }} — Sign In</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full font-sans antialiased bg-[#0F1A14]">
-    {{-- Splash Screen Loader for Guest/Auth (Snappy 200ms transition) --}}
-    <div id="guest-splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0F1A14] transition-opacity duration-300 pointer-events-auto">
-        <div class="flex flex-col items-center gap-4 text-center">
-            <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/20 shadow-2xl">
-                <svg class="w-8 h-8 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                    <polygon points="16,3 30,27 2,27"/>
-                </svg>
+    {{-- Splash Screen Loader for Guest/Auth (Smooth Opsora Slide & Pulse) --}}
+    <div id="guest-splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#07100B] transition-opacity duration-300 pointer-events-auto">
+        <div class="flex flex-col items-center gap-4 text-center max-w-xs px-4">
+            <div class="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-black/40 border border-emerald-500/30 shadow-2xl p-2.5">
+                <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-full h-full object-contain">
             </div>
             <div>
-                <h1 class="text-lg font-bold text-white tracking-tight">Support Tracker</h1>
-                <p class="text-[11px] text-[#F5C518] font-mono tracking-widest uppercase mt-0.5">Npontu Technologies</p>
+                <h1 class="text-xl font-extrabold text-white tracking-tight">Opsora SRE</h1>
+                <p class="text-[10px] text-[#F5C518] font-mono tracking-widest uppercase mt-0.5 font-semibold">OPSORA SRE OPERATIONS</p>
             </div>
-            <div class="flex items-center gap-1.5 mt-1">
-                <div class="w-2 h-2 rounded-full bg-[#1B6B3A] animate-ping"></div>
-                <span class="text-xs text-gray-400 font-medium">Initializing Security Portal...</span>
+            <div class="w-40 h-1 bg-white/10 rounded-full overflow-hidden mt-2">
+                <div class="h-full bg-gradient-to-r from-[#1B6B3A] via-[#F5C518] to-emerald-400 w-full animate-pulse rounded-full"></div>
+            </div>
+            <div class="flex items-center gap-2 mt-1 text-xs text-gray-400 font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Initializing Opsora SRE...</span>
             </div>
         </div>
     </div>

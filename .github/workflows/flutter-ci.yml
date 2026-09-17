@@ -133,3 +133,52 @@ jobs:
           path: npontu_sre_mobile/build/debug-info/
           if-no-files-found: warn
           retention-days: 30
+
+  flutter-ios-build:
+    name: Flutter iOS Build & Validation (macOS)
+    runs-on: macos-14
+
+    defaults:
+      run:
+        working-directory: npontu_sre_mobile
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter (stable)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Verify Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify code formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Static Analysis
+        run: flutter analyze
+
+      - name: Run Unit and Widget Tests
+        run: flutter test
+
+      - name: Build iOS Release App (No Codesign)
+        run: |
+          flutter build ios \
+            --release \
+            --no-codesign \
+            --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
+
+      - name: Upload iOS Runner App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: npontu-sre-ios-runner-app
+          path: npontu_sre_mobile/build/ios/iphoneos/Runner.app
+          if-no-files-found: warn
+          retention-days: 14
+

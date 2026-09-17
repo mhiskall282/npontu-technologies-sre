@@ -9,7 +9,7 @@ test('it renders the comprehensive high-level SRE docs portal with 200 ok', func
     $response->assertSee('Engineered for zero broken handovers. Documented for everyone.');
     $response->assertSee('SRE COMPREHENSIVE ARCHITECTURE');
     $response->assertSee('Pre-Seeded Operational Test Personas');
-    $response->assertSee('Kwame Mensah');
+    $response->assertSee('John Okyere');
     $response->assertSee('Abena Owusu');
     $response->assertSee('Kofi Asante');
 });

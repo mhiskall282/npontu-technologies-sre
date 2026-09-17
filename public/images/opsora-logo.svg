@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" fill="none">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="opsoraShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#248A4B"/>
+      <stop offset="60%" stop-color="#1B6B3A"/>
+      <stop offset="100%" stop-color="#0F3B20"/>
+    </linearGradient>
+    <linearGradient id="opsoraGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE066"/>
+      <stop offset="50%" stop-color="#F5C518"/>
+      <stop offset="100%" stop-color="#D9A807"/>
+    </linearGradient>
+    <linearGradient id="opsoraRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5C518" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#1B6B3A" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#F5C518" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- ── ICON MARK (Left: 0..100) ────────────────────────────────── -->
+  <g transform="translate(10, 10)">
+    <!-- Hexagonal Outer Shield -->
+    <path d="M40 2 L75 22 L75 58 L40 78 L5 58 L5 22 Z"
+          fill="url(#opsoraShieldGrad)"
+          stroke="#F5C518"
+          stroke-width="2"
+          stroke-opacity="0.4"
+          stroke-linejoin="round"/>
+
+    <!-- Subtle inner shield boundary -->
+    <path d="M40 7 L70 24 L70 56 L40 73 L10 56 L10 24 Z"
+          fill="none"
+          stroke="#FFFFFF"
+          stroke-width="1"
+          stroke-opacity="0.1"/>
+
+    <!-- Infinity Orbit / Interlocking Reliability Loop -->
+    <path d="M22 40 C22 30, 32 28, 40 40 C48 52, 58 50, 58 40 C58 30, 48 28, 40 40 C32 52, 22 50, 22 40 Z"
+          fill="none"
+          stroke="url(#opsoraGoldGrad)"
+          stroke-width="4.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          filter="url(#goldGlow)"/>
+
+    <!-- Telemetry Pulse Orbit Nodes -->
+    <circle cx="22" cy="40" r="4.5" fill="#FFFFFF" stroke="#1B6B3A" stroke-width="2"/>
+    <circle cx="58" cy="40" r="4.5" fill="#FFFFFF" stroke="#1B6B3A" stroke-width="2"/>
+    <circle cx="40" cy="40" r="5" fill="#F5C518" stroke="#FFFFFF" stroke-width="1.5"/>
+
+    <!-- North/South Observability Pointers -->
+    <circle cx="40" cy="18" r="2.5" fill="#F5C518" opacity="0.9"/>
+    <circle cx="40" cy="62" r="2.5" fill="#F5C518" opacity="0.9"/>
+    <line x1="40" y1="22" x2="40" y2="32" stroke="#F5C518" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.6"/>
+    <line x1="40" y1="48" x2="40" y2="58" stroke="#F5C518" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.6"/>
+  </g>
+
+  <!-- ── WORDMARK (Right: 100..420) ──────────────────────────────── -->
+  <g transform="translate(105, 0)">
+    <!-- Primary Brand Name: OPSORA -->
+    <text x="0" y="52"
+          font-family="'Inter', -apple-system, system-ui, sans-serif"
+          font-weight="900"
+          font-size="38"
+          letter-spacing="1.5"
+          fill="#FFFFFF">OPSORA</text>
+
+    <!-- SRE Badge -->
+    <g transform="translate(182, 22)">
+      <rect x="0" y="0" width="76" height="34" rx="8"
+            fill="#F5C518"
+            fill-opacity="0.15"
+            stroke="#F5C518"
+            stroke-width="1.5"/>
+      <text x="38" y="23"
+            font-family="'JetBrains Mono', monospace"
+            font-weight="900"
+            font-size="18"
+            letter-spacing="2"
+            text-anchor="middle"
+            fill="#F5C518">SRE</text>
+    </g>
+
+    <!-- Sub-label -->
+    <text x="2" y="74"
+          font-family="'JetBrains Mono', monospace"
+          font-weight="600"
+          font-size="10.5"
+          letter-spacing="4"
+          text-transform="uppercase"
+          fill="#86EFAC">SITE RELIABILITY PLATFORM</text>
+  </g>
+</svg>

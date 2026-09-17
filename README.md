@@ -1,8 +1,6 @@
-# Support Activity Tracker — Npontu Technologies
+# Opsora SRE — Site Reliability Engineering Operations Platform
 
-> **A Laravel 11 web application for operations support teams** to log daily shift activities, record status updates with immutable audit trails, and facilitate clean shift handovers.
->
-> 
+> **A mission-critical Laravel 11 + Flutter companion application** for 24/7 engineering operations teams to execute verified shift checklists, record status updates with immutable audit trails, manage two-way handovers, war rooms, and real-time operational telemetry.
 
 🌐 **Production Deployment**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)
 
@@ -21,7 +19,7 @@ Support teams managing live production systems need a lightweight, auditable too
 
 | Feature | Description |
 |---|---|
-| **Public SRE Landing Page** | High-impact overview of Npontu's SRE platform (`GET /`): capability matrix, 4-step handover lifecycle, live telemetry probes, and 1-click test roles |
+| **Public SRE Landing Page** | High-impact overview of Opsora's SRE platform (`GET /`): capability matrix, 4-step handover lifecycle, live telemetry probes, and 1-click test roles |
 | **High-Level SRE Docs Portal** | High-level platform guide (`GET /docs`): 6 permanent chapters (`#quickstart`, `#architecture`, `#handover-flow`, `#mobile-setup`, `#governance`, `#faq`) for technical, non-technical, and executive stakeholders |
 | **Mobile SRE Companion App** | Flutter 3.24+ mobile client for Android/iOS/Windows: offline-first local cache, zero-latency startup, active 3s chat sync, and animated onboarding walkthrough |
 | **SRE Profile Inspection Modals** | Clickable operator cards across web & mobile displaying SRE seniority tiers (`L1` to `L5`), department/pod, designation, contact info, and active clearances |
@@ -126,6 +124,7 @@ Open **[http://localhost:8000](http://localhost:8000)**
 
 | Role | Email | Password |
 |---|---|---|
+| **Principal Administrator** | `hello@johnokyere.xyz` | `password` |
 | Administrator | `admin@npontu.local` | `password` |
 | Team Lead | `lead@npontu.local` | `password` |
 | Support Agent | `agent@npontu.local` | `password` |

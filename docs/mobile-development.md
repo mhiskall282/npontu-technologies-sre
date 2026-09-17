@@ -60,6 +60,7 @@ flutter run -d "iPhone 15 Pro" \
 
 | Role | Email | Password | Grade |
 |---|---|---|---|
+| Admin (Primary) | `hello@johnokyere.xyz` | `password` | L5 Principal |
 | Admin | `admin@npontu.com` | `password` | L4 Principal |
 | Shift Lead | `lead@npontu.com` | `password` | L3 Senior |
 | SRE Engineer | `engineer@npontu.com` | `password` | L2 Engineer |

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Operational Notice') — Support Tracker — Npontu Technologies</title>
+    <title>@yield('title', 'Operational Notice') — Opsora SRE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -17,14 +17,10 @@
     {{-- Header --}}
     <header class="border-b border-[#1A2E22] px-4 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between bg-[#0A120E]/80 backdrop-blur-sm shrink-0">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5 sm:gap-3 group">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-sm group-hover:border-[#F5C518]/50 transition-colors">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                    <polygon points="16,3 30,27 2,27"/>
-                </svg>
-            </div>
+            <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 border border-white/10 p-1 shadow-sm group-hover:border-[#F5C518]/50 transition-colors object-contain">
             <div>
-                <span class="font-bold text-xs sm:text-sm tracking-tight text-white block leading-none">Support Tracker</span>
-                <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-semibold">NPONTU TECHNOLOGIES</span>
+                <span class="font-bold text-xs sm:text-sm tracking-tight text-white block leading-none">Opsora SRE</span>
+                <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-semibold">OPSORA SRE OPERATIONS</span>
             </div>
         </a>
 

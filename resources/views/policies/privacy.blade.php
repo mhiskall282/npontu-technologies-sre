@@ -1,7 +1,7 @@
 @extends('policies.layout')
 
 @section('title', 'Operational Data & Privacy Policy')
-@section('meta_description', 'Operational Privacy and Data Governance Policy for Npontu Technologies Support Activity Tracker')
+@section('meta_description', 'Operational Privacy and Data Governance Policy for Opsora SRE Operations Platform')
 @section('breadcrumb_current', 'Privacy Policy')
 @section('page_heading', 'Operational Data & Privacy Policy')
 
@@ -13,9 +13,9 @@
         <div>
             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-950 text-emerald-300 border border-emerald-700/50">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>Active Production Policy &bull; Legal Ref: NPT-SRE-POL-01</span>
+                <span>Active Production Policy &bull; Legal Ref: OPSORA-SRE-POL-01</span>
             </span>
-            <p class="text-xs text-gray-400 mt-1.5">Effective Date: January 1, 2026 &bull; Last Reviewed: September 5, 2026</p>
+            <p class="text-xs text-gray-400 mt-1.5">Effective Date: January 1, 2026 &bull; Last Reviewed: September 17, 2026</p>
         </div>
         <a href="#dpo-contact" class="inline-flex items-center gap-1.5 text-xs font-mono text-[#F5C518] hover:underline">
             <span>Contact Data Protection Officer &rarr;</span>
@@ -29,7 +29,7 @@
             <span>Scope and Architectural Purpose</span>
         </h2>
         <p>
-            This Operational Data & Privacy Policy governs the collection, processing, storage, and forensic archiving of operational telemetry, telemetry health probes, user activity records, shift handover briefs, and real-time operational communications executed within the <strong>Support Activity Tracker</strong> operated by <strong>Npontu Technologies Limited</strong> ("Npontu", "we", or "the Organization").
+            This Operational Data & Privacy Policy governs the collection, processing, storage, and forensic archiving of operational telemetry, telemetry health probes, user activity records, shift handover briefs, and real-time operational communications executed within the <strong>Opsora SRE</strong> platform ("Opsora SRE", "we", or "the Platform").
         </p>
         <p class="mt-2 text-gray-400">
             This platform is strictly designated for internal site reliability engineering, telemetry monitoring, shift custody transfer, and infrastructure oversight across enterprise telecommunications and payment gateway nodes.
@@ -46,7 +46,7 @@
             <div class="p-4 rounded-xl bg-white/5 border border-white/10">
                 <p class="text-xs font-bold text-[#F5C518] uppercase tracking-wider font-mono">A. Operator Identity & Authentication</p>
                 <p class="text-xs text-gray-400 mt-1">
-                    Full name, corporate email address (<code class="text-emerald-300">@npontu.local</code> / <code class="text-emerald-300">@npontu.com</code>), SRE technical grade (L1 through L5), assigned operational department, session tokens, and bcrypt-hashed password credentials.
+                    Full name, authorized operator email address (<code class="text-emerald-300">hello@johnokyere.xyz</code> / enterprise SRE domain), SRE technical grade (L1 through L5), assigned operational department, session tokens, and bcrypt-hashed password credentials.
                 </p>
             </div>
             <div class="p-4 rounded-xl bg-white/5 border border-white/10">
@@ -142,11 +142,11 @@
             <span>Cookies, Session Tokens & Client Storage</span>
         </h2>
         <p>
-            The Support Tracker utilizes strictly necessary security tokens only. <strong>We do not use advertising, marketing, or third-party behavioral tracking cookies.</strong>
+            Opsora SRE utilizes strictly necessary security tokens only. <strong>We do not use advertising, marketing, or third-party behavioral tracking cookies.</strong>
         </p>
         <ul class="list-disc list-inside mt-2 space-y-1 text-gray-400">
             <li><code class="text-emerald-300">XSRF-TOKEN</code>: Cryptographic token defending against Cross-Site Request Forgery attacks.</li>
-            <li><code class="text-emerald-300">npontu_sre_session</code>: Encrypted session identifier expiring after 120 minutes of inactivity.</li>
+            <li><code class="text-emerald-300">opsora_sre_session</code>: Encrypted session identifier expiring after 120 minutes of inactivity.</li>
             <li><code class="text-emerald-300">local_storage / clock</code>: Ephemeral UTC synchronization cache to ensure synchronized handover clocks across all engineering timezones.</li>
         </ul>
     </div>
@@ -190,7 +190,7 @@
         </p>
         <div class="mt-3 space-y-2 text-xs text-gray-400">
             <p>
-                <strong class="text-white">How to initiate account deletion:</strong> Users can request account deletion directly within the mobile application under <em>Settings &rarr; Legal, Privacy &amp; Compliance &rarr; Account Deletion</em>, or by submitting an email to our Data Protection Office at <a href="mailto:dpo@npontu.com" class="text-[#F5C518] hover:underline font-mono">dpo@npontu.com</a> with the subject line <code>"Account Deletion Request - [Employee ID/Email]"</code>.
+                <strong class="text-white">How to initiate account deletion:</strong> Users can request account deletion directly within the mobile application under <em>Settings &rarr; Legal, Privacy &amp; Compliance &rarr; Account Deletion</em>, or by submitting an email to our Data Protection Office at <a href="mailto:hello@johnokyere.xyz" class="text-[#F5C518] hover:underline font-mono">hello@johnokyere.xyz</a> with the subject line <code>"Account Deletion Request - [Employee ID/Email]"</code>.
             </p>
             <p>
                 <strong class="text-white">Processing &amp; SLA:</strong> Deletion requests are acknowledged within 48 hours and processed within 30 days. Personal profile identifiers, direct message channels, and active authentication credentials will be permanently erased or cryptographically pseudonymized.
@@ -205,16 +205,16 @@
     <div id="dpo-contact" class="p-5 rounded-xl bg-gradient-to-r from-emerald-950/40 via-black/40 to-transparent border border-emerald-800/40">
         <h3 class="text-base font-bold text-white">Governance & Data Protection Inquiries</h3>
         <p class="text-xs text-gray-400 mt-1">
-            For inquiries regarding compliance, forensic audit data extraction, or account deletion requests, contact the Npontu Technologies Data Protection Office and SRE Security Lead:
+            For inquiries regarding compliance, forensic audit data extraction, or account deletion requests, contact the Opsora SRE Data Protection Office and SRE Security Lead:
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 font-mono text-xs">
             <div>
                 <p class="text-gray-500">Data Protection Officer:</p>
-                <p class="text-[#F5C518] font-bold">dpo@npontu.com</p>
+                <p class="text-[#F5C518] font-bold"><a href="mailto:hello@johnokyere.xyz" class="hover:underline">hello@johnokyere.xyz</a></p>
             </div>
             <div>
                 <p class="text-gray-500">SRE Security & Compliance Lead:</p>
-                <p class="text-emerald-400 font-bold">security@npontu.local</p>
+                <p class="text-emerald-400 font-bold"><a href="mailto:hello@johnokyere.xyz" class="hover:underline">hello@johnokyere.xyz</a></p>
             </div>
         </div>
     </div>

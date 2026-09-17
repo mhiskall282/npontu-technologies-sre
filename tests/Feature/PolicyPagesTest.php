@@ -7,9 +7,9 @@ test('it renders the operational privacy and data governance policy page with 20
 
     $response->assertStatus(200);
     $response->assertSee('Operational Data & Privacy Policy');
-    $response->assertSee('Npontu Technologies Limited');
+    $response->assertSee('Opsora SRE');
     $response->assertSee('Ghana Data Protection Act, 2012 (Act 843)');
-    $response->assertSee('dpo@npontu.com');
+    $response->assertSee('hello@johnokyere.xyz');
     $response->assertSee('7 Years (Statutory)');
     $response->assertSee('Mobile Companion Application &amp; App Store / Play Store Disclosures', false);
     $response->assertSee('Account Deletion &amp; Data Subject Rights', false);
@@ -58,6 +58,6 @@ test('it renders the comprehensive multi-column footer with policy and corporate
     $response->assertSee('Corporate Headquarters');
     $response->assertSee('Accra-Cluster-01 (Primary SRE NOC)');
     $response->assertSee('Greater Accra Region, Ghana');
-    $response->assertSee('ops@npontu.com');
+    $response->assertSee('hello@johnokyere.xyz');
     $response->assertSee('Feature Tests Passed');
 });

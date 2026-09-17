@@ -43,7 +43,7 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Email Address <span class="text-[#E63946]">*</span></label>
                     <input type="email" name="email" value="{{ old('email') }}"
-                           placeholder="e.g. kwesi.mensah@npontu.com"
+                           placeholder="e.g. operator@johnokyere.xyz"
                            class="block w-full rounded-lg border-gray-300 text-sm focus:ring-[#1B6B3A] focus:border-[#1B6B3A] @error('email') border-[#E63946] @enderror">
                     @error('email')<p class="mt-1 text-xs text-[#E63946]">{{ $message }}</p>@enderror
                 </div>

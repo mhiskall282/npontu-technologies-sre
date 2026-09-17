@@ -41,7 +41,7 @@
                     System Health & Software Status
                 </h1>
                 <p class="text-xs sm:text-sm text-gray-300 mt-1 max-w-2xl leading-relaxed">
-                    Continuous uptime monitoring, real-time performance telemetry, outbound email dispatch pipeline, database benchmarks, and availability timelines for Npontu Support Tracker.
+                    Continuous uptime monitoring, real-time performance telemetry, outbound email dispatch pipeline, database benchmarks, and availability timelines for Opsora SRE.
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4 mt-4 text-xs text-gray-400">

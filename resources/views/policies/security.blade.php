@@ -1,7 +1,7 @@
 @extends('policies.layout')
 
 @section('title', 'Information Security & Forensic Audit Standard')
-@section('meta_description', 'Information Security Architecture, Cryptographic Audit Trail Standards, and SIEM Logging for Npontu Support Tracker')
+@section('meta_description', 'Information Security Architecture, Cryptographic Audit Trail Standards, and SIEM Logging for Opsora SRE')
 @section('breadcrumb_current', 'Security & SIEM Standard')
 @section('page_heading', 'Information Security & Cryptographic Audit Standard')
 
@@ -13,7 +13,7 @@
         <div>
             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-950 text-emerald-300 border border-emerald-700/50">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>Security Architecture Standard &bull; Ref: NPT-SRE-SEC-03</span>
+                <span>Security Architecture Standard &bull; Ref: OPSORA-SRE-SEC-03</span>
             </span>
             <p class="text-xs text-gray-400 mt-1.5">Compliance: ISO 27001 (A.8.15) &bull; PCI-DSS v4.0 (Req 10) &bull; Zero-Trust SRE</p>
         </div>
@@ -29,7 +29,7 @@
             <span>Zero-Trust Infrastructure & Security Architecture</span>
         </h2>
         <p>
-            The Support Activity Tracker is engineered according to Zero-Trust architecture principles. No operator, script, or automated job is granted implicit operational trust regardless of network perimeter or IP origination.
+            Opsora SRE is engineered according to Zero-Trust architecture principles. No operator, script, or automated job is granted implicit operational trust regardless of network perimeter or IP origination.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
             <div class="p-4 rounded-xl bg-white/5 border border-white/10">
@@ -88,9 +88,9 @@
     <div class="p-5 rounded-xl bg-white/5 border border-white/10">
         <h3 class="text-base font-bold text-white">Responsible Vulnerability Disclosure</h3>
         <p class="text-xs text-gray-400 mt-1">
-            If you discover a potential vulnerability in Npontu's SRE systems or telemetry endpoints, submit your findings to the Security Operations Center. We acknowledge reports within 4 hours and coordinate patch deployment:
+            If you discover a potential vulnerability in Opsora SRE systems or telemetry endpoints, submit your findings to the Security Operations Center. We acknowledge reports within 4 hours and coordinate patch deployment:
         </p>
-        <p class="text-xs font-mono text-[#F5C518] mt-2 font-bold">security@npontu.local &bull; PGP Fingerprint: 4F92 B102 D78A 5901</p>
+        <p class="text-xs font-mono text-[#F5C518] mt-2 font-bold">hello@johnokyere.xyz &bull; PGP Fingerprint: 4F92 B102 D78A 5901</p>
     </div>
 
 </div>

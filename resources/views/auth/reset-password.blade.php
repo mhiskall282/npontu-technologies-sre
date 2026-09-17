@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password — Npontu Support Tracker</title>
+    <title>Reset Password — Opsora SRE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; }</style>
@@ -11,9 +11,7 @@
 <body class="min-h-screen bg-gradient-to-br from-[#0d3d22] via-[#1B6B3A] to-[#12492A] flex items-center justify-center p-4">
 <div class="w-full max-w-md">
     <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 mb-4">
-            <span class="text-3xl font-black text-[#F5C518]">N</span>
-        </div>
+        <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-2.5 mb-4 object-contain inline-block">
         <h1 class="text-2xl font-bold text-white">Set your new password</h1>
         <p class="text-green-200 text-sm mt-1">Choose a strong password to secure your account.</p>
     </div>

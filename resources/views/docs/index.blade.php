@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Comprehensive Architecture, SRE Operations Manual, Evaluator Quickstart, and Interactive FAQ for Npontu Technologies Support Activity Tracker">
-    <title>Documentation & Operational Manual — Support Tracker — Npontu Technologies</title>
+    <meta name="description" content="Comprehensive Architecture, SRE Operations Manual, Evaluator Quickstart, and Interactive FAQ for Opsora SRE Operations Platform">
+    <title>Documentation & Operational Manual — Opsora SRE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,19 +36,20 @@
         </div>
     </div>
 
-    {{-- Main Header --}}
+    {{-- ── GLOBAL HEADER ──────────────────────────────────────────────────────── --}}
     <header class="sticky top-0 z-40 bg-[#0A1810]/95 backdrop-blur-md border-b border-emerald-900/40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ route('landing') }}" class="flex items-center gap-2.5 group">
-                    <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-sm group-hover:border-[#F5C518]/50 transition-colors shrink-0">
-                        <svg class="w-5 h-5 text-[#F5C518]" viewBox="0 0 32 32" fill="currentColor">
-                            <polygon points="16,3 30,27 2,27"/>
-                        </svg>
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-950/80 to-black/80 border border-white/10 flex items-center justify-center shadow-sm group-hover:border-[#F5C518]/50 transition-colors shrink-0 p-1">
+                        <img src="{{ asset('images/opsora-icon.svg') }}" alt="Opsora SRE" class="w-full h-full object-contain">
                     </div>
                     <div class="min-w-0">
-                        <span class="font-extrabold text-sm tracking-tight text-white block leading-none truncate">Support Tracker</span>
-                        <span class="block text-[#F5C518] text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">NPONTU TECHNOLOGIES</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-extrabold text-sm tracking-tight text-white block leading-none truncate">OPSORA</span>
+                            <span class="px-1 py-0.2 rounded bg-[#F5C518]/20 border border-[#F5C518]/50 text-[#F5C518] text-[9px] font-bold font-mono">SRE</span>
+                        </div>
+                        <span class="block text-emerald-400 text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">OPERATIONS MANUAL</span>
                     </div>
                 </a>
             </div>
@@ -147,7 +148,7 @@
                     Engineered for zero broken handovers. Documented for everyone.
                 </h1>
                 <p class="text-sm sm:text-base text-green-100/80 mt-4 leading-relaxed font-normal">
-                    Welcome to the central knowledge hub of the Npontu Support Activity Tracker. Whether you are an evaluator inspecting technical architecture, an on-call SRE executing a live shift handover, or executive leadership reviewing SLA compliance, this portal answers every operational question.
+                    Welcome to the central knowledge hub of the Opsora SRE Platform. Whether you are an evaluator inspecting technical architecture, an on-call SRE executing a live shift handover, or executive leadership reviewing SLA compliance, this portal answers every operational question.
                 </p>
 
                 {{-- Key Telemetry Metrics Pill Grid --}}
@@ -207,44 +208,46 @@
                class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
                 <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                 <span>Mobile &amp; Emulator</span>
-            </a>
+    {{-- Main Documentation Content Grid --}}
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-            <a href="#faq"
-               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all ml-auto">
-                <span>FAQ &rarr;</span>
-            </a>
-        </div>
-
-        <div class="space-y-14">
-
-            {{-- Evaluator Quick Access Cards --}}
-            <div id="quickstart" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-6">
+        {{-- ── SECTION 1: OPERATIONAL ROLE MATRIX ────────── --}}
+        <section id="quickstart" class="scroll-mt-24 space-y-6">
+            <div class="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-[#0F1E14] via-[#08120B] to-black border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
                     <div>
-                        <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 01 &bull; EVALUATOR FAST-TRACK</span>
-                        <h2 class="text-2xl font-black text-white mt-1">Pre-Seeded Operational Test Personas</h2>
-                        <p class="text-xs text-gray-400 mt-1">Experience the console from each perspective with pre-configured grades, departments, and granular privileges.</p>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">OPERATIONAL MATRIX</span>
+                            <span class="text-xs text-gray-400 font-mono">Enterprise Authorization Tiers</span>
+                        </div>
+                        <h2 class="text-2xl font-black text-white mt-2">Pre-Seeded Operational Test Personas</h2>
+                        <p class="text-xs sm:text-sm text-gray-400 mt-1 max-w-xl">
+                            Enterprise access governance across three distinct authorization tiers with granular RBAC policies, cryptographic audit trails, and strict two-way handovers.
+                        </p>
                     </div>
-                    <a href="{{ route('login') }}" class="self-start sm:self-auto px-4 py-2 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-bold text-xs shadow-md transition-colors">
-                        Launch Login Screen &rarr;
-                    </a>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-emerald-300 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span>Granular Role Policies Active</span>
+                        </span>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {{-- Admin Kwame --}}
-                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 relative overflow-hidden">
+                    {{-- Admin John --}}
+                    <div class="p-5 rounded-xl bg-black/40 border border-emerald-500/40 relative overflow-hidden">
                         <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-950/80 text-purple-300 border border-purple-800/60 font-bold">L4 Principal Lead</span>
-                            <span class="text-xs font-mono text-gray-400">admin@npontu.local</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-950/80 text-purple-300 border border-purple-800/60 font-bold">L5 Principal Lead</span>
+                            <span class="text-xs font-mono text-emerald-300 font-bold">hello@johnokyere.xyz</span>
                         </div>
-                        <h3 class="text-base font-black text-white mt-3">Kwame Mensah</h3>
-                        <p class="text-xs text-emerald-400 font-mono mt-0.5">Cloud Infrastructure &amp; SRE</p>
+                        <h3 class="text-base font-black text-white mt-3">John Okyere</h3>
+                        <p class="text-xs text-emerald-400 font-mono mt-0.5">Cloud Infrastructure &amp; Principal SRE</p>
                         <p class="text-xs text-gray-400 mt-2 leading-relaxed">
                             Full administrative command, user provisioning, checklists definition, forensic audit log inspection, and system settings.
                         </p>
                         <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-300">
-                            <span>Password: <strong class="text-white">password</strong></span>
-                            <a href="{{ route('login') }}" class="text-[#F5C518] hover:underline font-bold">Sign In &rarr;</a>
+                            <span class="text-emerald-400 font-bold">Authority: Super Administrator</span>
+                            <span class="text-gray-500">Tier L5</span>
                         </div>
                     </div>
 
@@ -260,8 +263,8 @@
                             Shift handover sign-off, oncoming briefing acceptance, task delegation, live telemetry HUD, and compliance reports.
                         </p>
                         <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-300">
-                            <span>Password: <strong class="text-white">password</strong></span>
-                            <a href="{{ route('login') }}" class="text-[#F5C518] hover:underline font-bold">Sign In &rarr;</a>
+                            <span class="text-emerald-400 font-bold">Authority: Shift Commander</span>
+                            <span class="text-gray-500">Tier L3</span>
                         </div>
                     </div>
 
@@ -277,8 +280,8 @@
                             Shift checklist status updates, blocker remarks, incident ticket tagging, and real-time team chat communications.
                         </p>
                         <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-300">
-                            <span>Password: <strong class="text-white">password</strong></span>
-                            <a href="{{ route('login') }}" class="text-[#F5C518] hover:underline font-bold">Sign In &rarr;</a>
+                            <span class="text-emerald-400 font-bold">Authority: SRE On-Call Operator</span>
+                            <span class="text-gray-500">Tier L2</span>
                         </div>
                     </div>
                 </div>
@@ -447,7 +450,7 @@
             {{-- Business Value & Governance --}}
             <div id="governance" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
                 <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 04 &bull; BUSINESS VALUE &amp; GOVERNANCE</span>
-                <h2 class="text-2xl font-black text-white mt-1">Why Support Tracker Exists: The Cost of Silent Outages</h2>
+                <h2 class="text-2xl font-black text-white mt-1">Why Opsora SRE Exists: The Cost of Silent Outages</h2>
                 <p class="text-sm text-gray-300 mt-3 leading-relaxed">
                     In high-throughput telecommunications and payment processing environments, <strong>unacknowledged shift handovers represent the single largest vector for catastrophic downtime</strong>. When an outgoing team forgets to mention a degraded database replica or an ongoing upstream telco failover, the incoming shift assumes all is nominal until client transactions begin failing.
                 </p>
@@ -718,7 +721,7 @@ flutter run -d emulator-5554</pre>
                             <li><strong>Daily EOD Report</strong>: Runs automatically at 23:59 UTC every day, aggregating the shift's resolution rate, blocker remarks, and signed handovers.</li>
                             <li><strong>Weekly Digest</strong>: Runs on Sundays at 23:59 UTC, compiling 7-day operational performance and compliance trends.</li>
                             <li><strong>Monthly Executive Summary</strong>: Runs on the 28th of each month, presenting formal SLA uptime achievement and audit log volume.</li>
-                            <li><strong>On-Demand Triggering</strong>: Administrators can dispatch reports at any time via CLI (e.g. <code class="text-emerald-300 font-mono">php artisan reports:send-automated --period=weekly --email=ops@npontu.com</code>).</li>
+                            <li><strong>On-Demand Triggering</strong>: Administrators can dispatch reports at any time via CLI (e.g. <code class="text-emerald-300 font-mono">php artisan reports:send-automated --period=weekly --email=hello@johnokyere.xyz</code>).</li>
                         </ul>
                     </div>
                 </div>

@@ -14,8 +14,8 @@ test('non-existent route returns 404 with custom branded SRE error page', functi
     $response->assertNotFound();
     $response->assertSee('Operational Resource Not Found');
     $response->assertSee("Today's Board", false);
-    $response->assertSee('Support Tracker');
-    $response->assertSee('NPONTU TECHNOLOGIES');
+    $response->assertSee('Opsora SRE');
+    $response->assertSee('OPSORA SRE OPERATIONS');
 });
 
 test('custom 419 error page renders session timeout explanation and re-auth CTA', function () {
@@ -36,7 +36,7 @@ test('custom 403 error page renders privilege restricted messaging', function ()
         ->toContain('ACCESS FORBIDDEN')
         ->toContain('Privileged Action Restricted')
         ->toContain("Return to Today's Board")
-        ->toContain('admin@npontu.local');
+        ->toContain('hello@johnokyere.xyz');
 });
 
 test('custom 500 error page renders SRE incident reference and recovery buttons', function () {
@@ -66,16 +66,15 @@ test('login page displays session expired alert banner when expired param is pre
     $response->assertSee('Your shift session timed out due to inactivity');
 });
 
-test('login page includes quick operator test credentials and system health link', function () {
+test('login page presents clean production operator authentication and system health link', function () {
     $response = $this->get(route('login'));
 
     $response->assertOk();
     $response->assertSee('Operator Sign-In');
-    $response->assertSee('Quick Operator Access (Test Accounts)');
-    $response->assertSee('admin@npontu.local');
-    $response->assertSee('lead@npontu.local');
-    $response->assertSee('agent@npontu.local');
+    $response->assertSee('Opsora SRE');
+    $response->assertSee('hello@johnokyere.xyz');
     $response->assertSee('System Health & Diagnostics', false);
+    $response->assertDontSee('Quick Operator Access (Test Accounts)');
 });
 
 test('login page displays authentication error banner on invalid credentials', function () {

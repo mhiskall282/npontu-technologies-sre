@@ -35,7 +35,7 @@ test('it renders the branded SRE password reset email template with security not
         ->toContain('Abena Owusu')
         ->toContain('60 minutes')
         ->toContain('Operational Security Safeguard')
-        ->toContain('security@npontu.local');
+        ->toContain('hello@johnokyere.xyz');
 });
 
 test('it renders the branded SRE security login alert email with session details', function () {
@@ -56,5 +56,5 @@ test('it renders the branded SRE security login alert email with session details
         ->toContain('Kwame Mensah')
         ->toContain('197.251.134.50')
         ->toContain('Accra-Cluster-01')
-        ->toContain('sre-emergency@npontu.local');
+        ->toContain('hello@johnokyere.xyz');
 });

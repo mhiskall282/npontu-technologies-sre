@@ -17,7 +17,7 @@
         </div>
         <h1 class="text-xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">Scheduled SRE Maintenance</h1>
         <p class="text-xs sm:text-sm text-gray-400 mt-1 sm:mt-2 max-w-sm sm:max-w-md mx-auto leading-relaxed">
-            The Support Tracker platform is currently undergoing scheduled infrastructure upgrades. Services will resume shortly.
+            The Opsora SRE platform is currently undergoing scheduled infrastructure upgrades. Services will resume shortly.
         </p>
     </div>
 

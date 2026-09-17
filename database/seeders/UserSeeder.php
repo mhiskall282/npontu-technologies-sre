@@ -12,6 +12,18 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        // Primary SRE Admin
+        User::updateOrCreate(
+            ['email' => 'hello@johnokyere.xyz'],
+            [
+                'name' => 'John Okyere',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'designation' => 'Principal SRE Lead',
+                'phone' => '+233 20 000 0001',
+            ]
+        );
+
         // Admin — can manage users + activities
         User::updateOrCreate(
             ['email' => 'admin@npontu.local'],

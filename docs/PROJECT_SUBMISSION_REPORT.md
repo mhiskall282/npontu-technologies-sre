@@ -1,17 +1,17 @@
-# Project Submission Report — Npontu Support Activity Tracker
+# Project Submission Report — Opsora SRE Operations Platform
 
-**Application Name**: Support Activity Tracker — Npontu Technologies  
+**Application Name**: Opsora SRE Operations Platform  
 **Developer**: John Okyere (`hello@johnokyere.xyz`)  
 **Live Custom Domain**: [https://npontu-tracker.johnokyere.xyz](https://npontu-tracker.johnokyere.xyz)  
 **Render Endpoint**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)  
 **GitHub Repository**: [https://github.com/mhiskall282/npontu-technologies-sre](https://github.com/mhiskall282/npontu-technologies-sre)  
-**Date of Submission**: 28th July 2026  
+**Date of Submission**: September 2026  
 
 ---
 
 ## 1. Project Overview & Business Value
 
-The **Support Activity Tracker** is a production-grade operations management system designed specifically for System Reliability Engineers (SRE) and Support Operations Teams at Npontu Technologies. 
+The **Opsora SRE Operations Platform** is a production-grade operations management system designed specifically for System Reliability Engineers (SRE) and Support Operations Teams. 
 
 It solves the operational challenge of fragmented shift handovers by offering:
 - **Real-Time Daily Shift Board**: A reactive checklist where operators update operational check statuses (`Done` / `Pending`) with required remarks.
@@ -28,6 +28,7 @@ For testing and evaluation, the production database is seeded with the following
 
 | Role | Name | Email | Password | Access Privileges |
 |---|---|---|---|---|
+| **Principal Administrator** | John Okyere | `hello@johnokyere.xyz` | `password` | Full root platform access, system configuration, user provisioning |
 | **Administrator** | Kwame Mensah | `admin@npontu.local` | `password` | Full system access, user management, activity creation, audit monitoring |
 | **Team Lead** | Abena Owusu | `lead@npontu.local` | `password` | Activity management, shift board oversight, reports & SRE monitoring |
 | **Support Agent** | Kofi Asante | `agent@npontu.local` | `password` | Shift checklist status updates, remark logging, personal settings |

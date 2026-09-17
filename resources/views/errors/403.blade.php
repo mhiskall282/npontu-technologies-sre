@@ -26,7 +26,7 @@
     <div class="p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10 text-left max-w-sm sm:max-w-md mx-auto text-[11px] sm:text-xs text-gray-300">
         <p class="font-bold text-white mb-0.5 sm:mb-1">Need higher privilege?</p>
         <p class="text-gray-400 leading-relaxed">
-            Contact your Lead or System Administrator (<span class="font-mono text-emerald-400">admin@npontu.local</span>) to grant the required capability flag (e.g. channel creation, task reassignment, or handover sign-off).
+            Contact your Lead or System Administrator (<span class="font-mono text-emerald-400">hello@johnokyere.xyz</span>) to grant the required capability flag (e.g. channel creation, task reassignment, or handover sign-off).
         </p>
     </div>
 
