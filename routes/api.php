@@ -34,6 +34,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         // Session & Profile Lifecycle
         Route::get('/me', [AuthController::class, 'me'])->name('me');
+        Route::put('/me', [AuthController::class, 'updateProfile'])->name('me.update');
         Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('/auth/revoke-sessions', [AuthController::class, 'revokeSessions'])->name('auth.revoke-sessions');
 

@@ -125,6 +125,34 @@ paths:
                   success: { type: boolean, example: true }
                   data: { $ref: '#/components/schemas/User' }
                   message: { type: string }
+    put:
+      tags: [Authentication]
+      summary: Update authenticated user profile, team/department, designation, and phone
+      operationId: updateCurrentUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, example: 'John Okyere' }
+                department: { type: string, example: 'Infrastructure & Cloud' }
+                designation: { type: string, example: 'Lead Cloud SRE' }
+                phone: { type: string, example: '+233 24 123 4567' }
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { $ref: '#/components/schemas/User' }
+                  message: { type: string }
 
   /dashboard:
     get:
