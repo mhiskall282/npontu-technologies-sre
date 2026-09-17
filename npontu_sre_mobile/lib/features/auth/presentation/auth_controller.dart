@@ -122,6 +122,41 @@ class AuthController extends StateNotifier<AuthState> {
     }
   }
 
+  Future<bool> updateProfile({
+    String? name,
+    String? department,
+    String? designation,
+    String? phone,
+  }) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final payload = <String, dynamic>{};
+      if (name != null) payload['name'] = name;
+      if (department != null) payload['department'] = department;
+      if (designation != null) payload['designation'] = designation;
+      if (phone != null) payload['phone'] = phone;
+
+      final response = await _apiClient.put('/me', data: payload);
+      final data = response.data['data'] as Map<String, dynamic>;
+      final user = UserModel.fromJson(data);
+      await _storage.saveUserData(user.toJson());
+      state = state.copyWith(user: user, isLoading: false);
+      return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: e.firstErrorMessage,
+      );
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Failed to update profile information.',
+      );
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     state = state.copyWith(isLoading: true);
     try {

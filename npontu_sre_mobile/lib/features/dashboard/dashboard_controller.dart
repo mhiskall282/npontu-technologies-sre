@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/network/api_client.dart';
 import '../../core/network/api_client_provider.dart';
+import '../../core/services/cache_service.dart';
+import '../../core/services/connectivity_service.dart';
 import '../../shared/models/activity_model.dart';
 import '../../shared/models/shift_handover_model.dart';
 
@@ -30,6 +32,7 @@ class DashboardDataState {
   final double dbLatencyMs;
   final String uptimeSla;
   final bool isLoading;
+  final bool isOffline;
   final String? errorMessage;
 
   const DashboardDataState({
@@ -55,6 +58,7 @@ class DashboardDataState {
     this.dbLatencyMs = 0.0,
     this.uptimeSla = '99.98%',
     this.isLoading = false,
+    this.isOffline = false,
     this.errorMessage,
   });
 
@@ -81,6 +85,7 @@ class DashboardDataState {
     double? dbLatencyMs,
     String? uptimeSla,
     bool? isLoading,
+    bool? isOffline,
     String? errorMessage,
   }) {
     return DashboardDataState(
@@ -107,6 +112,7 @@ class DashboardDataState {
       dbLatencyMs: dbLatencyMs ?? this.dbLatencyMs,
       uptimeSla: uptimeSla ?? this.uptimeSla,
       isLoading: isLoading ?? this.isLoading,
+      isOffline: isOffline ?? this.isOffline,
       errorMessage: errorMessage,
     );
   }
@@ -114,15 +120,87 @@ class DashboardDataState {
 
 class DashboardController extends StateNotifier<DashboardDataState> {
   final ApiClient _apiClient;
+  final CacheService _cacheService;
+  final Ref _ref;
 
-  DashboardController({required ApiClient apiClient})
-    : _apiClient = apiClient,
-      super(const DashboardDataState(isLoading: true)) {
+  DashboardController({
+    required ApiClient apiClient,
+    required CacheService cacheService,
+    required Ref ref,
+  }) : _apiClient = apiClient,
+       _cacheService = cacheService,
+       _ref = ref,
+       super(const DashboardDataState(isLoading: true)) {
+    _loadInitial();
+  }
+
+  void _loadInitial() {
+    // 1. Immediately hydrate from offline cache if available
+    final cached = _cacheService.getMap(CacheService.keyDashboard);
+    if (cached != null) {
+      state = _parseData(cached).copyWith(isLoading: false);
+    }
+    // 2. Fetch fresh from server
     loadDashboard();
   }
 
+  DashboardDataState _parseData(Map<String, dynamic> data) {
+    final metrics = data['metrics'] as Map<String, dynamic>? ?? {};
+    final personalQueue = data['personal_queue'] as Map<String, dynamic>? ?? {};
+    final health = data['system_health'] as Map<String, dynamic>? ?? {};
+
+    final personalTasksList =
+        (personalQueue['tasks'] as List<dynamic>?)
+            ?.map((e) => ActivityModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    final incidentsList =
+        (data['active_incidents'] as List<dynamic>?)
+            ?.map((e) => ActivityModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    final handoverJson = data['latest_handover'] as Map<String, dynamic>?;
+
+    return DashboardDataState(
+      date: data['date'] as String? ?? '',
+      currentShift: data['current_shift'] as String? ?? 'morning',
+      totalChecks: metrics['total_checks'] as int? ?? 0,
+      completedChecks: metrics['completed_checks'] as int? ?? 0,
+      pendingChecks: metrics['pending_checks'] as int? ?? 0,
+      completionRate: (metrics['completion_rate'] is num)
+          ? (metrics['completion_rate'] as num).toDouble()
+          : 0.0,
+      criticalP1: metrics['critical_p1'] as int? ?? 0,
+      highP2: metrics['high_p2'] as int? ?? 0,
+      mediumP3: metrics['medium_p3'] as int? ?? 0,
+      lowP4: metrics['low_p4'] as int? ?? 0,
+      totalAssignedToMe: personalQueue['total_assigned'] as int? ?? 0,
+      pendingAssignedToMe: personalQueue['pending_assigned'] as int? ?? 0,
+      completedAssignedToMe: personalQueue['completed_assigned'] as int? ?? 0,
+      personalTasks: personalTasksList,
+      activeIncidentsCount: data['active_incidents_count'] as int? ?? 0,
+      activeIncidents: incidentsList,
+      latestHandover: handoverJson != null
+          ? ShiftHandoverModel.fromJson(handoverJson)
+          : null,
+      unreadMessagesCount: data['unread_messages_count'] as int? ?? 0,
+      systemHealthStatus: health['status'] as String? ?? 'ok',
+      dbLatencyMs: (health['db_latency_ms'] is num)
+          ? (health['db_latency_ms'] as num).toDouble()
+          : 0.0,
+      uptimeSla: health['uptime_sla'] as String? ?? '99.98%',
+      isLoading: false,
+      isOffline: false,
+    );
+  }
+
   Future<void> loadDashboard({String? date}) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    // Only show full loading spinner if we don't already have data to display
+    if (state.date.isEmpty) {
+      state = state.copyWith(isLoading: true, errorMessage: null);
+    }
 
     try {
       final response = await _apiClient.get(
@@ -131,60 +209,23 @@ class DashboardController extends StateNotifier<DashboardDataState> {
       );
 
       final data = response.data['data'] as Map<String, dynamic>;
-      final metrics = data['metrics'] as Map<String, dynamic>? ?? {};
-      final personalQueue =
-          data['personal_queue'] as Map<String, dynamic>? ?? {};
-      final health = data['system_health'] as Map<String, dynamic>? ?? {};
+      // Save fresh payload to cache
+      await _cacheService.saveMap(CacheService.keyDashboard, data);
+      _ref.read(connectivityServiceProvider.notifier).markOnline();
 
-      final personalTasksList =
-          (personalQueue['tasks'] as List<dynamic>?)
-              ?.map((e) => ActivityModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
-
-      final incidentsList =
-          (data['active_incidents'] as List<dynamic>?)
-              ?.map((e) => ActivityModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
-
-      final handoverJson = data['latest_handover'] as Map<String, dynamic>?;
-
-      state = DashboardDataState(
-        date: data['date'] as String? ?? '',
-        currentShift: data['current_shift'] as String? ?? 'morning',
-        totalChecks: metrics['total_checks'] as int? ?? 0,
-        completedChecks: metrics['completed_checks'] as int? ?? 0,
-        pendingChecks: metrics['pending_checks'] as int? ?? 0,
-        completionRate: (metrics['completion_rate'] is num)
-            ? (metrics['completion_rate'] as num).toDouble()
-            : 0.0,
-        criticalP1: metrics['critical_p1'] as int? ?? 0,
-        highP2: metrics['high_p2'] as int? ?? 0,
-        mediumP3: metrics['medium_p3'] as int? ?? 0,
-        lowP4: metrics['low_p4'] as int? ?? 0,
-        totalAssignedToMe: personalQueue['total_assigned'] as int? ?? 0,
-        pendingAssignedToMe: personalQueue['pending_assigned'] as int? ?? 0,
-        completedAssignedToMe: personalQueue['completed_assigned'] as int? ?? 0,
-        personalTasks: personalTasksList,
-        activeIncidentsCount: data['active_incidents_count'] as int? ?? 0,
-        activeIncidents: incidentsList,
-        latestHandover: handoverJson != null
-            ? ShiftHandoverModel.fromJson(handoverJson)
-            : null,
-        unreadMessagesCount: data['unread_messages_count'] as int? ?? 0,
-        systemHealthStatus: health['status'] as String? ?? 'ok',
-        dbLatencyMs: (health['db_latency_ms'] is num)
-            ? (health['db_latency_ms'] as num).toDouble()
-            : 0.0,
-        uptimeSla: health['uptime_sla'] as String? ?? '99.98%',
-        isLoading: false,
-      );
+      state = _parseData(data).copyWith(isLoading: false, isOffline: false);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed to load SRE dashboard. Tap retry.',
-      );
+      _ref.read(connectivityServiceProvider.notifier).markOffline();
+
+      if (state.date.isNotEmpty) {
+        // We have cached data, keep displaying it and indicate offline mode
+        state = state.copyWith(isLoading: false, isOffline: true);
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: 'Failed to load SRE dashboard. Tap retry.',
+        );
+      }
     }
   }
 }
@@ -192,5 +233,10 @@ class DashboardController extends StateNotifier<DashboardDataState> {
 final dashboardControllerProvider =
     StateNotifierProvider<DashboardController, DashboardDataState>((ref) {
       final apiClient = ref.watch(apiClientProvider);
-      return DashboardController(apiClient: apiClient);
+      final cacheService = ref.watch(cacheServiceProvider);
+      return DashboardController(
+        apiClient: apiClient,
+        cacheService: cacheService,
+        ref: ref,
+      );
     });

@@ -7,8 +7,14 @@ import '../../core/theme/npontu_theme.dart';
 class StatusBadge extends StatelessWidget {
   final String status;
   final double fontSize;
+  final bool compact;
 
-  const StatusBadge({super.key, required this.status, this.fontSize = 11});
+  const StatusBadge({
+    super.key,
+    required this.status,
+    this.fontSize = 11,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +32,12 @@ class StatusBadge extends StatelessWidget {
       case 'acknowledged':
       case 'accepted':
         bg = NpontuColors.green;
-        label = 'ACKNOWLEDGED';
+        label = compact ? 'ACK' : 'ACKNOWLEDGED';
         icon = Icons.how_to_reg_rounded;
         break;
       case 'in_progress':
         bg = Colors.blue;
-        label = 'IN PROGRESS';
+        label = compact ? 'PROG' : 'IN PROGRESS';
         icon = Icons.autorenew_rounded;
         break;
       case 'skipped':
@@ -44,13 +50,16 @@ class StatusBadge extends StatelessWidget {
       default:
         bg = NpontuColors.gold;
         fg = const Color(0xFF1F2937);
-        label = status.toUpperCase();
+        label = compact ? 'PEND' : status.toUpperCase();
         icon = Icons.pending_rounded;
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 6 : 10,
+        vertical: compact ? 2 : 4,
+      ),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(9999),
@@ -65,12 +74,12 @@ class StatusBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: fontSize + 2, color: fg),
+          Icon(icon, size: fontSize + (compact ? 0 : 2), color: fg),
           const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
-              fontSize: fontSize,
+              fontSize: compact ? fontSize - 1 : fontSize,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
               color: fg,

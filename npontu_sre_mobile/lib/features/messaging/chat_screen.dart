@@ -1,5 +1,6 @@
 // lib/features/messaging/chat_screen.dart
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -22,11 +23,23 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
+  final _focusNode = FocusNode();
+  Timer? _pollTimer;
+  int _lastMessageCount = 0;
   bool _isSending = false;
 
   @override
   void initState() {
     super.initState();
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 250), () {
+          _scrollToBottom();
+        });
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref
           .read(messagingControllerProvider.notifier)
@@ -34,14 +47,37 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ref
           .read(messagingControllerProvider.notifier)
           .markAsRead(widget.conversationId);
+
+      // Start periodic real-time sync loop (every 3 seconds while active)
+      _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+        if (mounted) {
+          ref
+              .read(messagingControllerProvider.notifier)
+              .pollMessages(widget.conversationId);
+        }
+      });
     });
   }
 
   @override
   void dispose() {
+    _pollTimer?.cancel();
+    _focusNode.dispose();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom([int delayMs = 150]) {
+    Future.delayed(Duration(milliseconds: delayMs), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   Future<void> _send() async {
@@ -58,15 +94,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     setState(() => _isSending = false);
 
     if (success) {
-      // Scroll to bottom
-      await Future.delayed(const Duration(milliseconds: 100));
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      _scrollToBottom(100);
     }
   }
 
@@ -83,7 +111,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final messages =
         messagingState.messagesByConversation[widget.conversationId] ?? [];
 
+    // Trigger auto-scroll when new messages arrive
+    if (messages.length != _lastMessageCount) {
+      _lastMessageCount = messages.length;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom(100);
+      });
+    }
+
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,137 +148,136 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Sync Messages',
             onPressed: () => ref
                 .read(messagingControllerProvider.notifier)
                 .loadMessages(widget.conversationId),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Messages list
-          Expanded(
-            child: messages.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.chat_bubble_outline_rounded,
-                          size: 48,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'No messages yet in this room.',
-                          style: TextStyle(
-                            color: isDark
-                                ? NpontuColors.textSecondaryDark
-                                : NpontuColors.textSecondaryLight,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Messages list
+            Expanded(
+              child: messages.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.chat_bubble_outline_rounded,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No messages yet in this room.',
+                            style: TextStyle(
+                              color: isDark
+                                  ? NpontuColors.textSecondaryDark
+                                  : NpontuColors.textSecondaryLight,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Send the first message or runbook update.',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      itemCount: messages.length,
+                      itemBuilder: (ctx, index) {
+                        final msg = messages[index];
+                        final isMe = msg.senderId == user?.id;
+                        return _buildMessageBubble(msg, isMe, isDark);
+                      },
+                    ),
+            ),
+
+            // Message input bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: isDark ? NpontuColors.surfaceMid : Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(20),
+                    offset: const Offset(0, -1),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.attach_file_rounded,
+                      color: NpontuColors.green,
+                    ),
+                    tooltip: 'Attach Screenshot / Runbook snippet',
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Attachment capability ready for runbook uploads.',
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Send the first message or runbook update.',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    itemCount: messages.length,
-                    itemBuilder: (ctx, index) {
-                      final msg = messages[index];
-                      final isMe = msg.senderId == user?.id;
-                      return _buildMessageBubble(msg, isMe, isDark);
+                      );
                     },
                   ),
-          ),
-
-          // Message input bar
-          Container(
-            padding: EdgeInsets.only(
-              left: 12,
-              right: 12,
-              top: 8,
-              bottom: MediaQuery.of(context).padding.bottom + 8,
-            ),
-            decoration: BoxDecoration(
-              color: isDark ? NpontuColors.surfaceMid : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(20),
-                  offset: const Offset(0, -1),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.attach_file_rounded,
-                    color: NpontuColors.green,
-                  ),
-                  tooltip: 'Attach Screenshot / Runbook snippet',
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'File attachment picker ready for production integration.',
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      focusNode: _focusNode,
+                      textInputAction: TextInputAction.send,
+                      onSubmitted: (_) => _send(),
+                      decoration: InputDecoration(
+                        hintText: 'Type an ops update or paste logs...',
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
                         ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: isDark
+                            ? NpontuColors.surfaceDark
+                            : const Color(0xFFF3F4F6),
                       ),
-                    );
-                  },
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _send(),
-                    decoration: InputDecoration(
-                      hintText: 'Type an ops update or paste logs...',
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: isDark
-                          ? NpontuColors.surfaceDark
-                          : const Color(0xFFF3F4F6),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: _isSending
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: _isSending
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: NpontuColors.green,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.send_rounded,
                             color: NpontuColors.green,
                           ),
-                        )
-                      : const Icon(
-                          Icons.send_rounded,
-                          color: NpontuColors.green,
-                        ),
-                  onPressed: _isSending ? null : _send,
-                ),
-              ],
+                    onPressed: _isSending ? null : _send,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

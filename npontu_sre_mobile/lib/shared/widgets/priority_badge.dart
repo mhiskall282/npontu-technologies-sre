@@ -6,8 +6,13 @@ import '../../core/theme/npontu_theme.dart';
 
 class PriorityBadge extends StatelessWidget {
   final String priority;
+  final bool compact;
 
-  const PriorityBadge({super.key, required this.priority});
+  const PriorityBadge({
+    super.key,
+    required this.priority,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,25 +23,28 @@ class PriorityBadge extends StatelessWidget {
     switch (priority.toLowerCase()) {
       case 'critical':
         bg = NpontuColors.criticalP1;
-        label = 'P1 CRITICAL';
+        label = compact ? 'P1' : 'P1 CRITICAL';
         break;
       case 'high':
         bg = NpontuColors.highP2;
-        label = 'P2 HIGH';
+        label = compact ? 'P2' : 'P2 HIGH';
         break;
       case 'medium':
         bg = NpontuColors.mediumP3;
-        label = 'P3 MEDIUM';
+        label = compact ? 'P3' : 'P3 MEDIUM';
         break;
       case 'low':
       default:
         bg = NpontuColors.lowP4;
-        label = 'P4 LOW';
+        label = compact ? 'P4' : 'P4 LOW';
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 6 : 8,
+        vertical: compact ? 2 : 3,
+      ),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(4),
@@ -44,7 +52,7 @@ class PriorityBadge extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 10,
+          fontSize: compact ? 9 : 10,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
           color: fg,

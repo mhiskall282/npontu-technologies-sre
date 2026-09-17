@@ -64,6 +64,24 @@ class MessageModel {
           : null,
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'conversation_id': conversationId,
+      'sender_id': senderId,
+      'sender': sender?.toJson(),
+      'body': body,
+      'attachment_name': attachmentName,
+      'attachment_mime': attachmentMime,
+      'attachment_size': attachmentSize,
+      'formatted_attachment_size': formattedAttachmentSize,
+      'attachment_blob': attachmentBlob,
+      'has_attachment': hasAttachment,
+      'is_image': isImage,
+      'is_pdf': isPdf,
+      'created_at': createdAt?.toIso8601String(),
+    };
+  }
 }
 
 class ConversationModel {
@@ -134,5 +152,23 @@ class ConversationModel {
           ? DateTime.tryParse(json['updated_at'].toString())
           : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type,
+      'title': title,
+      'raw_title': rawTitle,
+      'description': description,
+      'is_private': isPrivate,
+      'is_direct': isDirect,
+      'created_by': createdBy,
+      'unread_count': unreadCount,
+      'latest_message': latestMessage?.toJson(),
+      'participants': participants.map((p) => p.toJson()).toList(),
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
   }
 }

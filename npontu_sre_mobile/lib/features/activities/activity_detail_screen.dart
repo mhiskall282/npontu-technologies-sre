@@ -22,11 +22,50 @@ class ActivityDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ActivityDetailScreenState extends ConsumerState<ActivityDetailScreen> {
+  bool _isFetching = false;
+  bool _fetchAttempted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndFetch();
+    });
+  }
+
+  Future<void> _checkAndFetch() async {
+    final activitiesState = ref.read(activitiesControllerProvider);
+    final exists = activitiesState.activities.any(
+      (a) => a.id == widget.activityId,
+    );
+    if (!exists && !_fetchAttempted) {
+      setState(() {
+        _isFetching = true;
+        _fetchAttempted = true;
+      });
+      await ref
+          .read(activitiesControllerProvider.notifier)
+          .fetchActivity(widget.activityId);
+      if (mounted) {
+        setState(() => _isFetching = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final activitiesState = ref.watch(activitiesControllerProvider);
     final user = ref.watch(authControllerProvider).user;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (_isFetching) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Activity Details')),
+        body: const Center(
+          child: CircularProgressIndicator(color: NpontuColors.green),
+        ),
+      );
+    }
 
     final activity = activitiesState.activities
         .cast<ActivityModel?>()

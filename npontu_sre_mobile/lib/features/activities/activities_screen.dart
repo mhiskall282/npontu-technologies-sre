@@ -52,133 +52,143 @@ class _ActivitiesScreenState extends ConsumerState<ActivitiesScreen> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-                left: 20,
-                right: 20,
-                top: 20,
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            activity.title,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                  left: 20,
+                  right: 20,
+                  top: 20,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              activity.title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 2,
                           ),
-                        ),
-                        PriorityBadge(priority: activity.priority),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Status Selection Radio
-                    const Text(
-                      'TRANSITION STATUS',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+                          const SizedBox(width: 8),
+                          PriorityBadge(
+                            priority: activity.priority,
+                            compact: true,
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    SegmentedButton<String>(
-                      segments: const [
-                        ButtonSegment(
-                          value: 'done',
-                          label: Text('Mark as Done'),
-                          icon: Icon(Icons.check_circle_rounded),
-                        ),
-                        ButtonSegment(
-                          value: 'pending',
-                          label: Text('Keep Pending'),
-                          icon: Icon(Icons.pending_actions_rounded),
-                        ),
-                      ],
-                      selected: {selectedStatus},
-                      onSelectionChanged: (val) {
-                        setModalState(() => selectedStatus = val.first);
-                      },
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    // Remark input
-                    TextField(
-                      controller: remarkController,
-                      maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'Operational Remark (Optional)',
-                        hintText: 'e.g. Logs match monitoring dashboard',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Incident Escalation Toggle
-                    CheckboxListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        'Flag Incident Escalation',
+                      // Status Selection Radio
+                      const Text(
+                        'TRANSITION STATUS',
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      subtitle: const Text(
-                        'Attach SRE incident tracking ticket reference',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      value: isEscalated,
-                      activeColor: NpontuColors.danger,
-                      onChanged: (val) {
-                        setModalState(() => isEscalated = val ?? false);
-                      },
-                    ),
-
-                    if (isEscalated) ...[
                       const SizedBox(height: 8),
+                      SegmentedButton<String>(
+                        segments: const [
+                          ButtonSegment(
+                            value: 'done',
+                            label: Text('Mark as Done'),
+                            icon: Icon(Icons.check_circle_rounded),
+                          ),
+                          ButtonSegment(
+                            value: 'pending',
+                            label: Text('Keep Pending'),
+                            icon: Icon(Icons.pending_actions_rounded),
+                          ),
+                        ],
+                        selected: {selectedStatus},
+                        onSelectionChanged: (val) {
+                          setModalState(() => selectedStatus = val.first);
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Remark input
                       TextField(
-                        controller: ticketController,
+                        controller: remarkController,
+                        maxLines: 2,
                         decoration: const InputDecoration(
-                          labelText: 'Incident Tracking Ticket ID',
-                          hintText: 'e.g. INC-1042',
-                          prefixIcon: Icon(
-                            Icons.confirmation_number_outlined,
-                            color: NpontuColors.danger,
+                          labelText: 'Operational Remark (Optional)',
+                          hintText: 'e.g. Logs match monitoring dashboard',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Incident Escalation Toggle
+                      CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text(
+                          'Flag Incident Escalation',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                        subtitle: const Text(
+                          'Attach SRE incident tracking ticket reference',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        value: isEscalated,
+                        activeColor: NpontuColors.danger,
+                        onChanged: (val) {
+                          setModalState(() => isEscalated = val ?? false);
+                        },
+                      ),
+
+                      if (isEscalated) ...[
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: ticketController,
+                          decoration: const InputDecoration(
+                            labelText: 'Incident Tracking Ticket ID',
+                            hintText: 'e.g. INC-1042',
+                            prefixIcon: Icon(
+                              Icons.confirmation_number_outlined,
+                              color: NpontuColors.danger,
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          await statusNotifier.updateActivityStatus(
+                            activityId: activity.id,
+                            status: selectedStatus,
+                            remark: remarkController.text.trim().isEmpty
+                                ? null
+                                : remarkController.text.trim(),
+                            incidentTicket:
+                                isEscalated &&
+                                    ticketController.text.trim().isNotEmpty
+                                ? ticketController.text.trim()
+                                : null,
+                            isEscalated: isEscalated,
+                          );
+                        },
+                        child: const Text('Confirm Status Checkoff'),
                       ),
                     ],
-
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        Navigator.pop(ctx);
-                        await statusNotifier.updateActivityStatus(
-                          activityId: activity.id,
-                          status: selectedStatus,
-                          remark: remarkController.text.trim().isEmpty
-                              ? null
-                              : remarkController.text.trim(),
-                          incidentTicket:
-                              isEscalated &&
-                                  ticketController.text.trim().isNotEmpty
-                              ? ticketController.text.trim()
-                              : null,
-                          isEscalated: isEscalated,
-                        );
-                      },
-                      child: const Text('Confirm Status Checkoff'),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );

@@ -98,6 +98,17 @@ class HandoversController extends StateNotifier<HandoversState> {
     }
   }
 
+  Future<ShiftHandoverModel?> fetchHandover(int id) async {
+    try {
+      final response = await _apiClient.get('/handovers/$id');
+      final data = response.data['data'] as Map<String, dynamic>;
+      final handover = ShiftHandoverModel.fromJson(data);
+      return handover;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<bool> acceptHandover(int handoverId, String? remarks) async {
     try {
       await _apiClient.post(

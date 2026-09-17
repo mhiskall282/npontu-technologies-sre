@@ -6,9 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/services/cache_service.dart';
 import '../../core/services/permission_service.dart';
 import '../../core/theme/npontu_theme.dart';
+import '../../shared/models/user_model.dart';
+import '../activities/activities_controller.dart';
 import '../auth/presentation/auth_controller.dart';
+import '../dashboard/dashboard_controller.dart';
+import '../handovers/handovers_controller.dart';
 import 'settings_controller.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -25,7 +30,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         children: [
           // ── Profile Section ──────────────────────────────────────────────
-          _SectionHeader(title: 'Profile'),
+          _SectionHeader(title: 'Profile & Operational Team'),
           _ProfileCard(
             name: user?.name ?? '—',
             email: user?.email ?? '—',
@@ -33,6 +38,7 @@ class SettingsScreen extends ConsumerWidget {
             grade: user?.gradeLabel ?? '—',
             designation: user?.designation,
             department: user?.department,
+            onEdit: () => _showEditProfileDialog(context, ref, user),
           ),
 
           // ── Appearance ──────────────────────────────────────────────────
@@ -189,6 +195,10 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
 
+          // ── Offline Telemetry & Storage ──────────────────────────────────
+          _SectionHeader(title: 'Offline Telemetry & Local Cache'),
+          const _OfflineStorageTile(),
+
           // ── About ────────────────────────────────────────────────────────
           _SectionHeader(title: 'About'),
           _SettingsTile(
@@ -276,6 +286,179 @@ class SettingsScreen extends ConsumerWidget {
       if (context.mounted) context.go('/login');
     }
   }
+
+  Future<void> _showEditProfileDialog(
+    BuildContext context,
+    WidgetRef ref,
+    UserModel? user,
+  ) async {
+    final nameController = TextEditingController(text: user?.name ?? '');
+    final desigController = TextEditingController(
+      text: user?.designation ?? '',
+    );
+    final phoneController = TextEditingController(text: user?.phone ?? '');
+    String selectedDept = user?.department ?? 'SRE & Core Operations';
+
+    const departments = [
+      'SRE & Core Operations',
+      'Application Support',
+      'Database Administration',
+      'DevOps & Cloud',
+      'Information Security',
+    ];
+
+    if (!departments.contains(selectedDept)) {
+      selectedDept = 'SRE & Core Operations';
+    }
+
+    final saved = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        String dept = selectedDept;
+        bool isSubmitting = false;
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 24,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Edit Profile & Operational Team',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded),
+                          onPressed: () => Navigator.pop(ctx, false),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Full Name *',
+                        prefixIcon: Icon(Icons.person_rounded),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: dept,
+                      decoration: const InputDecoration(
+                        labelText: 'Operational Department / Team *',
+                        prefixIcon: Icon(Icons.corporate_fare_rounded),
+                      ),
+                      items: departments
+                          .map(
+                            (d) => DropdownMenuItem(value: d, child: Text(d)),
+                          )
+                          .toList(),
+                      onChanged: (v) {
+                        if (v != null) setModalState(() => dept = v);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: desigController,
+                      decoration: const InputDecoration(
+                        labelText: 'Designation / Ops Role',
+                        hintText: 'e.g. Senior SRE, Shift Lead',
+                        prefixIcon: Icon(Icons.badge_rounded),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: 'Contact Phone Number',
+                        hintText: '+233 24 000 0000',
+                        prefixIcon: Icon(Icons.phone_rounded),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: NpontuColors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: isSubmitting
+                          ? null
+                          : () async {
+                              final name = nameController.text.trim();
+                              if (name.isEmpty) return;
+                              setModalState(() => isSubmitting = true);
+
+                              final success = await ref
+                                  .read(authControllerProvider.notifier)
+                                  .updateProfile(
+                                    name: name,
+                                    department: dept,
+                                    designation:
+                                        desigController.text.trim().isEmpty
+                                        ? null
+                                        : desigController.text.trim(),
+                                    phone: phoneController.text.trim().isEmpty
+                                        ? null
+                                        : phoneController.text.trim(),
+                                  );
+
+                              setModalState(() => isSubmitting = false);
+                              if (success && context.mounted) {
+                                Navigator.pop(ctx, true);
+                              }
+                            },
+                      child: isSubmitting
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Save Changes',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (saved == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile and operational team updated successfully.'),
+          backgroundColor: NpontuColors.green,
+        ),
+      );
+    }
+  }
 }
 
 // ─── Reusable Sub-widgets ──────────────────────────────────────────────────
@@ -309,6 +492,7 @@ class _ProfileCard extends StatelessWidget {
     required this.grade,
     this.designation,
     this.department,
+    this.onEdit,
   });
 
   final String name;
@@ -317,6 +501,7 @@ class _ProfileCard extends StatelessWidget {
   final String grade;
   final String? designation;
   final String? department;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -376,6 +561,27 @@ class _ProfileCard extends StatelessWidget {
                           color: isDark
                               ? NpontuColors.textSecondaryDark
                               : NpontuColors.textSecondaryLight,
+                        ),
+                      ),
+                    ),
+                  if (onEdit != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: OutlinedButton.icon(
+                        onPressed: onEdit,
+                        icon: const Icon(Icons.edit_note_rounded, size: 16),
+                        label: const Text(
+                          'Edit Profile & Team',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: NpontuColors.green,
+                          side: const BorderSide(color: NpontuColors.green),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          visualDensity: VisualDensity.compact,
                         ),
                       ),
                     ),
@@ -500,6 +706,125 @@ class _SettingsSwitchTile extends StatelessWidget {
         value: value,
         onChanged: onChanged,
         activeColor: NpontuColors.green,
+      ),
+    );
+  }
+}
+
+class _OfflineStorageTile extends ConsumerWidget {
+  const _OfflineStorageTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cacheService = ref.watch(cacheServiceProvider);
+    final count = cacheService.getCachedItemCount();
+    final lastSync = cacheService.getLastSyncTime();
+    final formattedSync = lastSync != null
+        ? '${DateTime.tryParse(lastSync)?.toLocal().hour.toString().padLeft(2, '0')}:${DateTime.tryParse(lastSync)?.toLocal().minute.toString().padLeft(2, '0')} (Active)'
+        : 'Never synced';
+
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.cached_rounded, color: NpontuColors.green),
+                const SizedBox(width: 8),
+                const Text(
+                  'Local Telemetry Cache',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: NpontuColors.green.withAlpha(20),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$count items',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: NpontuColors.green,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Last synchronized: $formattedSync',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      await ref
+                          .read(dashboardControllerProvider.notifier)
+                          .loadDashboard();
+                      await ref
+                          .read(activitiesControllerProvider.notifier)
+                          .loadActivities();
+                      await ref
+                          .read(handoversControllerProvider.notifier)
+                          .loadHandovers();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'All SRE telemetry synced with cloud.',
+                            ),
+                            backgroundColor: NpontuColors.green,
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.sync_rounded, size: 16),
+                    label: const Text(
+                      'Force Sync',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: NpontuColors.danger,
+                      side: const BorderSide(color: NpontuColors.danger),
+                    ),
+                    onPressed: () async {
+                      await cacheService.clearAllCache();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Local offline cache purged.'),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.delete_sweep_rounded, size: 16),
+                    label: const Text(
+                      'Clear Cache',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

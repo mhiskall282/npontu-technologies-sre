@@ -262,6 +262,26 @@ class ActivitiesController extends StateNotifier<ActivitiesState> {
     }
   }
 
+  Future<ActivityModel?> fetchActivity(int id) async {
+    try {
+      final response = await _apiClient.get('/activities/$id');
+      final data = response.data['data'] as Map<String, dynamic>;
+      final activity = ActivityModel.fromJson(data);
+
+      final currentList = List<ActivityModel>.from(state.activities);
+      final index = currentList.indexWhere((a) => a.id == id);
+      if (index >= 0) {
+        currentList[index] = activity;
+      } else {
+        currentList.add(activity);
+      }
+      state = state.copyWith(activities: currentList);
+      return activity;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<bool> deleteActivity(int id) async {
     try {
       await _apiClient.delete('/activities/$id');

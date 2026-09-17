@@ -106,6 +106,7 @@ class DashboardScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
+        if (state.isOffline) _buildOfflineBanner(),
         _buildShiftBanner(context, state),
         _buildMetricsGrid(context, state),
         if (state.activeIncidentsCount > 0)
@@ -122,6 +123,7 @@ class DashboardScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
+        if (state.isOffline) _buildOfflineBanner(),
         _buildShiftBanner(context, state),
         _buildMetricsGrid(context, state),
         if (state.activeIncidentsCount > 0)
@@ -136,6 +138,34 @@ class DashboardScreen extends ConsumerWidget {
         if (state.latestHandover != null)
           _buildLatestHandoverCard(context, state),
       ],
+    );
+  }
+
+  Widget _buildOfflineBanner() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF59E0B).withAlpha(30),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFF59E0B).withAlpha(120)),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.cloud_off_rounded, color: Color(0xFFF59E0B), size: 18),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Offline Mode — Viewing cached shift data. Will sync when reconnected.',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFFB45309),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -414,24 +444,32 @@ class DashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 _buildPriorityChip(
-                  'P1 Critical',
+                  'P1',
+                  'Critical',
                   state.criticalP1,
                   NpontuColors.criticalP1,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 _buildPriorityChip(
-                  'P2 High',
+                  'P2',
+                  'High',
                   state.highP2,
                   NpontuColors.highP2,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 _buildPriorityChip(
-                  'P3 Medium',
+                  'P3',
+                  'Medium',
                   state.mediumP3,
                   NpontuColors.mediumP3,
                 ),
-                const SizedBox(width: 8),
-                _buildPriorityChip('P4 Low', state.lowP4, NpontuColors.lowP4),
+                const SizedBox(width: 6),
+                _buildPriorityChip(
+                  'P4',
+                  'Low',
+                  state.lowP4,
+                  NpontuColors.lowP4,
+                ),
               ],
             ),
           ],
@@ -440,10 +478,10 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPriorityChip(String label, int count, Color color) {
+  Widget _buildPriorityChip(String tier, String label, int count, Color color) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
         decoration: BoxDecoration(
           color: color.withAlpha(20),
           borderRadius: BorderRadius.circular(6),
@@ -461,7 +499,10 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              label,
+              '$tier $label',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w700,
@@ -518,7 +559,7 @@ class DashboardScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
-                      PriorityBadge(priority: task.priority),
+                      PriorityBadge(priority: task.priority, compact: true),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -532,7 +573,11 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      StatusBadge(status: task.currentStatus, fontSize: 10),
+                      StatusBadge(
+                        status: task.currentStatus,
+                        fontSize: 10,
+                        compact: true,
+                      ),
                     ],
                   ),
                 );

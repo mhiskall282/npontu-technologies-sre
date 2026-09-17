@@ -8,6 +8,7 @@ import '../../features/activities/activity_form_screen.dart';
 import '../../features/audit/audit_screen.dart';
 import '../../features/auth/presentation/auth_controller.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/handovers/handover_form_screen.dart';
 import '../../features/handovers/handovers_screen.dart';
@@ -23,8 +24,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authControllerProvider);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     redirect: (context, state) {
+      final isSplash = state.matchedLocation == '/splash';
+      if (isSplash) return null;
+
       final isLoggingIn = state.matchedLocation == '/login';
       final isLoggedIn = authState.isAuthenticated;
 
@@ -44,6 +48,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(path: '/', builder: (context, state) => const DashboardScreen()),
       GoRoute(

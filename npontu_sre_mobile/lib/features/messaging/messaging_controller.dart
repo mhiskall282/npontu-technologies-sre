@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/errors/api_exception.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/api_client_provider.dart';
+import '../../core/services/cache_service.dart';
 import '../../shared/models/conversation_model.dart';
 
 class MessagingState {
@@ -38,15 +39,35 @@ class MessagingState {
 
 class MessagingController extends StateNotifier<MessagingState> {
   final ApiClient _apiClient;
+  final CacheService _cacheService;
 
-  MessagingController({required ApiClient apiClient})
-    : _apiClient = apiClient,
-      super(const MessagingState(isLoading: true)) {
+  MessagingController({
+    required ApiClient apiClient,
+    required CacheService cacheService,
+  }) : _apiClient = apiClient,
+       _cacheService = cacheService,
+       super(const MessagingState(isLoading: true)) {
+    _hydrateCache();
     loadConversations();
   }
 
+  void _hydrateCache() {
+    final cached = _cacheService.getList('sre_cache_conversations');
+    if (cached != null && cached.isNotEmpty) {
+      try {
+        final convs = cached
+            .map((e) => ConversationModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        state = state.copyWith(conversations: convs, isLoading: false);
+      } catch (_) {}
+    }
+  }
+
   Future<void> loadConversations() async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(
+      isLoading: state.conversations.isEmpty,
+      errorMessage: null,
+    );
 
     try {
       final response = await _apiClient.get('/conversations');
@@ -57,15 +78,42 @@ class MessagingController extends StateNotifier<MessagingState> {
           .toList();
 
       state = state.copyWith(conversations: convs, isLoading: false);
+      await _cacheService.saveList(
+        'sre_cache_conversations',
+        convs.map((c) => c.toJson()).toList(),
+      );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Failed to load ops communications channels.',
+        errorMessage: state.conversations.isEmpty
+            ? 'Failed to load ops communications channels.'
+            : null,
       );
     }
   }
 
   Future<void> loadMessages(int conversationId) async {
+    // Check cache first for immediate rendering
+    final cacheKey = 'sre_cache_conv_msgs_$conversationId';
+    final cachedMsgs = _cacheService.getList(cacheKey);
+    if (cachedMsgs != null && cachedMsgs.isNotEmpty) {
+      try {
+        final parsed = cachedMsgs
+            .map((e) => MessageModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        final updatedMap = Map<int, List<MessageModel>>.from(
+          state.messagesByConversation,
+        );
+        updatedMap[conversationId] = parsed;
+        state = state.copyWith(messagesByConversation: updatedMap);
+      } catch (_) {}
+    }
+
+    await pollMessages(conversationId);
+  }
+
+  /// Active background poll without resetting UI state
+  Future<void> pollMessages(int conversationId) async {
     try {
       final response = await _apiClient.get(
         '/conversations/$conversationId/messages',
@@ -82,6 +130,12 @@ class MessagingController extends StateNotifier<MessagingState> {
       updatedMap[conversationId] = msgs;
 
       state = state.copyWith(messagesByConversation: updatedMap);
+
+      // Persist to offline cache
+      await _cacheService.saveList(
+        'sre_cache_conv_msgs_$conversationId',
+        msgs.map((m) => m.toJson()).toList(),
+      );
     } catch (_) {}
   }
 
@@ -112,9 +166,15 @@ class MessagingController extends StateNotifier<MessagingState> {
         state.messagesByConversation,
       );
       final currentList = updatedMap[conversationId] ?? [];
-      updatedMap[conversationId] = [...currentList, newMsg];
+      final newList = [...currentList, newMsg];
+      updatedMap[conversationId] = newList;
 
       state = state.copyWith(messagesByConversation: updatedMap);
+
+      await _cacheService.saveList(
+        'sre_cache_conv_msgs_$conversationId',
+        newList.map((m) => m.toJson()).toList(),
+      );
       return true;
     } on ApiException catch (e) {
       state = state.copyWith(errorMessage: e.firstErrorMessage);
@@ -136,5 +196,9 @@ class MessagingController extends StateNotifier<MessagingState> {
 final messagingControllerProvider =
     StateNotifierProvider<MessagingController, MessagingState>((ref) {
       final apiClient = ref.watch(apiClientProvider);
-      return MessagingController(apiClient: apiClient);
+      final cacheService = ref.watch(cacheServiceProvider);
+      return MessagingController(
+        apiClient: apiClient,
+        cacheService: cacheService,
+      );
     });
