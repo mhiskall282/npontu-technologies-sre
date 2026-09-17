@@ -150,7 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         labelText: 'Operator Email',
-                        hintText: 'operator@npontu.com',
+                        hintText: 'admin@npontu.local',
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       validator: (val) {
@@ -232,7 +232,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           label: const Text('Admin (L5)'),
                           onPressed: () =>
-                              _fillPreset('admin@npontu.com', 'password'),
+                              _fillPreset('admin@npontu.local', 'password'),
                         ),
                         ActionChip(
                           avatar: const Icon(
@@ -242,7 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           label: const Text('Shift Lead (L4)'),
                           onPressed: () =>
-                              _fillPreset('lead@npontu.com', 'password'),
+                              _fillPreset('lead@npontu.local', 'password'),
                         ),
                         ActionChip(
                           avatar: const Icon(
@@ -252,7 +252,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           label: const Text('SRE Agent (L2)'),
                           onPressed: () =>
-                              _fillPreset('agent@npontu.com', 'password'),
+                              _fillPreset('agent@npontu.local', 'password'),
                         ),
                       ],
                     ),

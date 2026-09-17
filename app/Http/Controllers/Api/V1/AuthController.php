@@ -23,8 +23,15 @@ final class AuthController extends ApiController
     {
         $validated = $request->validated();
 
+        $email = $validated['email'];
         /** @var User|null $user */
-        $user = User::where('email', $validated['email'])->first();
+        $user = User::where('email', $email)->first();
+
+        if (! $user && str_ends_with($email, '@npontu.com')) {
+            $user = User::where('email', str_replace('@npontu.com', '@npontu.local', $email))->first();
+        } elseif (! $user && str_ends_with($email, '@npontu.local')) {
+            $user = User::where('email', str_replace('@npontu.local', '@npontu.com', $email))->first();
+        }
 
         if (! $user || ! Hash::check($validated['password'], $user->password)) {
             return $this->respondWithError('Invalid email or password provided.', 401);

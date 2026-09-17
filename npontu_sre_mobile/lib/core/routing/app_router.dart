@@ -21,10 +21,27 @@ import '../../features/reports/reports_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/team/team_screen.dart';
 
+class RouterNotifier extends ChangeNotifier {
+  final Ref _ref;
+
+  RouterNotifier(this._ref) {
+    _ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      if (previous?.isAuthenticated != next.isAuthenticated) {
+        notifyListeners();
+      }
+    });
+  }
+}
+
+final routerNotifierProvider = Provider<RouterNotifier>((ref) {
+  return RouterNotifier(ref);
+});
+
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authControllerProvider);
+  final notifier = ref.watch(routerNotifierProvider);
 
   return GoRouter(
+    refreshListenable: notifier,
     initialLocation: '/splash',
     redirect: (context, state) {
       final isSplash = state.matchedLocation == '/splash';
@@ -33,13 +50,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isOnboarding = state.matchedLocation == '/onboarding';
       if (isOnboarding) return null;
 
+      final authState = ref.read(authControllerProvider);
       final isLoggingIn = state.matchedLocation == '/login';
       final isLoggedIn = authState.isAuthenticated;
-
-      // While initializing token from secure storage, stay on current route
-      if (authState.isLoading && !authState.isAuthenticated) {
-        return null;
-      }
 
       if (!isLoggedIn && !isLoggingIn) {
         return '/login';
