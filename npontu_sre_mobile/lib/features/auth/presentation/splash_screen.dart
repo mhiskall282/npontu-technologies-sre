@@ -165,96 +165,99 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
           // Center branding and loader
           Center(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // SRE Shield Crest
-                    Container(
-                      width: 88,
-                      height: 88,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [NpontuColors.green, Color(0xFF0A2B15)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        border: Border.all(
-                          color: NpontuColors.gold.withAlpha(180),
-                          width: 2.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: NpontuColors.green.withAlpha(120),
-                            blurRadius: 28,
-                            spreadRadius: 4,
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // SRE Shield Crest
+                      Container(
+                        width: 88,
+                        height: 88,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [NpontuColors.green, Color(0xFF0A2B15)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
+                          border: Border.all(
+                            color: NpontuColors.gold.withAlpha(180),
+                            width: 2.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: NpontuColors.green.withAlpha(120),
+                              blurRadius: 28,
+                              spreadRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.shield_rounded,
+                            size: 46,
+                            color: NpontuColors.gold,
+                          ),
+                        ),
                       ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.shield_rounded,
-                          size: 46,
+                      const SizedBox(height: 24),
+
+                      // App Title
+                      const Text(
+                        'NPONTU SRE',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 3.5,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'HIGH RELIABILITY OPERATIONS COCKPIT',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
                           color: NpontuColors.gold,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 40),
 
-                    // App Title
-                    const Text(
-                      'NPONTU SRE',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 3.5,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'HIGH RELIABILITY OPERATIONS COCKPIT',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.5,
-                        color: NpontuColors.gold,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-
-                    // Loading progress
-                    SizedBox(
-                      width: 140,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: const LinearProgressIndicator(
-                          backgroundColor: Color(0xFF14261B),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            NpontuColors.gold,
+                      // Loading progress
+                      SizedBox(
+                        width: 140,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: const LinearProgressIndicator(
+                            backgroundColor: Color(0xFF14261B),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              NpontuColors.gold,
+                            ),
+                            minHeight: 3,
                           ),
-                          minHeight: 3,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 14),
+                      const SizedBox(height: 14),
 
-                    // Status text
-                    Text(
-                      _statusMessage,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white60,
-                        letterSpacing: 0.5,
+                      // Status text
+                      Text(
+                        _statusMessage,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white60,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
