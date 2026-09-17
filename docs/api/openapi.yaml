@@ -35,6 +35,8 @@ tags:
     description: SRE operator roster, grades, and availability
   - name: Audit Trail
     description: Immutable security compliance audit log stream
+  - name: Notifications
+    description: Operational push and in-app notification centre, badges, and read state management
 
 paths:
   /auth/login:
@@ -513,6 +515,92 @@ paths:
         '200':
           description: Audit logs retrieved
 
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: List operational notifications for authenticated operator
+      operationId: listNotifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: unread_only
+          schema: { type: boolean }
+          description: Filter unread notifications only
+        - in: query
+          name: type
+          schema: { type: string, enum: [system, escalation, handover, assignment, chat] }
+          description: Filter by notification type
+        - in: query
+          name: per_page
+          schema: { type: integer, default: 20 }
+          description: Number of items per page
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Notification'
+
+  /notifications/read-all:
+    post:
+      tags: [Notifications]
+      summary: Mark all notifications as read for authenticated operator
+      operationId: markAllNotificationsRead
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All notifications marked as read
+
+  /notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: Mark a single operational notification as read
+      operationId: markNotificationRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Notification marked as read
+        '403':
+          description: Forbidden (not owned by caller)
+        '404':
+          description: Notification not found
+
+  /notifications/{id}:
+    delete:
+      tags: [Notifications]
+      summary: Delete an operational notification
+      operationId: deleteNotification
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Notification deleted successfully
+        '403':
+          description: Forbidden
+        '404':
+          description: Notification not found
+
 components:
   securitySchemes:
     bearerAuth:
@@ -664,3 +752,23 @@ components:
             status: { type: string }
             db_latency_ms: { type: number }
             uptime_sla: { type: string }
+
+    Notification:
+      type: object
+      properties:
+        id: { type: integer, example: 42 }
+        user_id: { type: integer, example: 3 }
+        title: { type: string, example: 'Incident P1 Escalation' }
+        message: { type: string, example: 'Payment Gateway latency exceeded 500ms threshold.' }
+        body: { type: string, example: 'Payment Gateway latency exceeded 500ms threshold.' }
+        type: { type: string, enum: [system, escalation, handover, assignment, chat], example: 'escalation' }
+        priority: { type: string, enum: [critical, high, medium, info], example: 'critical' }
+        action_route: { type: string, nullable: true, example: '/activities/10' }
+        metadata: { type: object }
+        data: { type: object }
+        related_type: { type: string, nullable: true, example: 'Activity' }
+        related_id: { type: integer, nullable: true, example: 10 }
+        is_read: { type: boolean, example: false }
+        read_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+        time_ago: { type: string, example: '5 minutes ago' }

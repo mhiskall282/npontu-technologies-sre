@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\ShiftHandoverController;
 use App\Http\Controllers\Api\V1\SystemHealthController;
@@ -70,6 +71,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('/reports/handovers', [ReportController::class, 'handovers'])->name('reports.handovers');
         Route::get('/reports/timelines', [ReportController::class, 'timelines'])->name('reports.timelines');
         Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+
+        // Operational Notification Inbox & Push Status
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+        Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
         // Team Directory & Engineer Roster
         Route::get('/team', [TeamController::class, 'index'])->name('team.index');

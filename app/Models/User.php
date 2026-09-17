@@ -323,6 +323,24 @@ class User extends Authenticatable
     }
 
     /**
+     * In-app operational notifications for this user.
+     *
+     * @return HasMany<OperationalNotification, $this>
+     */
+    public function operationalNotifications(): HasMany
+    {
+        return $this->hasMany(OperationalNotification::class);
+    }
+
+    /**
+     * Compute total unread operational notifications for this user.
+     */
+    public function unreadNotificationsCount(): int
+    {
+        return $this->operationalNotifications()->whereNull('read_at')->count();
+    }
+
+    /**
      * Compute total unread operational messages for this user.
      */
     public function unreadMessagesCount(): int
