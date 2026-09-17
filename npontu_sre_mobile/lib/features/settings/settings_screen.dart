@@ -1,5 +1,6 @@
 // lib/features/settings/settings_screen.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -148,21 +149,18 @@ class SettingsScreen extends ConsumerWidget {
             _SettingsSwitchTile(
               icon: Icons.fingerprint_rounded,
               title: 'Biometric Sign-in',
-              subtitle: 'Use fingerprint or Face ID to authenticate',
+              subtitle: kIsWeb
+                  ? 'Hardware biometrics available on iOS and Android devices'
+                  : 'Use fingerprint or Face ID to authenticate',
               value: settings.biometricEnabled,
               onChanged: (v) async {
                 if (v) {
-                  // Verify device actually supports biometrics before enabling
-                  final localAuth = LocalAuthentication();
-                  final canCheck = await localAuth.canCheckBiometrics;
-                  final isSupported = await localAuth.isDeviceSupported();
-
-                  if (!canCheck || !isSupported) {
+                  if (kIsWeb) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
-                            'Biometric authentication is not available on this device.',
+                            'Biometric authentication is not supported in browser environments. Please test on an Android or iOS device.',
                           ),
                         ),
                       );
@@ -170,7 +168,36 @@ class SettingsScreen extends ConsumerWidget {
                     return;
                   }
 
-                  // Biometric is gated by local_auth — no separate OS permission call needed.
+                  try {
+                    // Verify device actually supports biometrics before enabling
+                    final localAuth = LocalAuthentication();
+                    final canCheck = await localAuth.canCheckBiometrics;
+                    final isSupported = await localAuth.isDeviceSupported();
+
+                    if (!canCheck || !isSupported) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Biometric authentication is not available on this device.',
+                            ),
+                          ),
+                        );
+                      }
+                      return;
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Biometric check failed: ${e.toString()}',
+                          ),
+                        ),
+                      );
+                    }
+                    return;
+                  }
                 }
 
                 ref

@@ -295,7 +295,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Assignee
+                   // Assignee
                   DropdownButtonFormField<int?>(
                     value: _assignedToId,
                     isExpanded: true,
@@ -303,12 +303,40 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                       labelText: 'Assigned Operator',
                       prefixIcon: Icon(Icons.person_outline_rounded),
                     ),
+                    selectedItemBuilder: (context) {
+                      // Build the list of selected-display widgets in the same
+                      // order as [items] below: null first, then conditional
+                      // current-assignee, then team members.
+                      final displayItems = <Widget>[
+                        const Text(
+                          'Unassigned (Shift Pool)',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        if (_assignedToId != null &&
+                            teamMembers.every((u) => u.id != _assignedToId))
+                          Text(
+                            'Current Assignee (ID: $_assignedToId)',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ...teamMembers.map(
+                          (user) => Text(
+                            '${user.name} (${user.gradeLabel})',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ];
+                      return displayItems;
+                    },
                     items: [
                       const DropdownMenuItem<int?>(
                         value: null,
                         child: Text(
                           'Unassigned (Shift Pool)',
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
                       if (_assignedToId != null &&
@@ -318,6 +346,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                           child: Text(
                             'Current Assignee (ID: $_assignedToId)',
                             overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                       ...teamMembers.map(
@@ -326,6 +355,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                           child: Text(
                             '${user.name} (${user.gradeLabel})',
                             overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                       ),
