@@ -46,7 +46,19 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
                 onPressed: () => Navigator.of(context).pop(),
               )
             : null,
-        title: const Text('SRE Operations Team'),
+        // FittedBox lets the title scale down on narrow screens (e.g. 360 px)
+        // instead of overflowing the NavigationToolbar trailing-actions slot.
+        titleSpacing: 4,
+        centerTitle: false,
+        title: const FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'SRE Operations Team',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
