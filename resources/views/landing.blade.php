@@ -45,12 +45,17 @@
             </a>
 
             {{-- Story Navigation Links (Desktop) --}}
-            <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-gray-300">
+            <nav class="hidden md:flex items-center gap-5 text-xs font-semibold text-gray-300">
                 <a href="#the-problem" class="hover:text-[#F5C518] transition-colors">The Challenge</a>
                 <a href="#the-solution" class="hover:text-[#F5C518] transition-colors">The Handshake</a>
-                <a href="#pillars" class="hover:text-[#F5C518] transition-colors">Core Pillars</a>
-                <a href="#telemetry" class="hover:text-[#F5C518] transition-colors">Live Telemetry</a>
-                <a href="{{ route('docs') }}" class="text-[#F5C518] hover:underline transition-colors font-bold">Docs &amp; Guide</a>
+                <a href="#pillars" class="hover:text-[#F5C518] transition-colors">Pillars</a>
+                <a href="#audiences" class="hover:text-[#F5C518] transition-colors">For Every Role</a>
+                <a href="#mobile" class="hover:text-[#F5C518] transition-colors flex items-center gap-1.5">
+                    <span>Mobile App</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">APK</span>
+                </a>
+                <a href="#telemetry" class="hover:text-[#F5C518] transition-colors">Telemetry</a>
+                <a href="{{ route('docs') }}" class="text-[#F5C518] hover:underline transition-colors font-bold">Docs</a>
             </nav>
 
             {{-- Right CTA Section --}}
@@ -109,6 +114,13 @@
             </a>
             <a href="#pillars" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
                 Core Pillars
+            </a>
+            <a href="#audiences" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
+                Stakeholder Roles (CIO, Leads, SREs)
+            </a>
+            <a href="#mobile" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors flex items-center justify-between">
+                <span>Mobile App (Android APK)</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v1.1.0</span>
             </a>
             <a href="#telemetry" onclick="toggleLandingNav()" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
                 Live Telemetry
@@ -494,14 +506,334 @@
             </div>
         </section>
 
-        {{-- ── ACT IV: LIVE TELEMETRY BENCHMARKS ──────────────────────────────────── --}}
+        {{-- ── ACT IV: PURPOSE-BUILT FOR EVERY SRE STAKEHOLDER ─────────────────────── --}}
+        <section id="audiences" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-[#14261B]">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F5C518]/10 border border-[#F5C518]/30 text-[#F5C518] text-xs font-mono font-bold uppercase mb-3">
+                    ACT IV &bull; STAKEHOLDER ALIGNMENT
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+                    Engineered for Every Seat in the Operations Center
+                </h2>
+                <p class="text-sm sm:text-base text-gray-400 mt-3 leading-relaxed">
+                    From the executive boardroom to the late-night on-call pager, Support Activity Tracker eliminates friction across the entire engineering hierarchy.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {{-- Role 1: CIO / VP Engineering --}}
+                <div class="p-6 rounded-3xl bg-[#0F1A14] border border-[#1A2E22] hover:border-[#F5C518]/50 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-[#F5C518]/30 flex items-center justify-center text-xl mb-5">
+                            👔
+                        </div>
+                        <span class="text-[10px] font-mono uppercase font-bold tracking-widest text-[#F5C518] block mb-1">Executive Leadership</span>
+                        <h3 class="text-lg font-bold text-white">CIOs &amp; VPs of Engineering</h3>
+                        <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">
+                            Gain boardroom-grade operational assurance. Replace anecdotal status reports with quantified handover metrics, SLA uptime tracking, and enterprise risk reduction across all payment and banking workloads.
+                        </p>
+                    </div>
+                    <ul class="mt-6 pt-4 border-t border-white/5 space-y-2 text-[11px] font-mono text-gray-300">
+                        <li class="flex items-center gap-2 text-emerald-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span>99.98% SLA Availability HUD</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>Zero Shift Handoff Blindspots</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>Enterprise ISO 27001 Readiness</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Role 2: Shift Leads --}}
+                <div class="p-6 rounded-3xl bg-[#0F1A14] border border-[#1A2E22] hover:border-[#1B6B3A] transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-[#1B6B3A]/20 border border-[#1B6B3A]/40 flex items-center justify-center text-xl mb-5">
+                            🎖️
+                        </div>
+                        <span class="text-[10px] font-mono uppercase font-bold tracking-widest text-emerald-400 block mb-1">Operations Command</span>
+                        <h3 class="text-lg font-bold text-white">SRE Shift Leads &amp; Commanders</h3>
+                        <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">
+                            Maintain crisp custody boundaries. Sign off formal digital briefings with blocker counts, delegate tasks to on-duty engineers in one click, and orchestrate incident War Rooms with active log feeds.
+                        </p>
+                    </div>
+                    <ul class="mt-6 pt-4 border-t border-white/5 space-y-2 text-[11px] font-mono text-gray-300">
+                        <li class="flex items-center gap-2 text-emerald-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span>Two-Way Cryptographic Handshake</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>1-Click Bulk Task Delegation</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>War Room Comms &amp; Mentions</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Role 3: On-Call Engineers --}}
+                <div class="p-6 rounded-3xl bg-[#0F1A14] border border-[#1A2E22] hover:border-emerald-500 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-xl mb-5">
+                            ⚡
+                        </div>
+                        <span class="text-[10px] font-mono uppercase font-bold tracking-widest text-emerald-300 block mb-1">On-Duty Frontline</span>
+                        <h3 class="text-lg font-bold text-white">On-Call Engineers &amp; SREs</h3>
+                        <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">
+                            Execute checkoffs without mental friction. Use the Flutter mobile app with 0ms offline startup, auto-syncing when network reconnects, instant P1 escalation tagging, and dark mode built for night shifts.
+                        </p>
+                    </div>
+                    <ul class="mt-6 pt-4 border-t border-white/5 space-y-2 text-[11px] font-mono text-gray-300">
+                        <li class="flex items-center gap-2 text-emerald-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span>Offline-First Mobile Cockpit</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>P1 Push Alerts &amp; Login Security</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>Auto-Scroll Live War Room Chat</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Role 4: Compliance & Auditors --}}
+                <div class="p-6 rounded-3xl bg-[#0F1A14] border border-[#1A2E22] hover:border-purple-500 transition-all flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xl mb-5">
+                            ⚖️
+                        </div>
+                        <span class="text-[10px] font-mono uppercase font-bold tracking-widest text-purple-300 block mb-1">Governance &amp; Trust</span>
+                        <h3 class="text-lg font-bold text-white">Infosec &amp; Compliance Auditors</h3>
+                        <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">
+                            Zero dispute post-mortems. Every check, status change, and handover briefing is immutably logged with actor snapshots, before/after JSON diffs, client IPs, and 1-click regulatory export.
+                        </p>
+                    </div>
+                    <ul class="mt-6 pt-4 border-t border-white/5 space-y-2 text-[11px] font-mono text-gray-300">
+                        <li class="flex items-center gap-2 text-purple-300">
+                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                            <span>100% Immutable Audit Trail</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>Polymorphic Before/After Diffs</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-gray-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span>One-Click CSV / PDF Archival</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        {{-- ── ACT V: THE NPONTU SRE MOBILE COMPANION & APK DISTRIBUTION ───────────── --}}
+        <section id="mobile" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-[#14261B]">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                {{-- Left: Narrative & Downloads --}}
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold uppercase">
+                        ACT V &bull; MOBILE SRE COMPANION &bull; FLUTTER 3.24+
+                    </div>
+
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+                        Command 24/7 Operations from the Palm of Your Hand.
+                    </h2>
+
+                    <p class="text-sm sm:text-base text-gray-300 leading-relaxed">
+                        Engineered specifically for on-call SRE engineers in the field. When high-priority P1 incidents trigger or a shift handover arrives, access your personal queue, check off critical runbooks, and coordinate in incident war rooms with zero startup latency.
+                    </p>
+
+                    {{-- Architectural Highlights Grid --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="p-4 rounded-2xl bg-[#0F1A14] border border-[#1A2E22]">
+                            <div class="flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold">
+                                <span>⚡ 0ms Offline Cache Hydration</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1.5">
+                                Loads immediately on app launch from local SharedPreferences without waiting for network round-trips. Auto-syncs on reconnect.
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-[#0F1A14] border border-[#1A2E22]">
+                            <div class="flex items-center gap-2 text-[#F5C518] font-mono text-xs font-bold">
+                                <span>🔄 Real-Time War Room Polling</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1.5">
+                                Active 3-second polling sync loop keeps incident messages, attachments, and alerts in lockstep with web operators.
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-[#0F1A14] border border-[#1A2E22]">
+                            <div class="flex items-center gap-2 text-purple-300 font-mono text-xs font-bold">
+                                <span>📱 Adaptive Responsive Layout</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1.5">
+                                Seamless portrait and landscape auto-rotation. Keyboard inset avoidance ensures input boxes are never obscured while typing.
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-[#0F1A14] border border-[#1A2E22]">
+                            <div class="flex items-center gap-2 text-emerald-300 font-mono text-xs font-bold">
+                                <span>🔒 Biometric Auth &amp; Login Alert</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1.5">
+                                Fingerprint and Face ID authentication. Automatically sends security email notifications and in-app audit records on mobile login.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- APK Download & Testing Hub --}}
+                    <div class="p-6 rounded-3xl bg-gradient-to-br from-[#0F1A14] to-[#14261B] border border-[#1B6B3A]/60 space-y-4 shadow-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-mono font-bold text-[#F5C518] uppercase tracking-wider">Release Distribution &bull; Version 1.1.0 (Build 2)</span>
+                                <h3 class="text-base font-bold text-white mt-0.5">Download Npontu SRE Android Client</h3>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold border border-emerald-500/30">
+                                Ready for Testing
+                            </span>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 pt-1">
+                            {{-- Universal APK Download --}}
+                            <a href="https://github.com/mhiskall282/npontu-technologies-sre/actions" target="_blank"
+                               class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#1B6B3A] hover:bg-[#2A8F52] text-white font-bold text-xs shadow-lg transition-transform hover:scale-[1.02]">
+                                <svg class="w-4 h-4 text-[#F5C518]" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.414 13.8533 8.12 12 8.12s-3.5902.294-5.1368.8307L4.8409 5.4477a.416.416 0 00-.5676-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/></svg>
+                                <span>Universal Release APK (.apk)</span>
+                            </a>
+
+                            {{-- GitHub Actions Artifacts Link --}}
+                            <a href="https://github.com/mhiskall282/npontu-technologies-sre/actions/workflows/flutter-ci.yml" target="_blank"
+                               class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 font-mono text-xs border border-white/10 transition-colors">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <span>GitHub CI Builds &amp; Split APKs</span>
+                            </a>
+
+                            {{-- Mobile Documentation & Emulator Guide --}}
+                            <a href="{{ route('docs') }}"
+                               class="inline-flex items-center gap-1.5 px-4 py-3 rounded-xl text-xs font-semibold text-[#F5C518] hover:underline">
+                                <span>Emulator Setup Guide &rarr;</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Right: Sleek Modern Phone Frame Mockup --}}
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-72 sm:w-80 h-[560px] rounded-[42px] bg-[#07100B] p-3 shadow-2xl border-4 border-gray-800 ring-1 ring-white/10">
+                        {{-- Phone Dynamic Island / Speaker Notch --}}
+                        <div class="absolute top-5 left-1/2 -translate-x-1/2 w-24 h-4 bg-gray-900 rounded-full flex items-center justify-center gap-2 z-20">
+                            <span class="w-2 h-2 rounded-full bg-black"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500/80"></span>
+                        </div>
+
+                        {{-- Phone Screen Content --}}
+                        <div class="w-full h-full rounded-[32px] bg-[#0B150F] overflow-hidden flex flex-col pt-8 pb-3 px-3 text-white border border-[#14261B]">
+                            {{-- Mock Mobile App Bar --}}
+                            <div class="flex items-center justify-between pb-3 border-b border-[#14261B]">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-lg bg-[#1B6B3A] flex items-center justify-center text-[10px] text-[#F5C518] font-bold">
+                                        ▲
+                                    </div>
+                                    <span class="text-xs font-extrabold tracking-wider">NPONTU SRE</span>
+                                </div>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">ONLINE</span>
+                            </div>
+
+                            {{-- Mock Offline Banner --}}
+                            <div class="mt-2.5 px-2.5 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between text-[10px]">
+                                <span class="text-emerald-300 flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <span>Cached Telemetry Hydrated</span>
+                                </span>
+                                <span class="font-mono text-gray-400 text-[9px]">0ms Latency</span>
+                            </div>
+
+                            {{-- Mock Shift Stats Card --}}
+                            <div class="mt-2.5 p-3 rounded-xl bg-[#0F1A14] border border-[#1A2E22]">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-mono text-gray-400 font-bold uppercase">MORNING SHIFT</span>
+                                    <span class="text-[9px] font-mono text-[#F5C518]">P1 CRITICAL: 0</span>
+                                </div>
+                                <div class="flex items-baseline gap-2 mt-1">
+                                    <span class="text-xl font-black text-white font-mono">14 / 16</span>
+                                    <span class="text-[11px] text-emerald-400 font-semibold">87.5% Completed</span>
+                                </div>
+                            </div>
+
+                            {{-- Mock Checklist Items --}}
+                            <div class="mt-2.5 space-y-2 flex-1 overflow-hidden">
+                                <div class="p-2.5 rounded-xl bg-[#0F1A14] border border-emerald-500/30 flex items-center justify-between">
+                                    <div class="min-w-0 pr-2">
+                                        <p class="text-[11px] font-bold text-white truncate">Verify DB Replication Lag</p>
+                                        <p class="text-[9px] font-mono text-emerald-400 mt-0.5">DONE &bull; 09:15 UTC &bull; Kwame A.</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">DONE</span>
+                                </div>
+
+                                <div class="p-2.5 rounded-xl bg-[#0F1A14] border border-amber-500/30 flex items-center justify-between">
+                                    <div class="min-w-0 pr-2">
+                                        <p class="text-[11px] font-bold text-white truncate">Telco SMS Gateway Latency</p>
+                                        <p class="text-[9px] font-mono text-[#F5C518] mt-0.5">PENDING &bull; SLA 11:30 &bull; Pool</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-[#F5C518] border border-amber-500/40">PENDING</span>
+                                </div>
+
+                                <div class="p-2.5 rounded-xl bg-[#0F1A14] border border-red-500/30 flex items-center justify-between">
+                                    <div class="min-w-0 pr-2">
+                                        <p class="text-[11px] font-bold text-white truncate">Payment Webhook Worker Queue</p>
+                                        <p class="text-[9px] font-mono text-red-400 mt-0.5">WAR ROOM #4 &bull; Active Polling</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-red-500/20 text-red-300 border border-red-500/40">P1 HIGH</span>
+                                </div>
+                            </div>
+
+                            {{-- Mock Bottom Navigation Bar --}}
+                            <div class="pt-2 mt-auto border-t border-[#14261B] flex items-center justify-around text-gray-400 text-[10px] font-mono">
+                                <span class="text-[#F5C518] font-bold flex flex-col items-center">
+                                    <span>📊</span>
+                                    <span class="text-[8px] mt-0.5">Cockpit</span>
+                                </span>
+                                <span class="flex flex-col items-center">
+                                    <span>📋</span>
+                                    <span class="text-[8px] mt-0.5">Checks</span>
+                                </span>
+                                <span class="flex flex-col items-center">
+                                    <span>🤝</span>
+                                    <span class="text-[8px] mt-0.5">Handoff</span>
+                                </span>
+                                <span class="flex flex-col items-center">
+                                    <span>💬</span>
+                                    <span class="text-[8px] mt-0.5">War Room</span>
+                                </span>
+                                <span class="flex flex-col items-center">
+                                    <span>⚙️</span>
+                                    <span class="text-[8px] mt-0.5">Settings</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ── ACT VI: LIVE TELEMETRY BENCHMARKS ──────────────────────────────────── --}}
         <section id="telemetry" class="bg-[#0B150F] border-t border-[#14261B] py-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="rounded-3xl bg-[#0F1A14] border border-[#1A2E22] p-8 sm:p-12">
                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-10 border-b border-[#1A2E22]">
                         <div>
                             <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold uppercase mb-3">
-                                ACT IV &bull; LIVE TELEMETRY & HEALTH
+                                ACT VI &bull; LIVE TELEMETRY & HEALTH
                             </div>
                             <h2 class="text-3xl font-black text-white tracking-tight">
                                 8 Core Subsystems. Monitored in Real Time.

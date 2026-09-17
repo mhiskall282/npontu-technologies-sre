@@ -62,6 +62,50 @@ flutter run -d "iPhone 15 Pro" \
 
 ---
 
+### 2.3 Android Studio & Emulator Setup for Testing
+
+To run and test the mobile application locally in an Android Virtual Device (AVD):
+
+1. **Install Android Studio**:
+   - Download and install [Android Studio](https://developer.android.com/studio) (Giraffe or newer).
+   - In Android Studio Setup Wizard, ensure **Android SDK Platform**, **Android SDK Command-line Tools**, and **Android Emulator** are installed.
+
+2. **Create an Android Virtual Device (AVD)**:
+   - Open Android Studio &rarr; Tools &rarr; **Device Manager** &rarr; **Create Device**.
+   - Select **Pixel 7** or **Pixel 8** (standard 1080x2400 screen resolution).
+   - System Image: Select **API 34 (UpsideDownCake)** or **API 35** with **Google APIs (x86_64)**.
+   - Click **Finish** to create the emulator.
+
+3. **Start the Emulator**:
+   ```bash
+   # List installed AVDs
+   emulator -list-avds
+
+   # Launch your AVD (example: Pixel_7_API_34)
+   emulator -avd Pixel_7_API_34 -netdelay none -netspeed full
+   ```
+
+4. **Verify ADB Connection**:
+   ```bash
+   adb devices
+   # Output: emulator-5554   device
+   ```
+
+5. **Install and Test Universal Release APK**:
+   ```bash
+   # Build Universal APK (v1.1.0+2)
+   cd npontu_sre_mobile
+   flutter build apk --release --dart-define=API_BASE_URL=https://npontu-support-tracker.onrender.com/api/v1
+
+   # Install directly onto the running emulator
+   adb install -r build/app/outputs/flutter-apk/app-release.apk
+   ```
+
+6. **Hot Reload / Debug Testing**:
+   ```bash
+   flutter run -d emulator-5554 --dart-define=API_BASE_URL=https://npontu-support-tracker.onrender.com/api/v1
+   ```
+
 ## 3. Architecture & Code Structure
 
 The project follows **Feature-First Clean Architecture** with Riverpod for state management.
@@ -223,17 +267,22 @@ All three gates are enforced by the CI workflow at `.github/workflows/flutter-ci
 
 ---
 
-## 7. CI/CD Pipeline
+## 7. CI/CD Pipeline & Version Control
 
-The Flutter CI workflow (`.github/workflows/flutter-ci.yml`) runs on every push to `main` that touches `npontu_sre_mobile/`:
+The Flutter CI workflow (`.github/workflows/flutter-ci.yml`) runs automatically on every push or pull request to `main` that touches `npontu_sre_mobile/`, and can also be triggered manually via `workflow_dispatch`:
 
 1. **Format check** — `dart format --set-exit-if-changed`
 2. **Static analysis** — `flutter analyze`
-3. **Unit tests** — `flutter test --coverage`
+3. **Unit & Widget tests** — `flutter test --coverage`
 4. **Debug APK** — `--split-per-abi --target-platform android-arm64` (fast CI feedback)
-5. **Release split APKs** — `--split-per-abi --obfuscate` → artifact `npontu-sre-android-split-apks`
-6. **Release AAB** — `--obfuscate` → artifact `npontu-sre-google-play-aab`
-7. **Debug symbols** — Uploaded separately for crash deobfuscation
+5. **Universal Release APK** — Full fat APK `app-release.apk` running on all CPU architectures & emulators → artifact `npontu-sre-universal-release-apk`
+6. **Release split APKs** — `--split-per-abi --obfuscate` → artifact `npontu-sre-android-split-apks`
+7. **Release AAB** — `--obfuscate` → artifact `npontu-sre-google-play-aab`
+8. **Debug symbols** — Uploaded separately for crash deobfuscation
+
+### Downloading the Correct APK from GitHub:
+- **For general testing on any phone, tablet, or Android emulator (x86_64 / ARM)**: Download `npontu-sre-universal-release-apk` (`app-release.apk`). This contains all native binaries and will never fail with architecture mismatch errors.
+- **For production deployments with minimum bandwidth**: Download the split APK matching your device's exact architecture (e.g., `app-arm64-v8a-release.apk` for modern phones).
 
 ---
 

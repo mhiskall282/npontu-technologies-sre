@@ -11,6 +11,7 @@ on:
     paths:
       - 'npontu_sre_mobile/**'
       - '.github/workflows/flutter-ci.yml'
+  workflow_dispatch:
 
 env:
   API_BASE_URL: https://npontu-support-tracker.onrender.com/api/v1
@@ -79,6 +80,13 @@ jobs:
             --split-debug-info=build/debug-info \
             --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
 
+      # ── Android Release — Universal Fat APK (Runs on all devices & emulators) ───
+      - name: Build Android Universal Release APK
+        run: |
+          flutter build apk \
+            --release \
+            --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
+
       # ── Android App Bundle (Google Play) ─────────────────────────────────
       # AAB is the preferred distribution format. Play splits per device automatically,
       # so users download only the ABI + language + density slice they need (~15-25 MB).
@@ -91,6 +99,14 @@ jobs:
             --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
 
       # ── Artifacts ─────────────────────────────────────────────────────────
+
+      - name: Upload Universal Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: npontu-sre-universal-release-apk
+          path: npontu_sre_mobile/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Upload Split APK Artifacts
         uses: actions/upload-artifact@v4
