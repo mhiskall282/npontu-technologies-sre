@@ -759,6 +759,7 @@ class _SettingsTile extends StatelessWidget {
     this.subtitle,
     this.trailing,
     this.onTap,
+    this.iconColor,
   });
 
   final IconData icon;
@@ -766,11 +767,12 @@ class _SettingsTile extends StatelessWidget {
   final String? subtitle;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: NpontuColors.green, size: 22),
+      leading: Icon(icon, color: iconColor ?? NpontuColors.green, size: 22),
       title: Text(
         title,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),

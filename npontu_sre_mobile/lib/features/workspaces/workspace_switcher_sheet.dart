@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/npontu_theme.dart';
 import 'workspace_controller.dart';
-import 'workspace_model.dart';
 
 class WorkspaceSwitcherSheet extends ConsumerStatefulWidget {
   const WorkspaceSwitcherSheet({super.key});
