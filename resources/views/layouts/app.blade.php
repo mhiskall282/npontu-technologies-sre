@@ -218,16 +218,39 @@
                 </a>
             </div>
 
-            {{-- SRE Cockpit Status Banner --}}
-            <div class="px-5 py-2.5 bg-[#122218] border-b border-[#1A2E22] flex items-center justify-between text-[11px]">
-                <div class="flex items-center gap-2">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                    </span>
-                    <span class="text-green-300 font-medium">SRE Cockpit</span>
-                </div>
-                <span class="text-[10px] font-mono text-gray-400">v1.2</span>
+            {{-- SRE Cockpit Status Banner & Active Tenant Workspace Indicator --}}
+            <div class="px-4 py-2.5 bg-[#122218] border-b border-[#1A2E22] flex items-center justify-between text-[11px]">
+                @auth
+                    @php
+                        $sidebarActiveWs = \App\Services\TenantContext::getWorkspace() ?? auth()->user()->currentWorkspace();
+                    @endphp
+                    @if($sidebarActiveWs)
+                        <a href="{{ route('workspaces.index') }}" class="flex items-center gap-2 min-w-0 group" title="Click to Switch Workspace">
+                            <span class="relative flex h-2 w-2 shrink-0">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                            </span>
+                            <span class="text-green-300 font-bold truncate max-w-[140px] group-hover:text-[#F5C518] transition-colors">
+                                {{ $sidebarActiveWs->name }}
+                            </span>
+                        </a>
+                        <a href="{{ route('workspaces.index') }}" class="text-[10px] font-mono text-[#F5C518] hover:underline shrink-0">
+                            Switch
+                        </a>
+                    @else
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span class="text-green-300 font-medium">SRE Cockpit</span>
+                        </div>
+                        <span class="text-[10px] font-mono text-gray-400">v1.2</span>
+                    @endif
+                @else
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span class="text-green-300 font-medium">SRE Cockpit</span>
+                    </div>
+                    <span class="text-[10px] font-mono text-gray-400">v1.2</span>
+                @endauth
             </div>
 
             {{-- Scrollable Navigation Links --}}

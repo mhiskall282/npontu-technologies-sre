@@ -127,4 +127,15 @@ class Organization extends Model
     {
         return $this->status === 'suspended';
     }
+
+    /**
+     * Check if a specific user has active membership in this organization.
+     */
+    public function hasUser(User $user): bool
+    {
+        return $this->memberships()
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->exists();
+    }
 }
