@@ -38,7 +38,7 @@ class _AuditScreenState extends ConsumerState<AuditScreen> {
                 onPressed: () => Navigator.of(context).pop(),
               )
             : null,
-        title: const Text('Compliance Audit Trail'),
+        title: const Text('Audit Trail'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -201,16 +201,19 @@ class _AuditScreenState extends ConsumerState<AuditScreen> {
                   : NpontuColors.textSecondaryLight,
             ),
             const SizedBox(width: 4),
-            Text(
-              log.actorName,
-              style: TextStyle(
-                fontSize: 12,
-                color: isDark
-                    ? NpontuColors.textSecondaryDark
-                    : NpontuColors.textSecondaryLight,
+            Expanded(
+              child: Text(
+                log.actorName,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark
+                      ? NpontuColors.textSecondaryDark
+                      : NpontuColors.textSecondaryLight,
+                ),
               ),
             ),
-            const Spacer(),
+            const SizedBox(width: 8),
             Text(
               log.createdAt != null
                   ? '${log.createdAt!.year}-${log.createdAt!.month.toString().padLeft(2, '0')}-${log.createdAt!.day.toString().padLeft(2, '0')} ${log.createdAt!.hour.toString().padLeft(2, '0')}:${log.createdAt!.minute.toString().padLeft(2, '0')}'

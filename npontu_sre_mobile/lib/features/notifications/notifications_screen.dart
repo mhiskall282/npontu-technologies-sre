@@ -48,16 +48,17 @@ class NotificationsScreen extends ConsumerWidget {
         ),
         actions: [
           if (unreadCount > 0)
-            TextButton.icon(
+            IconButton(
+              icon: const Icon(Icons.done_all_rounded),
+              tooltip: 'Mark all as read',
+              color: NpontuColors.gold,
               onPressed: () => ref
                   .read(notificationControllerProvider.notifier)
                   .markAllRead(),
-              icon: const Icon(Icons.done_all_rounded, size: 18),
-              label: const Text('All Read'),
-              style: TextButton.styleFrom(foregroundColor: NpontuColors.gold),
             ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Refresh',
             onPressed: () => ref.invalidate(notificationControllerProvider),
           ),
         ],

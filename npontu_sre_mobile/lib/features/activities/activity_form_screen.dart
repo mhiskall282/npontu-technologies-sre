@@ -152,7 +152,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? 'Edit Activity' : 'New Operational Activity'),
+        title: Text(isEdit ? 'Edit Activity' : 'New Activity'),
       ),
       body: _isLoadingData
           ? const Center(
@@ -309,7 +309,7 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                       // current-assignee, then team members.
                       // Wrap each in Flexible so the InputDecorator row never
                       // overflows on narrow screens.
-                      Widget _chip(String label) => Flexible(
+                      Widget chip(String label) => Flexible(
                             child: Text(
                               label,
                               overflow: TextOverflow.ellipsis,
@@ -317,12 +317,12 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
                             ),
                           );
                       final displayItems = <Widget>[
-                        _chip('Unassigned (Shift Pool)'),
+                        chip('Unassigned (Shift Pool)'),
                         if (_assignedToId != null &&
                             teamMembers.every((u) => u.id != _assignedToId))
-                          _chip('Current Assignee (ID: $_assignedToId)'),
+                          chip('Current Assignee (ID: $_assignedToId)'),
                         ...teamMembers.map(
-                          (user) => _chip('${user.name} (${user.gradeLabel})'),
+                          (user) => chip('${user.name} (${user.gradeLabel})'),
                         ),
                       ];
                       return displayItems;

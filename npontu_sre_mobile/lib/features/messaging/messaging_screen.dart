@@ -160,7 +160,7 @@ class _MessagingScreenState extends ConsumerState<MessagingScreen>
                 onPressed: () => Navigator.of(context).pop(),
               )
             : null,
-        title: const Text('Ops Communications'),
+        title: const Text('Ops Messaging'),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: NpontuColors.gold,

@@ -95,7 +95,7 @@ class _HandoverFormScreenState extends ConsumerState<HandoverFormScreen> {
     final teamMembers = ref.watch(teamControllerProvider).members;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Initiate Shift Handover')),
+      appBar: AppBar(title: const Text('New Shift Handover')),
       body: Form(
         key: _formKey,
         child: ListView(

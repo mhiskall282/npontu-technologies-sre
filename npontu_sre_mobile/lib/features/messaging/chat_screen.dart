@@ -139,10 +139,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             Text(
               conversation?.type == 'war_room'
-                  ? 'CRITICAL INCIDENT WAR ROOM'
+                  ? 'War Room'
                   : (conversation?.type == 'channel'
-                        ? 'Public Team Channel'
-                        : 'Direct Operations Chat'),
+                        ? 'Team Channel'
+                        : 'Direct Chat'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 11,
                 color: conversation?.type == 'war_room'

@@ -32,7 +32,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       drawer: const AppDrawer(currentRoute: '/reports'),
       appBar: AppBar(
         leading: _buildBackOrMenuButton(context),
-        title: const Text('Compliance Reports'),
+        title: const Text('Reports'),
         actions: [
           IconButton(
             icon: const Icon(Icons.download_rounded),

@@ -28,7 +28,7 @@ class HealthScreen extends ConsumerWidget {
                 onPressed: () => Navigator.of(context).pop(),
               )
             : null,
-        title: const Text('SRE Diagnostics & Health'),
+        title: const Text('System Health'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -291,11 +291,16 @@ class HealthScreen extends ConsumerWidget {
   Widget _buildInfoRow(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );

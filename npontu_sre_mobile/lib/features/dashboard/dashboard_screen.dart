@@ -23,7 +23,7 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Operations Cockpit'),
+        title: const Text('Ops Cockpit'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -386,13 +386,16 @@ class DashboardScreen extends ConsumerWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'ACTIVE OPERATIONAL ESCALATIONS (${state.activeIncidentsCount})',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: NpontuColors.danger,
-                  letterSpacing: 0.3,
+              Expanded(
+                child: Text(
+                  'ACTIVE OPERATIONAL ESCALATIONS (${state.activeIncidentsCount})',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: NpontuColors.danger,
+                    letterSpacing: 0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

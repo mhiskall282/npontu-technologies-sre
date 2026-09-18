@@ -50,14 +50,10 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
         // instead of overflowing the NavigationToolbar trailing-actions slot.
         titleSpacing: 4,
         centerTitle: false,
-        title: const FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'SRE Operations Team',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
+        title: const Text(
+          'SRE Team',
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         actions: [
           IconButton(
@@ -250,7 +246,9 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(height: 6),
-                    Row(
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -270,7 +268,6 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 6,
