@@ -379,7 +379,7 @@
             {{-- Layout Footer --}}
             <footer class="bg-white border-t border-gray-200 text-gray-500 text-xs py-3 mt-auto shrink-0 no-print">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <span>&copy; {{ date('Y') }} Npontu Technologies. Internal operational use only.</span>
+                    <span>&copy; {{ date('Y') }} Opsora SRE Operations. Internal operational use only.</span>
                     <div class="flex items-center gap-4">
                         <span class="text-gray-400">SRE Handover SLA: 99.98%</span>
                         <a href="{{ route('health') }}" class="text-[#1B6B3A] font-semibold hover:underline">

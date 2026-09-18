@@ -1,7 +1,7 @@
 @extends('policies.layout')
 
 @section('title', 'Acceptable Use & Terms of Service')
-@section('meta_description', 'Operational Terms of Service and SRE Acceptable Use Policy for Npontu Technologies Support Activity Tracker')
+@section('meta_description', 'Operational Terms of Service and SRE Acceptable Use Policy for Opsora Support Activity Tracker')
 @section('breadcrumb_current', 'Terms of Service')
 @section('page_heading', 'SRE Operations Acceptable Use & Terms of Service')
 
@@ -29,7 +29,7 @@
             <span>Permitted Use and Platform Authorization</span>
         </h2>
         <p>
-            The Support Activity Tracker is a proprietary enterprise application created and maintained by <strong>Npontu Technologies Limited</strong>. Access is restricted exclusively to authenticated site reliability engineers, support operations staff, infrastructure supervisors, and designated platform evaluators.
+            The Support Activity Tracker is a proprietary enterprise application powering the <strong>Opsora</strong> platform. Access is restricted exclusively to authenticated site reliability engineers, support operations staff, infrastructure supervisors, and designated platform evaluators.
         </p>
         <p class="mt-2 text-gray-400">
             By signing in to the console or inspecting telemetry streams, operators agree to conduct shift responsibilities with diligence, precision, and fidelity to live production state.
@@ -43,7 +43,7 @@
             <span>Two-Way Operational Custody Non-Repudiation</span>
         </h2>
         <p>
-            The Npontu Handover Engine enforces mathematical and operational custody transfer between shifts:
+            The Opsora Handover Engine enforces mathematical and operational custody transfer between shifts:
         </p>
         <ul class="list-disc list-inside mt-2 space-y-2 text-gray-400">
             <li><strong>Mandatory Outgoing Sign-Off</strong>: The outgoing shift lead must confirm that all assigned checks are resolved, blocked items documented with descriptive remarks, and ongoing incidents clearly tagged.</li>
@@ -91,7 +91,7 @@
             <li>Tampering with or attempting to manipulate the underlying MySQL InnoDB audit log sequences.</li>
         </ul>
         <p class="mt-2 text-xs text-rose-300 bg-rose-950/40 border border-rose-800/40 p-3 rounded-lg">
-            Violations will trigger immediate account suspension, forensic SIEM log extraction, and disciplinary review under Npontu Technologies IT Governance policies.
+            Violations will trigger immediate account suspension, forensic SIEM log extraction, and disciplinary review under Opsora IT Governance policies.
         </p>
     </div>
 

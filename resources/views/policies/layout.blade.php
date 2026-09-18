@@ -132,14 +132,14 @@
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">@yield('page_heading', 'Legal & Compliance Policy')</h1>
                     <p class="text-xs sm:text-sm text-green-100/70 mt-1 max-w-2xl">
-                        Operational compliance standards, data handling procedures, cryptographic audit mandates, and uptime SLA commitments for Npontu SRE systems.
+                        Operational compliance standards, data handling procedures, cryptographic audit mandates, and uptime SLA commitments for Opsora SRE systems.
                     </p>
                 </div>
                 <div class="flex items-center gap-2 font-mono text-xs text-gray-400 bg-black/40 border border-white/10 rounded-xl px-3 py-2 self-start md:self-auto">
                     <span class="text-emerald-400 font-bold">Revision:</span>
                     <span>2026.1 (Active)</span>
                     <span class="text-gray-600">•</span>
-                    <span class="text-gray-400">Npontu Legal</span>
+                    <span class="text-gray-400">Opsora Legal</span>
                 </div>
             </div>
 
