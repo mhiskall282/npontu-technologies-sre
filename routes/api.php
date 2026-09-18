@@ -8,10 +8,12 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\OrganizationController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\ShiftHandoverController;
 use App\Http\Controllers\Api\V1\SystemHealthController;
 use App\Http\Controllers\Api\V1\TeamController;
+use App\Http\Controllers\Api\V1\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +39,15 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::put('/me', [AuthController::class, 'updateProfile'])->name('me.update');
         Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::post('/auth/revoke-sessions', [AuthController::class, 'revokeSessions'])->name('auth.revoke-sessions');
+
+        // Multi-Tenant Workspaces & Organization Lifecycle
+        Route::get('/workspaces', [WorkspaceController::class, 'index'])->name('workspaces.index');
+        Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
+        Route::post('/workspaces/switch', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
+        Route::post('/organizations/join-by-code', [OrganizationController::class, 'joinByCode'])->name('organizations.join-by-code');
+        Route::post('/organizations/apply', [OrganizationController::class, 'apply'])->name('organizations.apply');
+        Route::get('/organizations/applications', [OrganizationController::class, 'applications'])->name('organizations.applications');
+        Route::post('/organizations/applications/{application}/review', [OrganizationController::class, 'reviewApplication'])->name('organizations.applications.review');
 
         // SRE Operations Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
