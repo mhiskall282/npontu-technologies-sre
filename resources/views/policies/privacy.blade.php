@@ -46,7 +46,7 @@
             <div class="p-4 rounded-xl bg-white/5 border border-white/10">
                 <p class="text-xs font-bold text-[#F5C518] uppercase tracking-wider font-mono">A. Operator Identity & Authentication</p>
                 <p class="text-xs text-gray-400 mt-1">
-                    Full name, authorized operator email address (<code class="text-emerald-300">hello@johnokyere.xyz</code> / enterprise SRE domain), SRE technical grade (L1 through L5), assigned operational department, session tokens, and bcrypt-hashed password credentials.
+                    Full name, authorized operator email address (<code class="text-emerald-300">email@email.com</code> / enterprise SRE domain), SRE technical grade (L1 through L5), assigned operational department, session tokens, and bcrypt-hashed password credentials.
                 </p>
             </div>
             <div class="p-4 rounded-xl bg-white/5 border border-white/10">

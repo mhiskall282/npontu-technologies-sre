@@ -72,7 +72,7 @@ test('login page presents clean production operator authentication and system he
     $response->assertOk();
     $response->assertSee('Operator Sign-In');
     $response->assertSee('Opsora SRE');
-    $response->assertSee('hello@johnokyere.xyz');
+    $response->assertSee('email@email.com');
     $response->assertSee('System Health & Diagnostics', false);
     $response->assertDontSee('Quick Operator Access (Test Accounts)');
 });

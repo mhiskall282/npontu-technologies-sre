@@ -119,17 +119,15 @@ php artisan serve
 Open **[http://localhost:8000](http://localhost:8000)**
 
 ---
+## Seeded Test Credentials (Local Development)
 
-## Seeded Test Credentials
+| Role | Email | Password | Scope |
+|---|---|---|---|
+| **Administrator** | `admin@npontu.local` | `password` | Full user & activity management |
+| **Team Lead** | `lead@npontu.local` | `password` | Activity management & shift handover sign-off |
+| **Support Agent** | `agent@npontu.local` | `password` | Activity checkoffs & remark updates |
 
-| Role | Email | Password |
-|---|---|---|
-| **Principal Administrator** | `hello@johnokyere.xyz` | `password` |
-| Administrator | `admin@npontu.local` | `password` |
-| Team Lead | `lead@npontu.local` | `password` |
-| Support Agent | `agent@npontu.local` | `password` |
-
-> ⚠️ **Change all passwords immediately in production.**
+> ⚠️ **Change all passwords immediately in production environments.**
 
 ---
 

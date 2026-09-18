@@ -133,7 +133,7 @@
                                    required
                                    autofocus
                                    autocomplete="username"
-                                   placeholder="hello@johnokyere.xyz"
+                                   placeholder="email@email.com"
                                    class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-[#1B6B3A] focus:border-[#1B6B3A] transition-colors @error('email') border-[#E63946] ring-1 ring-[#E63946] @enderror">
                         </div>
 

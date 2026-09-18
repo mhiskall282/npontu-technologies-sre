@@ -55,16 +55,13 @@ flutter run -d emulator-5554 \
 flutter run -d "iPhone 15 Pro" \
   --dart-define=API_BASE_URL=http://localhost:8000/api/v1
 ```
-
 ### 2.2 Test Accounts (seeded by DatabaseSeeder)
 
 | Role | Email | Password | Grade |
 |---|---|---|---|
-| Admin (Primary) | `hello@johnokyere.xyz` | `password` | L5 Principal |
-| Admin | `admin@npontu.com` | `password` | L4 Principal |
-| Shift Lead | `lead@npontu.com` | `password` | L3 Senior |
-| SRE Engineer | `engineer@npontu.com` | `password` | L2 Engineer |
-| SRE Agent | `agent@npontu.com` | `password` | L1 Support |
+| Admin | `admin@npontu.local` | `password` | L4 Principal |
+| Shift Lead | `lead@npontu.local` | `password` | L3 Senior |
+| SRE Agent | `agent@npontu.local` | `password` | L1 Support |
 
 ---
 

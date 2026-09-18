@@ -68,7 +68,7 @@ it('provides clean production operator authentication interface without test hel
     $response->assertOk();
     $response->assertSee('Operator Sign-In');
     $response->assertSee('Opsora SRE');
-    $response->assertSee('hello@johnokyere.xyz');
+    $response->assertSee('email@email.com');
     $response->assertDontSee('Quick Operator Access (Test Accounts):');
 });
 

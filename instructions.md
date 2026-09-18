@@ -1,1750 +1,1280 @@
-●
-●
-●
-●
-●
-●
-●
-●
-●
-1.
-2.
-3.
-●
-ROLE: Senior Software Architect, Laravel Engineer, Flutter Engineer, and
-DevSecOps Specialist
-You are a senior full-stack software architect and mobile engineer. Your task is to extend an existing
-Laravel-based SRE operations platform into a production-ready, cross-platform mobile application
-for Android and iOS.
-You must work directly with the existing codebase. Do not build a disconnected demo, create a
-parallel backend, or rewrite the existing web application without a documented and approved
-reason.
-⸻
-1. PROJECT CONTEXT
-Existing project
-Project name: Npontu Technologies SRE
-GitHub repository:
-https://github.com/mhiskall282/npontu-technologies-sre
-Project owner: John Okyere
-Existing technology stack:
-Laravel 11
-PHP
-Blade templates
-Livewire 3
-Tailwind CSS
-Existing Actions and Services
-Existing authentication and authorization
-Existing database models and migrations
-Existing operational workflows
-Project objective
-Transform the existing Npontu Technologies SRE platform into a multi-client platform consisting of:
-A web application — preserve and improve the existing Laravel Blade/Livewire application.
-A mobile application — build a dedicated Flutter application for Android and iOS.
-A shared Laravel backend — expose secure, versioned APIs that serve both the web and mobile
-clients where appropriate.
-The mobile application must consume the real Laravel backend and database. It must not use
-hardcoded mock data in production.
-Important rules
-Inspect the repository thoroughly before making changes.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Treat the existing implementation as the source of truth.
-Do not assume that documented features are implemented exactly as described.
-Do not invent database tables, fields, permissions, workflows, or API contracts without verifying the
-code.
-Do not remove existing features.
-Do not replace Blade or Livewire with Flutter or React.
-Do not create duplicate business logic in Flutter.
-Do not expose sensitive operational data to unauthorized users.
-Do not claim a feature is complete until it has been implemented and tested.
-Ask for clarification only when a decision cannot safely be made from the codebase. Otherwise,
-make a documented, reversible engineering decision.
-⸻
-2. MANDATORY INITIAL REPOSITORY AUDIT
-Before writing application code, perform a comprehensive audit.
-2.1 Inspect the entire project
-Review:
-README and project documentation
-composer.json
-package.json
-.env.example
-Laravel configuration
-Routes and route groups
-app/Models
-app/Actions
-app/Services
-app/Http
-app/Policies
-app/Providers
-app/Livewire
-app/Notifications
-app/Jobs
-app/Events and Listeners
-database/migrations
-database/seeders
-database/factories
-resources/views
-tests
-●
-●
-●
-●
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-0.
-1.
-2.
-3.
-4.
-deployment configuration
-CI/CD configuration
-existing authentication implementation
-existing authorization and permission checks
-Use repository search to identify all existing application modules and dependencies.
-2.2 Produce an audit report
+# Opsora SaaS Transformation â€” Master Antigravity Implementation Prompt
+
+## 0. Project Identity
+
+
+---
+
+## 1. Your Role
+
+Act as a principal SaaS architect, senior Laravel engineer, Flutter engineer, cloud infrastructure engineer, DevSecOps engineer, database architect, product engineer, QA engineer, and technical writer.
+
+You are working on the existing repository:
+
+- Repository: `https://github.com/mhiskall282/npontu-technologies-sre`
+- Existing backend: Laravel with Blade and Livewire
+- Existing mobile application: Flutter for Android and iOS
+- Existing product: SRE and technical operations workflow platform
+
+Your task is to evolve the existing application into a scalable, multi-tenant SaaS platform branded as **Opsora**, without unnecessarily rewriting or damaging the existing application.
+
+---
+
+# 2. Product Vision
+
+Opsora will be a flexible technical operations platform for:
+
+- Small and medium-sized businesses
+- Startups
+- Software development teams
+- Large enterprises
+- Managed service providers
+- Fintech and financial institutions
+- Universities and other institutions
+- Individual developers and freelancers
+- Internal IT and operations teams
+
+Opsora should support:
+
+1. Personal workspaces
+2. Multiple organization workspaces
+3. Organization registration and approval
+4. Shared SaaS deployments
+5. Dedicated managed deployments
+6. Customer-funded managed deployments
+7. Customer-hosted deployments
+8. Subdomain-based workspaces
+9. Path-based workspaces
+10. Custom domains
+11. Subscription and entitlement architecture
+12. One-time license keys
+13. Monthly and annual billing models
+14. Free tiers and trials
+15. Enterprise contracts
+16. Data-residency requirements
+17. Delegated platform administration
+18. Multi-workspace mobile access
+19. Company-code and QR-code onboarding
+20. Optional enterprise white-label mobile applications
+21. Future monitoring and observability capabilities
+
+The first product release should prioritize **workflow and operations management**. Deeper monitoring and observability should be architecturally supported but implemented later in controlled stages.
+
+---
+
+# 3. Non-Negotiable Principles
+
+Follow these principles throughout the implementation:
+
+- Audit the existing repository before making major changes.
+- Do not create a generic demo or throwaway prototype.
+- Do not destroy existing data.
+- Do not rewrite working features without a documented reason.
+- Preserve current functionality.
+- Preserve the current visual design and color scheme.
+- Use a modular monolith initially.
+- Avoid premature microservices.
+- Separate platform-level control-plane responsibilities from customer workspace responsibilities.
+- Enforce authorization on the backend.
+- Never rely on frontend checks for tenant isolation.
+- Make tenant ownership explicit in the data model.
+- Use feature flags for risky or incomplete functionality.
+- Use reversible migrations whenever practical.
+- Never place secrets in source code, logs, screenshots, or test fixtures.
+- Add cross-tenant isolation tests.
+- Do not claim compliance certifications that have not been verified.
+- Do not claim a stage is complete without tests and evidence.
+- Keep the existing Npontu environment separate during migration.
+- Keep architecture extensible without overengineering the first release.
+
+---
+
+# 4. Initial Brand-Only Migration
+
+## Objective
+
+Change the customer-facing brand from **Npontu** to **Opsora** without changing the productâ€™s visual identity.
+
+## Required Work
+
+Audit the repository for all references to:
+
+- Npontu
+- Npontu Technologies
+- Npontu Technologies SRE
+- Npontu logos
+- Npontu email addresses
+- Npontu URLs
+- Npontu metadata
+- Npontu application names
+- Npontu page titles
+- Npontu notification text
+- Npontu mobile application labels
+- Npontu environment variables
+- Npontu documentation
+
+Classify each reference as:
+
+1. Customer-facing and safe to rename
+2. Internal legacy reference that must remain temporarily
+3. Migration-sensitive reference
+4. Deployment or infrastructure reference
+5. Historical data that must not be modified automatically
+
 Create:
-docs/mobile-expansion-audit.md
-The report must include:
-Existing architecture.
-Database schema and relationships.
-Existing user roles and permissions.
-Existing authentication mechanism.
-Existing business workflows.
-Existing Action and Service classes that can be reused.
-Existing API endpoints and their purposes.
-Existing notification and real-time capabilities.
-Existing testing coverage.
-Deployment and hosting configuration.
-Security weaknesses relevant to mobile integration.
-Features that are incomplete, ambiguous, or undocumented.
-Recommended API boundaries.
-Risks and proposed mitigations.
-Do not proceed to major implementation until the audit is complete.
-⸻
-3. TARGET ARCHITECTURE
-Implement the following architecture:
- NPOINTU SRE PLATFORM
- |
- ┌───────────┴───────────┐
- | |
- WEB CLIENT MOBILE CLIENT
- Blade + Livewire Flutter + Dart
- Tailwind CSS Android + iOS
- | |
- └───────────┬───────────┘
- |
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
- |
- LARAVEL BACKEND
- |
- ┌───────────┴───────────┐
- | |
- WEB ROUTES API v1
- | |
- └───────────┬───────────┘
- |
- SHARED DOMAIN LOGIC
- Actions + Services
- |
- ┌───────────┴───────────┐
- | |
- DATABASE ASYNC SERVICES
- MySQL/Postgres Queues
- Production DB Cache
- Events
- Notifications
- |
- INFRASTRUCTURE
- Monitoring + Logging
- Deployment + Backups
-Architectural principles
-Domain logic must remain on the server.
-API controllers must be thin.
-Reuse existing Actions, Services, Policies, and domain rules.
-Use API Resources for consistent response serialization.
-Use Form Requests for validation.
-Use API versioning.
-Apply authorization on every protected resource.
-Design for unreliable mobile networks.
-Use pagination for large collections.
-Make mutating operations safe against accidental retries.
-Use database transactions where required.
-Keep API contracts documented and testable.
-⸻
-4. BACKEND API IMPLEMENTATION
-4. BACKEND API IMPLEMENTATION
-4.1 API foundation
-Create a versioned API under:
-/api/v1
-Use Laravel’s API routing conventions.
-Before implementation, map existing web functionality to API endpoints.
-Proposed endpoint groups include:
-/api/v1/auth
-/api/v1/me
-/api/v1/dashboard
-/api/v1/activities
-/api/v1/handovers
-/api/v1/incidents
-/api/v1/messages
-/api/v1/channels
-/api/v1/war-rooms
-/api/v1/notifications
-/api/v1/reports
-/api/v1/team
-/api/v1/health
-These are proposed boundaries only. Adapt them to the actual repository.
-4.2 API response standard
-Create a consistent response format.
-Successful response example:
-{
-“success”: true,
-“data”: {},
-“meta”: {},
-“message”: “Request completed successfully”
-}
-Error response example:
-{
-“success”: false,
-“message”: “Validation failed”,
-“errors”: {
-“field”: [
-“The field is required.”
-]
-}
-}
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-1.
-2.
-3.
-}
-For paginated responses, include pagination metadata.
-Follow HTTP semantics:
-200: Successful request.
-201: Resource created.
-204: Successful request with no content.
-400: Malformed request where applicable.
-401: Unauthenticated.
-403: Unauthorized.
-404: Resource not found.
-409: Conflict.
-422: Validation failure.
-429: Rate limit exceeded.
-500: Unexpected server error.
-Never expose stack traces, SQL queries, secrets, or internal exception details in production
-responses.
-4.3 API Resources and validation
-Implement or extend:
-API Resource classes.
-Form Request classes.
-API exception handling.
-Consistent validation responses.
-Pagination.
-Filtering and sorting where needed.
-Resource relationships.
-Date/time serialization using a documented convention, preferably ISO 8601 with explicit timezone
-handling.
-Ensure that sensitive model fields such as passwords, tokens, internal secrets, and private
-metadata are never serialized.
-⸻
-5. SANCTUM AUTHENTICATION
-Implement secure Laravel Sanctum authentication for the mobile application.
-5.1 Authentication requirements
-Support:
-Login with the existing supported credentials.
-Logout from the current mobile session.
-Fetch authenticated user profile.
-4.
-5.
-6.
-7.
-8.
-9.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Session/token revocation.
-Password reset if the existing platform supports it.
-Account status checks.
-Role and permission retrieval.
-Optional device/session management.
-Token expiration and revocation strategy.
-Use the authentication model and guards already established in the repository.
-For native mobile clients, implement a documented token-based authentication flow using Sanctum
-personal access tokens or another verified Sanctum-compatible approach.
-Do not expose tokens in logs or analytics.
-5.2 Token security
-Store only the necessary token material.
-Store mobile tokens using secure platform storage.
-Never use SharedPreferences or unencrypted local storage for bearer tokens.
-Hash or otherwise protect token-related data in accordance with the chosen Sanctum
-implementation.
-Use HTTPS in production.
-Revoke tokens on logout.
-Provide a mechanism for administrators to revoke compromised sessions where appropriate.
-Do not hardcode credentials or API secrets in the Flutter application.
-Configure token abilities only if they can be enforced consistently.
-Use server-side authorization regardless of token abilities.
-5.3 Authentication endpoints
-Implement only endpoints justified by the existing application:
-POST /api/v1/auth/login
-POST /api/v1/auth/logout
-GET /api/v1/me
-POST /api/v1/auth/revoke-sessions
-Add password reset, refresh, and device management endpoints only when compatible with the
-actual authentication design.
-5.4 Authorization
-Preserve existing roles and permissions.
-Inspect the application to determine whether it uses:
-Laravel Gates.
-Policies.
-Spatie Laravel Permission.
-Custom role management.
-Other authorization mechanisms.
-Apply the existing authorization rules to API controllers and domain Actions.
-Never trust role values, user IDs, or permissions supplied by the mobile client.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Test horizontal and vertical privilege escalation scenarios.
-⸻
-6. IMPLEMENT ALL EXISTING FEATURE MODULES
-The mobile app must cover the existing platform’s real capabilities, subject to mobile usability and
-permission constraints.
-Do not omit existing core workflows.
-MODULE A — Dashboard and operational overview
-Build a mobile dashboard that displays the information available to the authenticated user.
-Potential capabilities:
-Today’s shift overview.
-Assigned tasks.
-Pending activities.
-Completed activities.
-Incident summary.
-Handover status.
-Unread messages.
-Relevant operational metrics.
-Important alerts.
-Service health indicators, if implemented in the backend.
-Requirements:
-Respect user permissions.
-Provide loading, empty, error, and offline states.
-Use pagination or summarized data where appropriate.
-Avoid expensive dashboard queries.
-Provide pull-to-refresh.
-Avoid exposing confidential information in notifications or screenshots.
-MODULE B — Daily shift activity board
-Implement mobile workflows for the existing activity board.
-Potential operations:
-View assigned activities.
-View activities by shift/date/status.
-Create activities if authorized.
-Update activities if authorized.
-Assign or delegate activities if authorized.
-Mark activities as complete.
-Add comments or notes.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-View activity history.
-Search and filter activities.
-Verify the actual activity lifecycle in the repository before implementation.
-Prevent unauthorized modification of another user’s records.
-Use server-side validation and authorization.
-MODULE C — Shift handover management
-Implement the existing two-way handover workflow.
-Potential features:
-View current and previous handovers.
-View outgoing handover details.
-Create or initiate handovers if permitted.
-Review incoming handovers.
-Sign off on handovers.
-Confirm receipt.
-View pending sign-offs.
-Track handover status.
-View audit history.
-Handle conflicting or already-signed handovers safely.
-Critical requirements:
-Preserve the existing handover state machine.
-Do not bypass required sign-offs.
-Make sign-off requests idempotent where practical.
-Protect handover records from unauthorized edits.
-Preserve auditability.
-MODULE D — Incident management and escalation
-Implement mobile incident workflows supported by the backend.
-Potential features:
-View incidents.
-Create incidents if permitted.
-Update incident status.
-Record severity and priority.
-Assign responders.
-Add incident notes.
-Escalate incidents.
-View escalation history.
-View incident timelines.
-Acknowledge incidents.
-Resolve or close incidents according to existing rules.
-Participate in war rooms when applicable.
-Requirements:
-Preserve existing severity and status definitions.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Ensure that only authorized users can change incident state.
-Use transactions for important state transitions.
-Prevent duplicate submissions.
-Preserve the incident audit trail.
-Do not claim real-time incident updates unless the backend supports them.
-MODULE E — Messaging and team communication
-Implement existing messaging capabilities.
-Potential features:
-Direct messages.
-Team channels.
-War rooms.
-Conversation lists.
-Message history.
-Sending messages.
-Unread counts.
-Mentions, if supported.
-Attachments, if supported.
-Message timestamps.
-Message delivery state, if supported.
-Pagination and lazy loading.
-Requirements:
-Inspect the actual messaging models and workflows.
-Do not expose conversations to unauthorized users.
-Validate message content server-side.
-Restrict attachment types and sizes.
-Scan or safely process uploaded files where applicable.
-Apply rate limiting.
-Use secure WebSockets or polling fallback where appropriate.
-Do not build a custom encryption protocol.
-If end-to-end encryption is required, document and design it separately.
-MODULE F — Notifications
-Implement notification support for the mobile client.
-Potential features:
-In-app notification inbox.
-Unread notification count.
-Mark as read.
-Mark all as read where supported.
-Deep links to incidents, activities, or handovers.
-Push notifications.
-Use Firebase Cloud Messaging only after verifying the backend’s notification architecture.
-Requirements:
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Do not put sensitive operational information in push payloads unless explicitly approved.
-Store device push tokens securely.
-Support token rotation.
-Associate tokens with authenticated users.
-Revoke or deactivate tokens on logout where appropriate.
-Avoid duplicate notifications.
-Handle notification permission denial gracefully.
-MODULE G — Reports and exports
-Implement the existing reporting capabilities in a mobile-friendly format.
-Potential features:
-View reports.
-Filter by date, team, shift, and status where supported.
-Display summary metrics.
-View charts.
-Download authorized reports.
-Share or save reports using platform mechanisms where appropriate.
-Requirements:
-Reuse existing reporting logic.
-Enforce access controls on report generation and downloads.
-Avoid loading huge datasets directly into mobile memory.
-Use asynchronous jobs for expensive reports.
-Implement secure, expiring download links where appropriate.
-Avoid exposing unprotected export URLs.
-MODULE H — Team management
-If the existing application supports these operations, implement:
-Team directory.
-User profiles.
-Team membership.
-Role visibility.
-Availability/status.
-Team assignments.
-Administrative management features only for authorized roles.
-Do not expose confidential employee data.
-Do not assume that every web administrative feature belongs in the mobile app.
-MODULE I — Health diagnostics and operational system status
-Inspect the repository’s health endpoints and diagnostic features.
-If the platform exposes system health information, implement a restricted mobile health view that
-may include:
-Service availability.
-Database health.
-Queue status.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Application health.
-Relevant system metrics.
-Last updated time.
-Requirements:
-Never expose sensitive infrastructure credentials or internal secrets.
-Enforce administrator or appropriate operational permissions.
-Avoid exposing unrestricted internal diagnostic endpoints.
-Use safe, aggregated health information.
-MODULE J — Audit logs
-If the application has audit-log functionality, provide an appropriate read-only mobile view for
-authorized users.
-Support:
-Filtered audit history.
-Actor information according to permissions.
-Event type.
-Timestamp.
-Related resource.
-Audit details where safe.
-Preserve append-only behavior if the existing audit design requires it.
-⸻
-7. FLUTTER MOBILE APPLICATION
-7.1 Technology requirements
+
+`docs/saas/brand-migration-audit.md`
+
+The audit must include:
+
+- File path
+- Existing reference
+- Reference category
+- Proposed action
+- Risk level
+- Whether the change is reversible
+
+## Brand Rules
+
 Use:
-Flutter stable channel.
-Dart.
-Material 3, adapted to the existing Npontu SRE design.
-Riverpod for state management, unless repository or team constraints justify another architecture.
-Dio for HTTP networking.
-go_router for navigation.
-flutter_secure_storage for secure token storage.
-Firebase Cloud Messaging if push notifications are implemented.
-A charting library only where reports require charts.
-A WebSocket client compatible with the Laravel real-time implementation.
-Pin compatible dependency versions and avoid unnecessary packages.
-7.2 Flutter architecture
-Use a feature-first architecture.
-Recommended structure:
-npontu_sre_mobile/
-├── android/
-├── ios/
-├── lib/
-│ ├── main.dart
-│ ├── app.dart
-│ │
-│ ├── core/
-│ │ ├── config/
-│ │ ├── constants/
-│ │ ├── errors/
-│ │ ├── network/
-│ │ ├── routing/
-│ │ ├── storage/
-│ │ ├── theme/
-│ │ └── utils/
-│ │
-│ ├── features/
-│ │ ├── auth/
-│ │ │ ├── data/
-│ │ │ ├── domain/
-│ │ │ └── presentation/
-│ │ ├── dashboard/
-│ │ ├── activities/
-│ │ ├── handovers/
-│ │ ├── incidents/
-│ │ ├── messaging/
-│ │ ├── notifications/
-│ │ ├── reports/
-│ │ ├── team/
-│ │ └── audit/
-│ │
-│ └── shared/
-│ ├── widgets/
-│ ├── models/
-│ └── extensions/
-│
-├── test/
-├── integration_test/
-├── pubspec.yaml
-└── README.md
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Adapt the structure if a better design is justified.
-7.3 Mobile UX requirements
-Create a professional SRE operations interface.
-Requirements:
-Responsive layouts.
-Material 3 design.
-Dark mode and light mode.
-Clear status indicators.
-Accessible contrast.
-Large, touch-friendly controls.
-Pull-to-refresh.
-Skeleton loading states.
-Empty states.
-Error recovery.
-Offline and reconnecting states.
-Confirmation dialogs for destructive actions.
-Form validation.
-Search and filters.
-Deep links from notifications.
-Tablet-friendly layouts where practical.
-No excessive animations in operational workflows.
-Do not display fake metrics or fake monitoring results.
-7.4 Navigation
-Implement authenticated and unauthenticated navigation.
-Potential authenticated navigation:
-Home.
-Activities.
-Handovers.
-Incidents.
-Messages.
-Notifications.
-Profile/Settings.
-Adapt navigation to actual feature availability and user permissions.
-Ensure users cannot access restricted screens merely by manipulating routes.
-7.5 Networking layer
-Implement:
-Centralized Dio client.
-Base URL configuration by environment.
-Authentication headers.
-Request timeouts.
-Safe retry policies.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Error mapping.
-Connectivity handling.
-Pagination support.
-Request cancellation where useful.
-Consistent serialization and deserialization.
-Logging that redacts credentials and sensitive information.
-Do not retry non-idempotent operations blindly.
-⸻
-8. API CONTRACT AND DOCUMENTATION
-Create and maintain API documentation.
-Preferred approach:
-OpenAPI 3.x specification.
-Swagger UI or an equivalent documentation viewer.
-Document authentication.
-Document request and response schemas.
-Document validation errors.
-Document pagination.
-Document authorization requirements.
-Document status transitions.
-Document rate limits.
-Document versioning and deprecation policy.
-Suggested location:
-docs/api/openapi.yaml
-If an API documentation tool is already present, integrate with it instead of introducing unnecessary
-tooling.
-Add contract tests for critical endpoints.
-Ensure the Flutter models reflect the documented API schema.
-⸻
-9. SECURITY AND DEVSECOPS
-Treat security as a first-class requirement.
-9.1 Backend security
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Implement or verify:
-HTTPS in production.
-Strict authorization on all protected API routes.
-CSRF protection for stateful web routes.
-Rate limiting on login and sensitive endpoints.
-Input validation.
-Output sanitization where applicable.
-SQL injection protection through safe query practices.
-Secure file uploads.
-MIME type and size validation.
-Secure download authorization.
-Secure password handling.
-No secrets in source control.
-Safe error responses.
-Security headers where applicable.
-CORS configuration restricted to legitimate clients.
-Session/token revocation.
-Audit logging of security-sensitive operations.
-9.2 Mobile security
-Secure token storage.
-No secrets embedded in the application.
-No hardcoded production credentials.
-HTTPS-only production communication.
-Safe handling of deep links.
-No sensitive data in logs.
-No sensitive data in crash reports.
-Secure handling of screenshots where required by organizational policy.
-Appropriate certificate validation.
-Avoid insecure SSL bypasses.
-Consider platform protections against screenshots for especially sensitive screens, subject to
-product requirements.
-Do not implement certificate pinning unless its operational implications and update strategy are
-understood.
-9.3 Supply-chain security
-Audit Composer dependencies.
-Audit Flutter dependencies.
-Audit npm dependencies where applicable.
-Keep lockfiles under version control.
-Scan for secrets.
-Scan for vulnerable dependencies.
-Use Dependabot or an equivalent tool if appropriate.
-Pin production build dependencies where practical.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-1.
-2.
-3.
-4.
-5.
-6.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-9.4 Threat model
+
+- Product name: `Opsora`
+- Legacy name: `Npontu`
+- Legacy environment: retained separately during transition
+
+Do not modify historical audit records, customer data, or legal records merely to change the displayed brand.
+
+Create a configurable brand layer where practical, such as:
+
+- Application name configuration
+- Email sender display name
+- Page titles
+- Mobile application display name
+- Public metadata
+- Documentation labels
+- Environment-specific branding
+
+Do not change colors or layouts.
+
+## Acceptance Criteria
+
+- Customer-facing product name displays as Opsora.
+- Existing colors remain unchanged.
+- Existing layouts remain unchanged.
+- Existing Laravel and Flutter workflows continue working.
+- Legacy Npontu environment remains separately identifiable.
+- Tests cover the brand configuration.
+- A rollback plan exists.
+
+---
+
+# 5. Stage 0 â€” Safety Baseline and Repository Audit
+
+Before implementing multi-tenancy, complete the following:
+
+## Repository Audit
+
+Inspect:
+
+- README files
+- `composer.json`
+- `package.json`
+- `.env.example`
+- Routes
+- Models
+- Migrations
+- Factories
+- Seeders
+- Policies
+- Gates
+- Middleware
+- Controllers
+- Form Requests
+- API Resources
+- Actions
+- Services
+- Jobs
+- Events
+- Notifications
+- Livewire components
+- Blade views
+- Flutter source code
+- Tests
+- CI/CD workflows
+- Deployment files
+- Queue configuration
+- Cache configuration
+- Storage configuration
+- Authentication implementation
+- Authorization implementation
+
+Identify:
+
+- Single-company assumptions
+- Hard-coded company names
+- Global queries that may become tenant-sensitive
+- Existing user-role assumptions
+- Existing SRE data ownership
+- Existing API endpoints
+- Existing mobile authentication flow
+- Existing database relationships
+- Existing real-time features
+- Existing notification system
+- Existing reporting and export functionality
+
 Create:
-docs/security/mobile-threat-model.md
-Cover:
-Stolen mobile token.
-Unauthorized API access.
-Broken object-level authorization.
-Account takeover.
-Insecure file upload.
-WebSocket authorization failures.
-Data leakage through push notifications.
-Malicious deep links.
-Replay of mutating requests.
-Excessive API requests.
-Lost or compromised devices.
-Sensitive information exposure in logs.
-Document mitigations and residual risks.
-⸻
-10. DATABASE AND BACKEND PERFORMANCE
-Do not unnecessarily modify existing database schemas.
-Before adding migrations:
-Inspect the current schema.
-Confirm whether the required data already exists.
-Identify missing indexes.
-Assess relationship loading and N+1 queries.
-Check existing constraints.
-Document migration impact.
-Requirements:
-Add indexes where justified.
-Use eager loading appropriately.
-Paginate large collections.
-Avoid loading unnecessary columns.
-Use queues for expensive operations.
-Use Redis only where its operational value is justified.
-Preserve existing data.
-Create reversible migrations where practical.
-Test migrations on a non-production database.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Do not introduce a new database engine merely to support Flutter.
-⸻
-11. OFFLINE SUPPORT AND NETWORK RESILIENCE
-SRE staff may work with unreliable mobile connectivity.
-Implement a realistic network strategy.
-Minimum requirements:
-Display connection state.
-Handle timeouts gracefully.
-Cache appropriate read-only data.
-Allow safe refresh.
-Preserve unsent drafts where appropriate.
-Prevent duplicate submissions.
-Clearly indicate stale data.
-Handle server-side conflicts.
-Provide retry actions.
-Avoid claiming full offline functionality unless it is implemented and tested.
-If offline activity creation or editing is required, design an explicit synchronization strategy with:
-Local operation identifiers.
-Idempotency keys.
-Conflict handling.
-Sync status.
-Server reconciliation.
-Data retention rules.
-Do not implement a complex offline-first system without verifying the actual requirements.
-⸻
-12. REAL-TIME FEATURES
-Inspect whether the existing project uses:
-Laravel broadcasting.
-Reverb.
-Pusher.
-WebSockets.
-Server-sent events.
-●
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Polling.
-If real-time updates are already supported:
-Implement the Flutter client integration.
-Authenticate private channels securely.
-Subscribe only to authorized channels.
-Handle reconnects.
-Handle duplicate events.
-Update local state safely.
-Provide polling fallback where appropriate.
-If real-time support does not exist, implement a minimal, maintainable solution only where it
-provides clear value.
-Do not add WebSockets merely for appearance.
-⸻
-13. TESTING STRATEGY
-Testing is mandatory.
-13.1 Backend tests
-Create or extend Laravel tests for:
-Login and logout.
-Authenticated profile retrieval.
-Token revocation.
-API validation.
-Authorization.
-Role-based access.
-Activity CRUD and lifecycle.
-Shift handovers.
-Two-way sign-offs.
-Incident state transitions.
-Escalation rules.
-Messaging access controls.
-Notification registration.
-Report authorization.
-Audit-log integrity.
-File upload restrictions.
-Rate limiting.
-Idempotency behavior.
-Pagination.
-API error formats.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-●
-●
-●
-●
-●
-●
-●
-Use PHPUnit or Pest according to the existing project.
-13.2 Flutter tests
-Implement:
-Unit tests
-API models.
-JSON serialization.
-Repositories.
-Validators.
-State notifiers/providers.
-Error mapping.
-Authentication state transitions.
-Widget tests
-Login.
-Dashboard.
-Activity list.
-Activity form.
-Handover sign-off.
-Incident details.
-Messaging interface.
-Notification inbox.
-Error and empty states.
-Integration tests
-Test critical workflows against a test backend or controlled integration environment:
-Login.
-Fetch dashboard.
-View activities.
-Update an authorized activity.
-Complete a handover sign-off.
-View and update an incident.
-Send a message if supported.
-Receive a notification.
-Logout and verify protected access is revoked.
-13.3 Security testing
-Test:
-Unauthorized resource access.
-Cross-user data access.
-Invalid tokens.
-Revoked tokens.
-Expired sessions.
-Invalid payloads.
-Excessive requests.
-●
-●
-●
-●
-1.
-2.
-3.
-4.
-5.
-6.
-1.
-2.
-3.
-4.
-5.
-6.
-●
-●
-●
-●
-File upload attacks.
-Sensitive data leakage.
-API route exposure.
-WebSocket channel authorization.
-13.4 Test quality
-Do not simply write tests that assert that the application returns HTTP 200.
-Test business rules, permissions, state transitions, error cases, and data integrity.
-Run all existing tests before and after major changes.
-Do not weaken or delete existing tests to make the build pass.
-⸻
-14. CI/CD PIPELINE
-Set up or improve automated CI/CD.
-Backend pipeline
-On every pull request:
-Install PHP dependencies.
-Run code style checks.
-Run static analysis if configured.
-Run Laravel/PHP tests.
-Run security/dependency checks.
-Validate migrations and configuration where practical.
-Flutter pipeline
-On every pull request:
-Run flutter pub get.
-Run dart format checks.
-Run flutter analyze.
-Run unit tests.
-Run widget tests.
-Build a debug or release-compatible artifact where feasible.
-Build environments
-Use environment-specific configuration:
-Development.
-Staging.
-Production.
-Never commit:
-API secrets.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Signing keys.
-Firebase private credentials.
-Production .env files.
-Keystores.
-iOS certificates.
-Access tokens.
-Document secret management and CI variables.
-⸻
-15. DEPLOYMENT
-15.1 Backend deployment
-Inspect the existing deployment strategy before changing it.
-Prepare a production deployment guide covering:
-PHP version.
-Laravel configuration.
-APP_KEY management.
-Database configuration.
-Cache configuration.
-Queue workers.
-Scheduler.
-Storage permissions.
-File storage.
-HTTPS.
-API URL.
-CORS.
-Rate limiting.
-Monitoring.
-Error reporting.
-Database backups.
-Rollback procedures.
-Migration procedures.
-Health checks.
-If the current hosting platform is unsuitable for the required workload, document alternatives and
-trade-offs rather than silently migrating infrastructure.
-15.2 Flutter Android deployment
-Prepare:
-Android application ID.
-App display name.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-App icon.
-Splash screen.
-Release build configuration.
-Signing configuration.
-Secure keystore handling.
-Environment configuration.
-Google Play App Bundle build.
-Internal testing track deployment instructions.
-Privacy policy requirements.
-Permissions review.
-Never commit the Android signing keystore.
-15.3 Flutter iOS deployment
-Prepare:
-Bundle identifier.
-App icon.
-Launch configuration.
-Signing and provisioning requirements.
-Apple Developer configuration.
-Release build instructions.
-TestFlight deployment instructions.
-App Store privacy declarations.
-Required permissions descriptions.
-iOS release builds require macOS/Xcode or an appropriate macOS CI environment. Do not claim an
-iOS release has been built unless it has actually been built.
-15.4 Environment configuration
-The mobile app must support configurable API endpoints.
-Example:
-Development:
-https://staging-api.example.com
-Production:
-https://api.example.com
-Use the actual deployed API domains only after they are verified.
-Do not hardcode placeholder URLs into a production release.
-⸻
-16. OBSERVABILITY AND OPERATIONS
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Extend the platform’s operational visibility to the new mobile client.
-Implement where appropriate:
-Structured backend logs.
-API request correlation IDs.
-Error tracking.
-Performance monitoring.
-Queue monitoring.
-Database health monitoring.
-Mobile crash reporting.
-Mobile performance monitoring.
-API latency tracking.
-Authentication failure monitoring.
-Security event alerts.
-Avoid logging:
-Access tokens.
-Passwords.
-Secrets.
-Sensitive message contents.
-Confidential employee information.
+
+- `docs/saas/current-state-audit.md`
+- `docs/saas/risk-register.md`
+- `docs/saas/architecture-decision-records.md`
+- `docs/saas/brand-migration-audit.md`
+
+## Safety Requirements
+
+Before risky changes:
+
+- Create a dedicated feature branch.
+- Back up the database.
+- Record the current application version.
+- Establish a rollback procedure.
+- Add or update smoke tests.
+- Verify local and staging environments.
+- Document migration order.
+
+Do not begin large-scale implementation until the audit is complete.
+
+---
+
+# 6. Stage 1 â€” Target Architecture and Domain Design
+
+Design Opsora as a modular monolith with clear boundaries.
+
+## High-Level Architecture
+
+Clients:
+
+- Laravel Blade and Livewire web application
+- Flutter Android application
+- Flutter iOS application
+- Future enterprise-branded mobile applications
+
+Platform control plane:
+
+- Identity and account management
+- Organization registry
+- Workspace registry
+- Domain and routing registry
+- Deployment registry
+- Subscription and entitlement records
+- License management
+- Provisioning records
+- Region registry
+- Platform administration
+- Security and audit management
+
+Execution planes:
+
+- Shared SaaS environments
+- Dedicated managed environments
+- Customer-funded managed environments
+- Customer-hosted environments
+- Region-specific environments where required
+
+The control plane must retain essential deployment and customer metadata even when a dedicated environment is temporarily unavailable.
+
 Create:
-docs/observability.md
-Document dashboards, alerts, and incident response procedures.
-⸻
-17. UI/UX DESIGN SYSTEM
-Create a consistent Npontu SRE visual identity.
-First inspect the existing Blade/Livewire UI and reuse:
-Color palette.
-Typography.
-Spacing.
-Status colors.
-Button styles.
-Card styles.
-Navigation patterns.
-Brand assets.
-Accessibility conventions.
-Build Flutter equivalents rather than copying web layouts literally.
-The mobile UI should feel like a professional operations product.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Prioritize:
-Clarity.
-Speed.
-Readability.
-Operational context.
-Low cognitive load.
-Accessible controls.
-Clear status and severity indicators.
-Do not fabricate logos, brand assets, or visual metrics.
-⸻
-18. DEVELOPMENT WORKFLOW
-Implement in incremental, reviewable phases.
-Phase 0 — Audit
-Inspect repository.
-Produce architecture and security audit.
-Identify API gaps.
-Identify dependencies.
-Document risks.
-Deliverable:
-docs/mobile-expansion-audit.md
-Phase 1 — API foundation
-Configure API versioning.
-Implement authentication.
-Implement response conventions.
-Implement API Resources and Form Requests.
-Add initial API tests.
-Create API documentation.
-Deliverables:
-Laravel API foundation.
-Sanctum authentication.
-API tests.
-OpenAPI specification.
-Phase 2 — Core mobile features
-Initialize Flutter project.
-Configure environments.
-Implement authentication.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Implement navigation.
-Implement dashboard.
-Implement activities.
-Implement handovers.
-Implement secure local storage.
-Deliverables:
-Working authenticated Flutter app.
-Core feature workflows.
-Automated tests.
-Phase 3 — Operations and communications
-Incidents.
-Escalation workflows.
-Messaging.
-War rooms.
-Notifications.
-Real-time updates if justified.
-Deliverables:
-Operationally useful mobile application.
-Messaging and notification integration.
-Security tests.
-Phase 4 — Reports and administration
-Reports.
-Exports.
-Team management.
-Audit views.
-Health diagnostics, subject to permissions.
-Deliverables:
-Feature-complete mobile workflows according to the audit.
-API documentation updates.
-Phase 5 — Hardening and deployment
-Security testing.
-Performance testing.
-Offline and resilience testing.
-CI/CD.
-Staging deployment.
-Android internal testing.
-iOS TestFlight preparation.
-Production readiness review.
-Deliverables:
-Release candidates.
-Deployment documentation.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-Test reports.
-Security review.
-Rollback plan.
-⸻
-19. DEFINITION OF DONE
-The project is complete only when all applicable criteria are met.
-Backend
-☐ API endpoints are versioned.
-☐ Existing domain logic is reused where appropriate.
-☐ Authentication is secure.
-☐ Authorization is enforced.
-☐ Validation is implemented.
-☐ API responses are consistent.
-☐ Sensitive data is protected.
-☐ Critical workflows have automated tests.
-☐ API documentation is available.
-☐ Existing web functionality still works.
-☐ Database migrations are reviewed and tested.
-Flutter
-☐ Android and iOS project configuration is present.
-☐ Authentication works against the real backend.
-☐ Core existing workflows are supported.
-☐ Loading, error, empty, and offline states are handled.
-☐ Token storage is secure.
-☐ Navigation respects authentication and permissions.
-☐ API errors are handled correctly.
-☐ Unit and widget tests are present.
-☐ Critical integration tests are present.
-☐ Accessibility and responsive layouts are reviewed.
-Security
-☐ Authorization tests pass.
-☐ No secrets are committed.
-☐ Dependencies are audited.
-☐ File uploads are restricted.
-☐ Sensitive logs are removed.
-☐ Push notification privacy is reviewed.
-●
-●
-●
-●
-●
-●
-●
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-0.
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-☐ Threat model is documented.
-Deployment
-☐ Staging deployment is documented or verified.
-☐ Backend production configuration is documented.
-☐ Android release build is verified where possible.
-☐ iOS build requirements are documented.
-☐ Signing credentials are protected.
-☐ Monitoring and rollback procedures are documented.
-Do not mark unchecked items as complete.
-⸻
-20. REQUIRED FINAL DELIVERABLES
-At the end of the implementation, provide a comprehensive report containing:
-Executive summary.
-Existing architecture findings.
-Changes made to the Laravel backend.
-New API endpoints.
-Authentication implementation details.
-Database changes.
-Flutter application architecture.
-Mobile features implemented.
-Features deferred and why.
-Security improvements.
-Tests executed and exact results.
-Known issues and limitations.
-Environment variables required.
-Deployment instructions.
-Android build instructions.
-iOS build instructions.
-Recommended next steps.
-Create or update:
-docs/mobile-expansion-audit.md
-docs/mobile-api.md
-docs/security/mobile-threat-model.md
-docs/deployment/mobile-deployment.md
-docs/mobile-development.md
-Also update the main README with the new architecture and setup instructions.
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-●
-⸻
-21. AGENT EXECUTION RULES
-Work in small, logical commits or clearly separated changes.
-Keep the existing web application functional.
-Do not silently overwrite user changes.
-Do not make destructive database changes.
-Do not remove dependencies unless their removal is justified.
-Do not expose secrets in output.
-Do not use mock data as a substitute for real backend integration.
-Do not mark features as complete without testing.
-If a build or test fails, investigate the root cause.
-If a feature is blocked by missing infrastructure, document the blocker and continue with
-independent work.
-Prefer maintainable, production-quality code over quick hacks.
-Review all security-sensitive code carefully.
-Before finalizing, run the relevant tests, static analysis, and build checks.
-BEGIN EXECUTION
-Start by auditing the repository at:
-https://github.com/mhiskall282/npontu-technologies-sre
-Do not start by creating a generic Flutter demo.
-First, understand the existing Laravel architecture and produce the audit report. Then implement
-the mobile expansion incrementally, reusing existing business logic and preserving the web
-application.
-Your final response must clearly distinguish:
-What you inspected.
-What you implemented.
-What you tested.
-What remains incomplete.
-What requires manual configuration or human approval.
-Proceed with engineering discipline and production-readiness as the primary goals.
+
+- `docs/saas/domain-model.md`
+- `docs/saas/resource-ownership-matrix.md`
+- `docs/saas/tenant-boundary-map.md`
+- `docs/saas/deployment-architecture.md`
+- `docs/saas/data-residency-design.md`
+- `docs/saas/identity-architecture.md`
+- `docs/saas/billing-domain-design.md`
+
+---
+
+# 7. Stage 2 â€” Account, Organization, and Workspace Model
+
+Support both individual and organization accounts.
+
+## Required Concepts
+
+### User
+
+A platform identity that can:
+
+- Own a personal workspace
+- Join multiple organizations
+- Join multiple workspaces
+- Have different roles in different organizations
+- Access different deployments based on authorization
+
+### Personal Workspace
+
+Each user may have a personal workspace.
+
+### Organization
+
+An organization represents a customer, company, institution, team, or enterprise.
+
+An organization may have:
+
+- Multiple members
+- Multiple workspaces
+- Multiple deployments
+- Multiple domains
+- Multiple subscriptions or entitlements
+- Multiple administrators
+
+### Workspace
+
+A workspace is an operational environment belonging to a user or organization.
+
+Do not merge the concepts of organization and workspace.
+
+## Suggested Entities
+
+Evaluate and implement only where appropriate:
+
+- `users`
+- `identity_accounts`
+- `sessions`
+- `organizations`
+- `organization_applications`
+- `organization_memberships`
+- `organization_roles`
+- `workspaces`
+- `workspace_memberships`
+- `workspace_settings`
+- `workspace_domains`
+- `workspace_invitations`
+- `workspace_access_logs`
+
+Document ownership and relationships before creating migrations.
+
+---
+
+# 8. Stage 3 â€” Organization Registration and Approval
+
+## Required Flow
+
+1. Anyone can create a platform account.
+2. A user can create a personal workspace.
+3. A user can submit an organization application.
+4. The platform applies configurable automatic-approval rules.
+5. Approved applications create or activate an organization.
+6. Applications that require review enter a manual-review queue.
+7. Platform administrators can approve, reject, suspend, or request additional information.
+8. Every decision is audited.
+
+## Configurable Approval Rules
+
+Design platform-admin-configurable rules for:
+
+- Email verification status
+- Domain verification
+- Organization type
+- Country or region
+- Risk indicators
+- Duplicate organization detection
+- Requested deployment model
+- Requested data-residency region
+- Requested plan or contract type
+- User history
+- Manual-review requirements
+
+Do not implement invasive or unjustified profiling.
+
+Create:
+
+- Application status lifecycle
+- Admin review interface
+- Review notes
+- Approval and rejection reasons
+- Audit events
+- Notifications
+- Rate limits
+- Abuse prevention
+- Duplicate detection
+
+---
+
+# 9. Stage 4 â€” Tenant Isolation and Authorization
+
+Tenant isolation is a critical security requirement.
+
+## Requirements
+
+- Every tenant-owned resource must have explicit ownership.
+- Use tenant-aware services, repositories, scopes, or query boundaries.
+- Never trust a tenant ID supplied by the client.
+- Resolve tenant context from authenticated membership and validated routing.
+- Validate organization membership and workspace membership server-side.
+- Prevent cross-tenant reads, writes, updates, deletes, exports, notifications, and broadcasts.
+- Ensure background jobs carry validated tenant context.
+- Ensure queued notifications cannot cross tenant boundaries.
+- Ensure file storage is tenant-isolated.
+- Ensure cache keys include tenant context where necessary.
+- Ensure search and reporting are tenant-scoped.
+- Ensure real-time channels authorize tenant membership.
+- Ensure exports cannot include data from another tenant.
+
+Create automated tests for:
+
+- Cross-tenant model access
+- Cross-tenant API access
+- Cross-tenant Livewire actions
+- Cross-tenant exports
+- Cross-tenant notifications
+- Cross-tenant broadcasts
+- Cross-tenant background jobs
+- Tenant suspension
+- Unauthorized workspace switching
+
+Create:
+
+`docs/saas/tenant-security-model.md`
+
+---
+
+# 10. Stage 5 â€” Delegated Platform Administration
+
+Support multiple platform-level roles with delegated permissions.
+
+## Suggested Platform Roles
+
+- Platform Owner
+- Platform Administrator
+- Trust and Safety Administrator
+- Billing Administrator
+- Deployment Administrator
+- Support Administrator
+- Security Administrator
+- Regional Administrator
+- Read-only Auditor
+
+## Suggested Permissions
+
+- `organizations.review`
+- `organizations.approve`
+- `organizations.suspend`
+- `organizations.view`
+- `billing.manage_plans`
+- `billing.manage_subscriptions`
+- `billing.view_records`
+- `deployments.provision`
+- `deployments.update`
+- `deployments.suspend`
+- `deployments.decommission`
+- `security.view_events`
+- `audit_logs.read`
+- `customer_data.access`
+- `regions.manage`
+- `branding.manage`
+- `licenses.manage`
+
+Use least privilege.
+
+Sensitive customer-data access must require:
+
+- Explicit permission
+- A documented reason
+- Audit logging
+- Appropriate visibility to authorized administrators
+- Optional time-limited access where practical
+
+---
+
+# 11. Stage 6 â€” Deployment and Infrastructure Abstraction
+
+Support these deployment models:
+
+1. Shared SaaS
+2. Provider-owned and provider-managed dedicated deployment
+3. Customer-funded managed deployment
+4. Customer-hosted deployment
+
+## Deployment Lifecycle
+
+Use a documented lifecycle such as:
+
+- Requested
+- Under review
+- Approved
+- Provisioning
+- Health verification
+- Active
+- Maintenance
+- Suspended
+- Decommissioned
+- Failed
+
+## Deployment Registry
+
+Track:
+
+- Deployment ID
+- Organization
+- Workspace or tenant association
+- Deployment model
+- Ownership model
+- Hosting provider
+- Region
+- Runtime version
+- Application version
+- Database location
+- Storage location
+- Backup policy
+- Upgrade channel
+- Provisioning status
+- Health status
+- License status
+- Last health check
+- Maintenance state
+- Decommission date
+
+For customer-hosted environments, design a secure outbound registration or deployment-agent mechanism. Do not expose control-plane credentials unnecessarily.
+
+Start with manual or semi-automated provisioning. Automate only after the deployment model is proven.
+
+Create:
+
+- Deployment service interfaces
+- Deployment health checks
+- Deployment access policies
+- Provisioning records
+- Upgrade and rollback documentation
+- Operational runbooks
+
+---
+
+# 12. Stage 7 â€” Regions and Data Residency
+
+Allow customers to nominate preferred regions from the beginning, but only advertise regions that are actually supported.
+
+Create a region registry containing:
+
+- Region code
+- Display name
+- Hosting providers
+- Available deployment models
+- Database availability
+- Object-storage availability
+- Backup location
+- Disaster-recovery options
+- Data-processing limitations
+- Compliance requirements
+- Operational status
+- Supported application versions
+
+Design for:
+
+- Shared regional deployments
+- Dedicated regional deployments
+- Region-aware routing
+- Region-specific backups
+- Cross-region access restrictions
+- Data-residency policy enforcement
+- Documented limitations
+
+Do not claim legal or regulatory compliance without verification.
+
+---
+
+# 13. Stage 8 â€” Authentication and Identity
+
+Support both:
+
+## Platform-First Login
+
+1. User visits the main Opsora platform.
+2. User signs in.
+3. User selects a personal workspace or organization workspace.
+4. The platform routes the user to the correct workspace or deployment.
+
+## Workspace-First Login
+
+1. User visits a workspace URL.
+2. The platform identifies the workspace.
+3. The user authenticates.
+4. The backend validates membership, workspace status, deployment status, and entitlements.
+5. Access is granted only if all checks pass.
+
+A workspace URL or company code must never grant access by itself.
+
+## Initial Authentication
+
+Start with secure basic authentication and existing Laravel authentication mechanisms.
+
+Design extension points for:
+
+- OIDC
+- SAML
+- MFA
+- SCIM
+- Enterprise identity providers
+- Passkeys
+- Organization-specific authentication policies
+
+Use secure session handling, token revocation, rate limiting, account lockout protections, and audit logs.
+
+---
+
+# 14. Stage 9 â€” Routing, Domains, and Onboarding
+
+Support:
+
+- Subdomain workspaces
+- Path-based workspaces
+- Custom domains
+- Domain verification
+- Company codes
+- QR-code onboarding
+- Workspace discovery
+- Deployment-aware routing
+
+Examples:
+
+- `company.opsora.example`
+- `opsora.example/company`
+- `operations.customer-domain.example`
+
+Do not hard-code the final production domain until it is confirmed.
+
+Routing must validate:
+
+- Domain ownership
+- Workspace existence
+- Workspace status
+- Organization status
+- Deployment status
+- User membership
+- Subscription or license entitlements
+- Region and deployment mapping
+
+Create a safe fallback for unknown or suspended workspaces.
+
+---
+
+# 15. Stage 10 â€” Billing, Subscriptions, Entitlements, and Licenses
+
+Build the billing architecture first. Payment activation can happen later.
+
+## Supported Commercial Models
+
+- Free tier
+- Paid SaaS
+- Free trials
+- Monthly subscriptions
+- Annual subscriptions
+- User-based pricing
+- Monitored-service-based pricing
+- Feature-based pricing
+- Enterprise custom pricing
+- One-time license keys
+- Self-hosted enterprise licensing
+- Contract-based enterprise plans
+
+## Suggested Entities
+
+- `subscription_plans`
+- `plan_versions`
+- `plan_features`
+- `subscriptions`
+- `subscription_items`
+- `entitlements`
+- `usage_meters`
+- `usage_records`
+- `invoices`
+- `payment_records`
+- `license_keys`
+- `license_activations`
+- `billing_accounts`
+- `billing_events`
+- `provider_customers`
+
+## Requirements
+
+- Version plans instead of mutating historical pricing.
+- Separate plan definitions from entitlements.
+- Support trials and grace periods.
+- Support subscription suspension and cancellation.
+- Support usage limits.
+- Support feature flags.
+- Support license activation and revocation.
+- Support multiple future payment providers through interfaces.
+- Keep payment-provider logic behind adapters.
+- Do not activate real payment collection until explicitly approved.
+- Ensure billing decisions are enforced server-side.
+- Audit all billing changes.
+
+---
+
+# 16. Stage 11 â€” Existing SRE Workflow Modules
+
+Preserve and migrate the existing modules into tenant-aware architecture.
+
+Audit and support, where present:
+
+- Dashboard
+- Daily shift activities
+- Task assignments
+- Shift handovers
+- Handover sign-offs
+- Incident management
+- Incident escalation
+- Incident status updates
+- Direct messaging
+- Team channels
+- War rooms
+- Notifications
+- Reports
+- Exports
+- Team management
+- Role-based access control
+- Audit logs
+- System health diagnostics
+- Email notifications
+- Real-time updates
+- Background jobs
+
+For every module:
+
+1. Identify ownership.
+2. Identify required tenant context.
+3. Identify authorization rules.
+4. Identify API requirements.
+5. Identify Livewire requirements.
+6. Identify Flutter requirements.
+7. Add isolation tests.
+8. Preserve current behavior.
+9. Avoid fake metrics or placeholder production data.
+
+---
+
+# 17. Stage 12 â€” Future Operations and Monitoring Architecture
+
+Design for deeper operations capabilities without implementing everything immediately.
+
+## Future Modules
+
+- Service catalog
+- Uptime monitoring
+- Metrics
+- Logs
+- Traces
+- Alert ingestion
+- Alert correlation
+- Escalation policies
+- SLOs
+- SLIs
+- Error budgets
+- Cloud integrations
+- Kubernetes integrations
+- Infrastructure discovery
+- Runbooks
+- Automated remediation
+- On-call scheduling
+- Status pages
+- Webhooks
+- Third-party integrations
+
+The initial launch should focus on workflow management and operational collaboration.
+
+Use clear module boundaries so future monitoring features can be added without destabilizing the existing platform.
+
+---
+
+# 18. Stage 13 â€” Flutter Multi-Workspace Application
+
+The existing Flutter Android and iOS applications must evolve into an Opsora multi-workspace client.
+
+## Required Onboarding Methods
+
+Support:
+
+1. Workspace URL
+2. Company code
+3. QR code
+4. Platform account login
+5. Workspace selection
+6. Multiple saved workspaces
+
+## Mobile Requirements
+
+- Preserve the existing visual design and colors initially.
+- Support iOS conventions and platform-appropriate navigation.
+- Support Android conventions where appropriate.
+- Securely store credentials and tokens.
+- Never log tokens or secrets.
+- Support workspace switching.
+- Support multiple accounts where practical.
+- Support deep links.
+- Support push notifications.
+- Support offline states.
+- Support loading, error, and empty states.
+- Support tablet layouts where practical.
+- Support tenant-aware API requests.
+- Support deployment-aware routing.
+- Support enterprise-branded apps through a configurable build/branding system later.
+
+## Mobile Architecture
+
+Use a maintainable feature-first structure.
+
+Evaluate the existing stack before changing it. Do not replace working libraries without justification.
+
+Maintain clear layers for:
+
+- Authentication
+- Workspace discovery
+- Workspace selection
+- API client
+- Secure storage
+- Session management
+- Dashboard
+- Activities
+- Handovers
+- Incidents
+- Messaging
+- Channels
+- War rooms
+- Notifications
+- Reports
+- Settings
+- Profile
+- Offline synchronization
+
+---
+
+# 19. Stage 14 â€” Enterprise White-Label Capability
+
+Design an optional white-label capability for selected enterprise customers.
+
+Support, depending on contract:
+
+- Custom application name
+- Custom logo
+- Custom domain
+- Custom app identifiers
+- Custom app-store metadata
+- Custom email branding
+- Custom login experience
+- Custom mobile application builds
+- Enterprise-specific configuration
+
+Do not implement uncontrolled per-customer forks.
+
+Use a configuration-driven approach with controlled build pipelines and version management.
+
+---
+
+# 20. Stage 15 â€” Migration from the Existing Npontu Environment
+
+Keep the existing Npontu environment separate during transition.
+
+Build a migration tool rather than performing an unsafe direct conversion.
+
+## Migration Pipeline
+
+1. Read-only extraction
+2. Schema and data inspection
+3. Mapping configuration
+4. Dry-run validation
+5. Staging import
+6. Relationship validation
+7. Duplicate and orphan detection
+8. Approved production import
+9. Reconciliation
+10. Audit report
+11. Rollback or recovery procedure
+
+The migration tool should support:
+
+- Batch processing
+- Retry handling
+- ID mapping
+- Legacy-to-new ownership mapping
+- User mapping
+- Organization mapping
+- Workspace mapping
+- Conflict reporting
+- Data validation
+- Import logs
+- Reconciliation summaries
+
+Do not modify historical records unnecessarily.
+
+---
+
+# 21. Stage 16 â€” Security and Compliance Foundations
+
+Implement:
+
+- HTTPS-only production traffic
+- Secure cookies
+- CSRF protection where applicable
+- Strong password handling
+- Rate limiting
+- Authorization policies
+- Tenant isolation
+- Secure file uploads
+- Input validation
+- Output encoding
+- Secret management
+- Dependency scanning
+- Security headers
+- Audit logging
+- Session revocation
+- Token rotation where appropriate
+- Backup and restore procedures
+- Access reviews
+- Security event monitoring
+- Secure error handling
+- No sensitive data in logs
+
+Create:
+
+`docs/security/opsora-threat-model.md`
+
+Include threats such as:
+
+- Tenant data leakage
+- Broken access control
+- Workspace spoofing
+- Domain takeover
+- Session theft
+- Token leakage
+- Malicious organization registration
+- Abuse of automatic approval
+- Cross-tenant exports
+- Customer-hosted deployment compromise
+- Supply-chain vulnerabilities
+- Privileged administrator misuse
+- Billing entitlement manipulation
+
+---
+
+# 22. Stage 17 â€” Testing Strategy
+
+## Backend Tests
+
+Use the repositoryâ€™s established testing framework.
+
+Add tests for:
+
+- Brand migration
+- Authentication
+- Authorization
+- Organization registration
+- Approval rules
+- Manual review
+- Personal workspaces
+- Multiple organization memberships
+- Workspace switching
+- Tenant isolation
+- Deployment lifecycle
+- Region restrictions
+- Subscription entitlements
+- License keys
+- Trial periods
+- API contracts
+- Notifications
+- Queued jobs
+- Exports
+- Real-time authorization
+- Migration tooling
+- Audit logs
+
+## Flutter Tests
+
+Add:
+
+- Unit tests
+- Widget tests
+- Integration tests
+- Authentication tests
+- Workspace-discovery tests
+- Workspace-switching tests
+- Offline-state tests
+- Token-storage tests
+- Deep-link tests
+- Push-notification tests
+- Error-state tests
+- Accessibility checks where practical
+
+## Security Tests
+
+Include:
+
+- Cross-tenant access attempts
+- IDOR-style tests
+- Unauthorized workspace access
+- Role-escalation tests
+- Suspended-tenant access
+- Expired-session tests
+- Invalid-token tests
+- Rate-limit tests
+- Export-isolation tests
+
+Do not report completion until tests pass or known failures are documented.
+
+---
+
+# 23. Stage 18 â€” API and Documentation
+
+Use versioned APIs, such as:
+
+- `/api/v1/auth`
+- `/api/v1/me`
+- `/api/v1/workspaces`
+- `/api/v1/organizations`
+- `/api/v1/dashboard`
+- `/api/v1/activities`
+- `/api/v1/handovers`
+- `/api/v1/incidents`
+- `/api/v1/messages`
+- `/api/v1/channels`
+- `/api/v1/war-rooms`
+- `/api/v1/notifications`
+- `/api/v1/reports`
+- `/api/v1/team`
+- `/api/v1/health`
+
+Use:
+
+- API Resources
+- Form Requests
+- Consistent response envelopes
+- Consistent error formats
+- Correct HTTP status codes
+- Pagination
+- Filtering
+- Sorting
+- ISO 8601 timestamps
+- Request IDs
+- Rate-limit responses
+- Authorization checks
+
+Create and maintain:
+
+`docs/api/openapi.yaml`
+
+Document:
+
+- Authentication
+- Workspace context
+- Organization context
+- Error responses
+- Pagination
+- Permissions
+- Webhooks
+- Versioning
+- Deprecation policy
+
+---
+
+# 24. Stage 19 â€” Observability and Operations
+
+Add appropriate operational visibility for Opsora itself:
+
+- Application logs
+- Structured logs
+- Error tracking
+- Queue monitoring
+- Database monitoring
+- Health checks
+- Deployment health
+- Uptime checks
+- Audit events
+- Security events
+- Usage metrics
+- Subscription metrics
+- Tenant-level operational metrics
+
+Do not expose internal platform metrics to customers unless explicitly designed and authorized.
+
+---
+
+# 25. Stage 20 â€” CI/CD and Deployment
+
+Support a scalable managed deployment approach using Render or a comparable managed platform, while keeping infrastructure abstraction flexible.
+
+## Backend Pipeline
+
+Include:
+
+- Dependency installation
+- Static analysis
+- Formatting checks
+- Unit tests
+- Feature tests
+- Security checks
+- Migration checks
+- Build verification
+- Deployment health checks
+- Rollback documentation
+
+## Flutter Pipeline
+
+Include:
+
+- Formatting
+- Static analysis
+- Unit tests
+- Widget tests
+- Integration tests where available
+- Android build validation
+- iOS build validation where the environment permits
+- Secure signing configuration
+- Environment configuration
+- Release-channel management
+
+## Environment Separation
+
+Maintain separate environments for:
+
+- Local development
+- Testing
+- Staging
+- Shared production
+- Dedicated customer environments
+- Legacy Npontu transition environment
+
+Never commit production secrets.
+
+---
+
+# 26. Recommended Implementation Order
+
+Implement the work in this order:
+
+1. Brand-only audit and Opsora name replacement
+2. Safety baseline and repository audit
+3. Domain model and ownership design
+4. Account, organization, and workspace foundations
+5. Tenant context and isolation
+6. Organization registration and approval
+7. Delegated platform administration
+8. Deployment abstraction
+9. Region and data-residency foundations
+10. Authentication and routing
+11. Billing and entitlement architecture
+12. Existing SRE workflow migration
+13. Flutter multi-workspace support
+14. Migration tooling
+15. Security hardening
+16. Testing and quality gates
+17. CI/CD and deployment
+18. Pilot readiness
+19. Enterprise white-label capabilities
+20. Future monitoring modules
+
+Do not implement all stages in one uncontrolled change set.
+
+---
+
+# 27. Required Documentation
+
+Maintain these documents:
+
+- `docs/saas/brand-migration-audit.md`
+- `docs/saas/current-state-audit.md`
+- `docs/saas/domain-model.md`
+- `docs/saas/resource-ownership-matrix.md`
+- `docs/saas/tenant-boundary-map.md`
+- `docs/saas/tenant-security-model.md`
+- `docs/saas/deployment-architecture.md`
+- `docs/saas/data-residency-design.md`
+- `docs/saas/identity-architecture.md`
+- `docs/saas/billing-domain-design.md`
+- `docs/saas/migration-strategy.md`
+- `docs/saas/risk-register.md`
+- `docs/saas/architecture-decision-records.md`
+- `docs/api/openapi.yaml`
+- `docs/security/opsora-threat-model.md`
+- Deployment runbooks
+- Rollback runbooks
+- Backup and restore documentation
+- Tenant onboarding documentation
+- Admin operation documentation
+- Mobile release documentation
+
+---
+
+# 28. Definition of Done
+
+The project is complete only when:
+
+- The customer-facing brand is Opsora.
+- Existing colors and layouts remain unchanged.
+- The legacy Npontu environment remains separate.
+- The repository has been audited.
+- The target architecture is documented.
+- Personal and organization workspaces are supported.
+- Users can belong to multiple organizations.
+- Organization approval rules are configurable.
+- Manual review is available.
+- Tenant isolation is enforced and tested.
+- Delegated platform administration is implemented.
+- Deployment models are represented safely.
+- Region and data-residency concepts are documented.
+- Authentication supports platform-first and workspace-first flows.
+- Routing supports planned workspace access methods.
+- Billing architecture exists without prematurely activating payments.
+- Existing SRE workflow modules remain functional.
+- Flutter supports multi-workspace onboarding.
+- Migration tooling is available and tested.
+- Security controls are implemented.
+- API documentation is maintained.
+- Backend and Flutter tests pass or documented exceptions exist.
+- CI/CD checks are configured.
+- Monitoring and rollback procedures exist.
+- No secrets are committed.
+- No unverified compliance claims are made.
+- Every completed stage has evidence, tests, and documentation.
+
+---
+
+# 29. Antigravity Execution Instructions
+
+Begin with **Stage 0 and the brand-only migration audit**.
+
+Do not immediately redesign the application.
+
+Your first response and first implementation cycle must contain:
+
+1. A repository audit summary
+2. A list of all Npontu references
+3. A classification of each reference
+4. A proposed Opsora brand migration plan
+5. A list of single-company assumptions
+6. A proposed domain model
+7. A tenant-boundary risk assessment
+8. A staged implementation plan
+9. A list of files that will be changed
+10. A list of files that will not be changed
+11. A rollback plan
+12. Tests to be run before and after the first change
+
+Initially, implement only the safe brand configuration and customer-facing name replacement after the audit is reviewed.
+
+Do not change colors, layouts, or unrelated functionality.
+
+After each stage:
+
+- Summarize changes
+- List changed files
+- List migrations
+- List tests run
+- Report test results honestly
+- Identify known risks
+- Provide rollback instructions
+- Wait for approval before starting the next high-risk stage
+
+The goal is to evolve the existing product into **Opsora**, a scalable technical operations SaaS platform, while preserving the existing product experience and protecting customer data.
+
+
+
+the best thing do a new github brach and push it new dont mix with old one a deployed one 
