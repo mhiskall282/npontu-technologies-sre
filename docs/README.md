@@ -130,6 +130,7 @@ docs/
 │   ├── customer-hosted.md                 # Self-hosted / on-premise deployment
 │   ├── environments.md                    # Local, Test, Staging, Production
 │   ├── configuration.md                   # Environment variables & caching
+│   ├── environment-variables.md           # Exhaustive production environment variables guide
 │   ├── secrets.md                         # Key management & rotation
 │   ├── backups.md                         # Automated S3/GCS backups
 │   ├── disaster-recovery.md               # RTO / RPO and recovery protocols
@@ -153,6 +154,16 @@ docs/
 │   ├── security.md                        # Tenant isolation & authorization tests
 │   ├── tenant-isolation.md                # Cross-tenant query leak tests
 │   └── end-to-end.md                      # End-to-end operational workflows
+│
+├── mvp/                                   # MVP Testing & Pilot Package
+│   ├── README.md                          # MVP testing package overview
+│   ├── test-plan.md                       # Master test plan & scope
+│   ├── test-cases.md                      # Step-by-step test cases across suites
+│   ├── acceptance-criteria.md             # Formal release quality gates
+│   ├── test-environment.md                # Test sandbox setup & personas
+│   ├── bug-reporting.md                   # Defect triage & severity matrix
+│   ├── pilot-onboarding.md                # Pilot customer onboarding runbook
+│   └── release-checklist.md               # Pre-flight production sign-off
 │
 ├── integrations/                          # External Services & Webhooks
 │   └── overview.md                        # Email SMTP/SES, webhooks, monitors

@@ -4,12 +4,13 @@
 
 🌐 **Production Deployment**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)
 
-[![Backend Tests](https://img.shields.io/badge/backend%20tests-109%20passing%20(541%20assertions)-brightgreen)](tests/)
-[![Mobile Tests](https://img.shields.io/badge/mobile%20tests-22%20passing-brightgreen)](npontu_sre_mobile/test/)
+[![Backend Tests](https://img.shields.io/badge/backend%20tests-139%20passing%20(655%20assertions)-brightgreen)](tests/)
+[![Mobile Tests](https://img.shields.io/badge/mobile%20tests-25%20passing-brightgreen)](npontu_sre_mobile/test/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
 [![Flutter](https://img.shields.io/badge/Flutter-3.24+-02569B?logo=flutter)](npontu_sre_mobile/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.x-cyan)](https://tailwindcss.com)
+[![MVP Ready](https://img.shields.io/badge/MVP%20Pilot-Ready%20%26%20Verified-brightgreen)](docs/mvp/README.md)
 
 ---
 
