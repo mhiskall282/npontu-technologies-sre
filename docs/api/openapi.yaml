@@ -1,28 +1,24 @@
 openapi: 3.0.3
 info:
-  title: Opsora Multi-Tenant SRE Operations Platform API
+  title: Npontu Technologies SRE Operations Platform API
   description: >
-    Production-ready versioned RESTful API (v1) serving the Opsora Multi-Tenant
+    Production-ready versioned RESTful API (v1) serving the Npontu Technologies
     Site Reliability Engineering operations platform, enabling cross-platform
-    mobile integration (Android/iOS), multi-workspace discovery, and web client operations.
-  version: 1.1.0
+    mobile integration (Android/iOS) and web client operations.
+  version: 1.0.0
   contact:
-    name: Opsora SRE Operations & Engineering
+    name: SRE Operations & Engineering
     email: hello@johnokyere.xyz
 
 servers:
   - url: http://localhost:8000/api/v1
     description: Local Development Environment
-  - url: https://api-sre.npontu.com/api/v1
+  - url: https://npontu-support-tracker.onrender.com/api/v1
     description: Production Environment
 
 tags:
   - name: Authentication
     description: Session token issuance and revocation via Laravel Sanctum
-  - name: Workspaces
-    description: Operational workspaces, discovery, context switching, and personal spaces
-  - name: Organizations
-    description: Enterprise organizations, company code onboarding, and registration approval lifecycle
   - name: Dashboard
     description: Real-time operational overview and shift health metrics
   - name: Activities
@@ -43,58 +39,6 @@ tags:
     description: Operational push and in-app notification centre, badges, and read state management
 
 paths:
-  /workspaces:
-    get:
-      tags: [Workspaces]
-      summary: List all accessible operational workspaces
-      security: [{ bearerAuth: [] }]
-      responses:
-        '200':
-          description: List of workspaces with user membership role and organization details
-    post:
-      tags: [Workspaces]
-      summary: Provision a new operational workspace
-      security: [{ bearerAuth: [] }]
-      responses:
-        '201':
-          description: Workspace provisioned successfully
-
-  /workspaces/switch:
-    post:
-      tags: [Workspaces]
-      summary: Switch active workspace context
-      security: [{ bearerAuth: [] }]
-      responses:
-        '200':
-          description: Active workspace switched successfully
-
-  /organizations/join-by-code:
-    post:
-      tags: [Organizations]
-      summary: Join an organization using company code or QR code token
-      security: [{ bearerAuth: [] }]
-      responses:
-        '200':
-          description: Successfully joined organization and primary workspace
-
-  /organizations/apply:
-    post:
-      tags: [Organizations]
-      summary: Submit an organization registration application
-      security: [{ bearerAuth: [] }]
-      responses:
-        '201':
-          description: Application submitted or auto-approved
-
-  /organizations/applications:
-    get:
-      tags: [Organizations]
-      summary: List organization registration applications (Admin queue)
-      security: [{ bearerAuth: [] }]
-      responses:
-        '200':
-          description: Paginated queue of pending applications
-
   /auth/login:
     post:
       tags: [Authentication]
@@ -856,34 +800,3 @@ components:
         read_at: { type: string, format: date-time, nullable: true }
         created_at: { type: string, format: date-time }
         time_ago: { type: string, example: '5 minutes ago' }
-
-    Workspace:
-      type: object
-      properties:
-        id: { type: integer, example: 1 }
-        uuid: { type: string, format: uuid }
-        name: { type: string, example: 'Primary SRE Operations' }
-        slug: { type: string, example: 'primary-sre' }
-        subdomain: { type: string, nullable: true, example: 'primary' }
-        is_personal: { type: boolean, example: false }
-        status: { type: string, example: 'active' }
-        my_role: { type: string, example: 'admin' }
-        organization:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            name: { type: string }
-            slug: { type: string }
-            company_code: { type: string }
-
-    Organization:
-      type: object
-      properties:
-        id: { type: integer, example: 1 }
-        name: { type: string, example: 'Opsora SRE' }
-        slug: { type: string, example: 'opsora-sre' }
-        company_code: { type: string, example: 'NPT-OPS-01' }
-        tier: { type: string, example: 'enterprise' }
-        deployment_model: { type: string, example: 'shared_saas' }
-        preferred_region: { type: string, example: 'af-south' }
