@@ -218,39 +218,16 @@
                 </a>
             </div>
 
-            {{-- SRE Cockpit Status Banner & Active Tenant Workspace Indicator --}}
-            <div class="px-4 py-2.5 bg-[#122218] border-b border-[#1A2E22] flex items-center justify-between text-[11px]">
-                @auth
-                    @php
-                        $sidebarActiveWs = \App\Services\TenantContext::getWorkspace() ?? auth()->user()->currentWorkspace();
-                    @endphp
-                    @if($sidebarActiveWs)
-                        <a href="{{ route('workspaces.index') }}" class="flex items-center gap-2 min-w-0 group" title="Click to Switch Workspace">
-                            <span class="relative flex h-2 w-2 shrink-0">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                            </span>
-                            <span class="text-green-300 font-bold truncate max-w-[140px] group-hover:text-[#F5C518] transition-colors">
-                                {{ $sidebarActiveWs->name }}
-                            </span>
-                        </a>
-                        <a href="{{ route('workspaces.index') }}" class="text-[10px] font-mono text-[#F5C518] hover:underline shrink-0">
-                            Switch
-                        </a>
-                    @else
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            <span class="text-green-300 font-medium">SRE Cockpit</span>
-                        </div>
-                        <span class="text-[10px] font-mono text-gray-400">v1.2</span>
-                    @endif
-                @else
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        <span class="text-green-300 font-medium">SRE Cockpit</span>
-                    </div>
-                    <span class="text-[10px] font-mono text-gray-400">v1.2</span>
-                @endauth
+            {{-- SRE Cockpit Status Banner --}}
+            <div class="px-5 py-2.5 bg-[#122218] border-b border-[#1A2E22] flex items-center justify-between text-[11px]">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                    </span>
+                    <span class="text-green-300 font-medium">SRE Cockpit</span>
+                </div>
+                <span class="text-[10px] font-mono text-gray-400">v1.2</span>
             </div>
 
             {{-- Scrollable Navigation Links --}}
@@ -402,7 +379,7 @@
             {{-- Layout Footer --}}
             <footer class="bg-white border-t border-gray-200 text-gray-500 text-xs py-3 mt-auto shrink-0 no-print">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <span>&copy; {{ date('Y') }} Opsora SRE Operations. Internal operational use only.</span>
+                    <span>&copy; {{ date('Y') }} Npontu Technologies. Internal operational use only.</span>
                     <div class="flex items-center gap-4">
                         <span class="text-gray-400">SRE Handover SLA: 99.98%</span>
                         <a href="{{ route('health') }}" class="text-[#1B6B3A] font-semibold hover:underline">

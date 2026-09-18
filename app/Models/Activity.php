@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToWorkspace;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +20,6 @@ use Illuminate\Support\Carbon;
  * events in the related ActivityLog model.
  *
  * @property int $id
- * @property int|null $workspace_id
  * @property string $title
  * @property string|null $description
  * @property string|null $category
@@ -38,7 +36,7 @@ use Illuminate\Support\Carbon;
  */
 class Activity extends Model
 {
-    use BelongsToWorkspace, HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -46,7 +44,6 @@ class Activity extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'workspace_id',
         'title',
         'description',
         'category',

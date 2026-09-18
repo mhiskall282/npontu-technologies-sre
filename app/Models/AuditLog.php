@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToWorkspace;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -23,7 +22,6 @@ use Illuminate\Support\Carbon;
  * - Morphable subject relation (`subject_type`, `subject_id`) allows tracking any entity.
  *
  * @property int $id
- * @property int|null $workspace_id
  * @property int|null $actor_id
  * @property string $actor_name
  * @property string|null $actor_role
@@ -37,15 +35,12 @@ use Illuminate\Support\Carbon;
  */
 class AuditLog extends Model
 {
-    use BelongsToWorkspace;
-
     /**
      * Mass assignable attributes.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'workspace_id',
         'actor_id',
         'actor_name',
         'actor_role',

@@ -43,11 +43,6 @@ class ApiClient {
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-          // Attach active multi-tenant workspace context
-          final activeWorkspaceId = await storageService.getActiveWorkspaceId();
-          if (activeWorkspaceId != null && activeWorkspaceId.isNotEmpty) {
-            options.headers['X-Workspace-Id'] = activeWorkspaceId;
-          }
           return handler.next(options);
         },
         onError: (DioException e, handler) {

@@ -18,7 +18,6 @@ class AppConstants {
   static const String userDataKey = 'npontu_user_data';
   static const String themeModeKey = 'npontu_theme_mode';
   static const String baseUrlKey = 'npontu_base_url';
-  static const String activeWorkspaceKey = 'opsora_active_workspace_id';
 
   // SRE Priority Tiers
   static const String priorityCritical = 'critical'; // P1

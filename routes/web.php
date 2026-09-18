@@ -10,11 +10,9 @@ use App\Http\Controllers\EmailReplyController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MonitoringController;
-use App\Http\Controllers\OrganizationApplicationController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\WorkspaceController;
 use App\Livewire\DailyActivityBoard;
 use App\Livewire\OperationalChat;
 use Illuminate\Support\Facades\Route;
@@ -47,16 +45,6 @@ Route::middleware('auth')->group(function () {
 
     // Primary gateway redirect (sends authenticated operators to /daily)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Multi-Tenant Workspaces & Switching
-    Route::get('/workspaces', [WorkspaceController::class, 'index'])->name('workspaces.index');
-    Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
-    Route::post('/workspaces/switch', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
-    Route::post('/workspaces/join', [WorkspaceController::class, 'join'])->name('workspaces.join');
-
-    // Self-Service Organization Application
-    Route::get('/organizations/apply', [OrganizationApplicationController::class, 'create'])->name('organizations.apply');
-    Route::post('/organizations/apply', [OrganizationApplicationController::class, 'store'])->name('organizations.apply.store');
 
     // Daily handover view (Livewire component)
     Route::get('/daily', DailyActivityBoard::class)->name('activities.daily');
@@ -94,14 +82,6 @@ Route::middleware('auth')->group(function () {
                 ->name('users.resetPassword')
                 ->middleware('role:admin');
             Route::resource('activities', Admin\ActivityController::class);
-
-            // Platform Admin Organization Applications Review Queue
-            Route::get('organizations/applications', [OrganizationApplicationController::class, 'index'])
-                ->name('organizations.applications')
-                ->middleware('role:admin');
-            Route::post('organizations/applications/{application}/review', [OrganizationApplicationController::class, 'review'])
-                ->name('organizations.applications.review')
-                ->middleware('role:admin');
         });
 });
 

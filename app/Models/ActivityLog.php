@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToWorkspace;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,7 +23,6 @@ use Illuminate\Support\Carbon;
  * even if user profiles or designations change in the future.
  *
  * @property int $id
- * @property int|null $workspace_id
  * @property int $activity_id
  * @property Carbon $date
  * @property string $status ('pending' | 'done')
@@ -41,7 +39,7 @@ use Illuminate\Support\Carbon;
  */
 class ActivityLog extends Model
 {
-    use BelongsToWorkspace, HasFactory;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -49,7 +47,6 @@ class ActivityLog extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'workspace_id',
         'activity_id',
         'date',
         'status',

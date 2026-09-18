@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToWorkspace;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +19,6 @@ use Illuminate\Support\Carbon;
  * Supports direct 1-on-1 private messaging, team shift channels, and specialized operational groups.
  *
  * @property int $id
- * @property int|null $workspace_id
  * @property string $type ('direct' | 'team' | 'group')
  * @property string|null $title
  * @property string|null $description
@@ -31,7 +29,7 @@ use Illuminate\Support\Carbon;
  */
 class Conversation extends Model
 {
-    use BelongsToWorkspace, HasFactory;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -39,7 +37,6 @@ class Conversation extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'workspace_id',
         'type',
         'title',
         'description',

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\BelongsToWorkspace;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +18,6 @@ use Illuminate\Support\Carbon;
  * when transferring operational responsibility between shifts (Morning, Afternoon, Night).
  *
  * @property int $id
- * @property int|null $workspace_id
  * @property Carbon $date
  * @property string $shift
  * @property int $outgoing_lead_id
@@ -34,7 +32,7 @@ use Illuminate\Support\Carbon;
  */
 class ShiftHandover extends Model
 {
-    use BelongsToWorkspace, HasFactory;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -42,7 +40,6 @@ class ShiftHandover extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'workspace_id',
         'date',
         'shift',
         'outgoing_lead_id',
