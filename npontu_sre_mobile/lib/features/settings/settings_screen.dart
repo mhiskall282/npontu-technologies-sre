@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/services/cache_service.dart';
+import '../../core/services/notification_service.dart';
 import '../../core/services/permission_service.dart';
 import '../../core/theme/npontu_theme.dart';
 import '../../shared/models/user_model.dart';
@@ -141,6 +142,26 @@ class SettingsScreen extends ConsumerWidget {
                     .setNotifyAssignments(v),
                 iconColor: NpontuColors.greenLight,
                 indent: true,
+              ),
+              _SettingsTile(
+                icon: Icons.add_alert_rounded,
+                title: 'Test Device Notification',
+                subtitle: 'Send a simulated P1 critical alert to your phone tray',
+                iconColor: NpontuColors.gold,
+                onTap: () async {
+                  await ref.read(notificationServiceProvider).sendTestAlert();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Simulated SRE alert dispatched! Check your notification tray & lockscreen.',
+                        ),
+                        backgroundColor: NpontuColors.green,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                },
               ),
             ],
 

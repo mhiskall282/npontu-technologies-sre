@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/services/notification_service.dart';
 import '../../core/theme/npontu_theme.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/error_retry.dart';
@@ -56,6 +57,24 @@ class NotificationsScreen extends ConsumerWidget {
                   .read(notificationControllerProvider.notifier)
                   .markAllRead(),
             ),
+          IconButton(
+            icon: const Icon(Icons.add_alert_rounded),
+            tooltip: 'Trigger Test Push Alert',
+            onPressed: () async {
+              await ref.read(notificationServiceProvider).sendTestAlert();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'SRE Alert dispatched to your device notification tray & lockscreen!',
+                    ),
+                    backgroundColor: NpontuColors.green,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             tooltip: 'Refresh',

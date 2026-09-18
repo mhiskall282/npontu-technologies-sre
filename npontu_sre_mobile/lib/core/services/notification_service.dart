@@ -74,15 +74,27 @@ class NotificationService {
       _channelName,
       channelDescription: _channelDesc,
       importance: _mapImportance(importance),
-      priority: Priority.high,
+      priority: Priority.max,
       icon: '@mipmap/ic_launcher',
-      styleInformation: BigTextStyleInformation(body),
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: title,
+        summaryText: 'Opsora SRE Alert',
+      ),
+      channelShowBadge: true,
+      playSound: true,
+      enableVibration: true,
+      ticker: title,
+      visibility: NotificationVisibility.public,
     );
 
     const darwinDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      presentBanner: true,
+      presentList: true,
+      badgeNumber: 1,
     );
 
     final details = NotificationDetails(
@@ -91,6 +103,17 @@ class NotificationService {
     );
 
     await _plugin.show(id, title, body, details, payload: payload);
+  }
+
+  /// Dispatches an immediate test push notification for verification.
+  Future<void> sendTestAlert() async {
+    final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    await showLocalNotification(
+      id: id,
+      title: '🚨 P1 Critical SRE Alert — Payments Gateway',
+      body: 'High webhook latency detected on FinTech cluster (420ms > 200ms SLA). Escalated to on-duty SRE pod.',
+      importance: NotificationImportance.critical,
+    );
   }
 
   Importance _mapImportance(NotificationImportance imp) {

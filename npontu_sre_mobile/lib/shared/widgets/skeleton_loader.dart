@@ -54,8 +54,20 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: (isDark ? Colors.white : Colors.black).withAlpha(
-              (_animation.value * (isDark ? 30 : 20)).toInt(),
+            gradient: LinearGradient(
+              begin: Alignment(-1.0 + _animation.value * 2, -0.2),
+              end: Alignment(1.0 + _animation.value * 2, 0.2),
+              colors: isDark
+                  ? [
+                      const Color(0xFF0D1B12),
+                      const Color(0xFF1B3825),
+                      const Color(0xFF0D1B12),
+                    ]
+                  : [
+                      const Color(0xFFEDF2F7),
+                      const Color(0xFFE2E8F0),
+                      const Color(0xFFEDF2F7),
+                    ],
             ),
             borderRadius: BorderRadius.circular(widget.borderRadius),
           ),
