@@ -138,6 +138,57 @@ class SecureStorageService {
     }
   }
 
+  Future<void> saveBaseUrl(String url) async {
+    if (kIsWeb) {
+      final prefs = await _getPrefs();
+      await prefs.setString(AppConstants.baseUrlKey, url);
+      return;
+    }
+    try {
+      await _storage
+          .write(key: AppConstants.baseUrlKey, value: url)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      final prefs = await _getPrefs();
+      await prefs.setString(AppConstants.baseUrlKey, url);
+    }
+  }
+
+  Future<String?> getBaseUrl() async {
+    if (kIsWeb) {
+      final prefs = await _getPrefs();
+      return prefs.getString(AppConstants.baseUrlKey);
+    }
+    try {
+      return await _storage
+          .read(key: AppConstants.baseUrlKey)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      try {
+        final prefs = await _getPrefs();
+        return prefs.getString(AppConstants.baseUrlKey);
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
+  Future<void> deleteBaseUrl() async {
+    if (kIsWeb) {
+      final prefs = await _getPrefs();
+      await prefs.remove(AppConstants.baseUrlKey);
+      return;
+    }
+    try {
+      await _storage
+          .delete(key: AppConstants.baseUrlKey)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      final prefs = await _getPrefs();
+      await prefs.remove(AppConstants.baseUrlKey);
+    }
+  }
+
   Future<void> saveUserData(Map<String, dynamic> userMap) async {
     final encoded = jsonEncode(userMap);
     if (kIsWeb) {

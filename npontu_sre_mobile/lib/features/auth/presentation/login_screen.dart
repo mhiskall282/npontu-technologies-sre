@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/network/api_client_provider.dart';
 import '../../../core/theme/npontu_theme.dart';
 import '../../../shared/widgets/opsora_logo.dart';
 import '../../legal/privacy_policy_sheet.dart';
@@ -99,7 +101,62 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             : NpontuColors.textSecondaryLight,
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 12),
+
+                    // Environment & Server Link Selector Pill
+                    Center(
+                      child: InkWell(
+                        onTap: () => _showServerSwitcherDialog(context),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? NpontuColors.surfaceDark
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.white12
+                                  : Colors.grey.shade300,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.cloud_outlined,
+                                size: 14,
+                                color: NpontuColors.green,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _getServerLabel(AppConfig.baseUrl),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.grey.shade700,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.arrow_drop_down_rounded,
+                                size: 16,
+                                color: isDark
+                                    ? Colors.white54
+                                    : Colors.grey.shade500,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
                     // Error Banner
                     if (authState.errorMessage != null) ...[
@@ -271,6 +328,122 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  String _getServerLabel(String url) {
+    if (url.contains('onrender.com')) return 'Cloud Live';
+    if (url.contains('10.0.2.2')) return 'Android Emulator';
+    if (url.contains('127.0.0.1') || url.contains('localhost')) {
+      return 'Localhost';
+    }
+    return 'Custom (${Uri.tryParse(url)?.host ?? url})';
+  }
+
+  void _showServerSwitcherDialog(BuildContext context) {
+    final customController = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.dns_rounded, color: NpontuColors.green),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Target Backend Environment',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildServerOption(
+                title: 'Render Cloud (Production Live)',
+                subtitle: 'https://npontu-support-tracker.onrender.com/api/v1',
+                url: 'https://npontu-support-tracker.onrender.com/api/v1',
+                ctx: ctx,
+              ),
+              _buildServerOption(
+                title: 'Android Emulator Loopback',
+                subtitle: 'http://10.0.2.2:8000/api/v1',
+                url: 'http://10.0.2.2:8000/api/v1',
+                ctx: ctx,
+              ),
+              _buildServerOption(
+                title: 'iOS Simulator / Desktop (Localhost)',
+                subtitle: 'http://127.0.0.1:8000/api/v1',
+                url: 'http://127.0.0.1:8000/api/v1',
+                ctx: ctx,
+              ),
+              const Divider(height: 20),
+              TextField(
+                controller: customController,
+                decoration: InputDecoration(
+                  labelText: 'Or custom API URL',
+                  hintText: 'http://192.168.1.100:8000/api/v1',
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.check_circle_rounded,
+                      color: NpontuColors.green,
+                    ),
+                    onPressed: () {
+                      final text = customController.text.trim();
+                      if (text.isNotEmpty) {
+                        ref.read(apiClientProvider).updateBaseUrl(text);
+                        setState(() {});
+                        Navigator.pop(ctx);
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildServerOption({
+    required String title,
+    required String subtitle,
+    required String url,
+    required BuildContext ctx,
+  }) {
+    final isCurrent = AppConfig.baseUrl == url;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(
+        isCurrent ? Icons.radio_button_checked : Icons.radio_button_off,
+        color: isCurrent ? NpontuColors.green : Colors.grey,
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+      ),
+      subtitle: Text(subtitle, style: const TextStyle(fontSize: 11)),
+      onTap: () {
+        ref.read(apiClientProvider).updateBaseUrl(url);
+        setState(() {});
+        Navigator.pop(ctx);
+      },
     );
   }
 }

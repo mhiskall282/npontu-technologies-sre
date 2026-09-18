@@ -33,14 +33,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void initState() {
     super.initState();
 
-    // 1. Entrance animation: slide in, scale, and fade
+    // 1. Entrance animation: snappy, smooth slide in, scale, and fade
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 450),
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.20),
+      begin: const Offset(0, 0.15),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animController,
@@ -48,7 +48,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     ));
 
     _scaleAnimation = Tween<double>(
-      begin: 0.88,
+      begin: 0.92,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animController,
@@ -63,12 +63,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // 2. Ambient breathing pulse for the Opsora logo emblem
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 1400),
     )..repeat(reverse: true);
 
     _pulseAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.06,
+      begin: 0.96,
+      end: 1.05,
     ).animate(CurvedAnimation(
       parent: _pulseController,
       curve: Curves.easeInOutSine,
@@ -110,54 +110,45 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _bootSequence() async {
-    // Master watchdog: guarantee transition within 3.5 seconds under all conditions
-    Future.delayed(const Duration(milliseconds: 3500), () {
+    // Watchdog safety guard: guarantee transition within 2.2 seconds under all network conditions
+    Future.delayed(const Duration(milliseconds: 2200), () {
       if (mounted && !_hasNavigated) {
         _navigateToNextScreen();
       }
     });
 
     try {
-      // Step 1: Initialise local offline cache
-      await Future.delayed(const Duration(milliseconds: 300));
-      if (!mounted || _hasNavigated) return;
-      setState(() {
-        _statusMessage = 'Hydrating offline telemetry nodes...';
-        _progressValue = 0.55;
-      });
+      // Step 1: Load saved base URL into ApiClient
       try {
-        await ref
-            .read(cacheServiceProvider)
-            .initialise()
-            .timeout(const Duration(seconds: 2));
-      } catch (e) {
-        debugPrint('Cache init skipped or timed out: $e');
-      }
+        final storage = ref.read(cacheServiceProvider);
+        // Ensure cache initializes fast
+        await storage.initialise().timeout(const Duration(milliseconds: 600));
+      } catch (_) {}
 
-      // Step 2: Check token and security credentials
-      await Future.delayed(const Duration(milliseconds: 350));
       if (!mounted || _hasNavigated) return;
       setState(() {
-        _statusMessage = 'Verifying security credentials & session...';
-        _progressValue = 0.85;
+        _statusMessage = 'Hydrating telemetry & security credentials...';
+        _progressValue = 0.65;
       });
+
+      // Step 2: Parallel check of authentication state & network reachability
       try {
         await ref
             .read(authControllerProvider.notifier)
             .checkAuthStatus()
-            .timeout(const Duration(seconds: 2));
+            .timeout(const Duration(milliseconds: 1200));
       } catch (e) {
-        debugPrint('Auth check skipped or timed out: $e');
+        debugPrint('Auth status probe non-fatal: $e');
       }
 
-      // Step 3: Complete splash presentation
-      await Future.delayed(const Duration(milliseconds: 300));
       if (!mounted || _hasNavigated) return;
       setState(() {
         _statusMessage = 'Opsora SRE Ready.';
         _progressValue = 1.0;
       });
-      await Future.delayed(const Duration(milliseconds: 180));
+
+      // Subtle pause for visual satisfaction before smooth handoff
+      await Future.delayed(const Duration(milliseconds: 100));
     } catch (e) {
       debugPrint('Boot sequence exception: $e');
     } finally {

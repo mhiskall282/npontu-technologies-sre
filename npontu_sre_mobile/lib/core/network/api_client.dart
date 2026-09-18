@@ -29,9 +29,21 @@ class ApiClient {
     _setupInterceptors();
   }
 
-  void updateBaseUrl(String newUrl) {
+  Future<void> loadSavedBaseUrl() async {
+    try {
+      final savedUrl = await storageService.getBaseUrl();
+      if (savedUrl != null && savedUrl.isNotEmpty) {
+        updateBaseUrl(savedUrl, persist: false);
+      }
+    } catch (_) {}
+  }
+
+  void updateBaseUrl(String newUrl, {bool persist = true}) {
     AppConfig.setBaseUrl(newUrl);
     dio.options.baseUrl = AppConfig.baseUrl;
+    if (persist) {
+      storageService.saveBaseUrl(AppConfig.baseUrl);
+    }
   }
 
   void _setupInterceptors() {

@@ -36,6 +36,11 @@
 	<string>Npontu SRE uses your location for datacenter geofencing and on-call check-in validation, even in the background during active shifts.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Npontu SRE uses Face ID to securely authenticate on-duty engineers and unlock sensitive audit logs.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
