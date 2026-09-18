@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Comprehensive Architecture, SRE Operations Manual, Evaluator Quickstart, and Interactive FAQ for Opsora SRE Operations Platform">
-    <title>Documentation & Operational Manual — Opsora SRE</title>
+    <meta name="description" content="Opsora SRE Operations Manual, Architecture Reference, REST API Docs, and Mobile Companion Setup">
+    <title>Documentation &amp; API Reference — Opsora SRE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,18 +13,24 @@
     <style>
         body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="min-h-full bg-[#08120B] text-white flex flex-col antialiased selection:bg-[#F5C518] selection:text-gray-900" x-data="{ activeTab: 'evaluators', openFaq: 1, mobileNavOpen: false }">
+<body class="min-h-full bg-[#08120B] text-white flex flex-col antialiased selection:bg-[#F5C518] selection:text-gray-900"
+      x-data="{
+          mobileNavOpen: false,
+          activeApiTab: 'auth',
+          openFaq: 1
+      }">
 
-    {{-- Top Live Operational Status Banner --}}
+    {{-- ── TOP OPERATIONAL STATUS TICKER ────────────────────────────────────── --}}
     <div class="bg-[#040805] border-b border-white/5 py-1.5 px-4 text-center text-[11px] text-gray-400 font-mono">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2 truncate">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
                 <span class="truncate">PRODUCTION SRE NODE: ACCRA-CLUSTER-01</span>
                 <span class="hidden sm:inline text-gray-600">|</span>
-                <span class="hidden sm:inline text-emerald-300">ARCHITECTURE MANUAL &bull; RELEASE v1.4.0</span>
+                <span class="hidden sm:inline text-emerald-300">OPSORA SAAS CORE &bull; RELEASE v1.5.0</span>
             </div>
             <div class="flex items-center gap-3 sm:gap-4 shrink-0">
                 <span id="nav-live-clock">UTC --:--:--</span>
@@ -36,9 +42,11 @@
         </div>
     </div>
 
-    {{-- ── GLOBAL HEADER ──────────────────────────────────────────────────────── --}}
-    <header class="sticky top-0 z-40 bg-[#0A1810]/95 backdrop-blur-md border-b border-emerald-900/40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    {{-- ── GLOBAL CONCISE HEADER ────────────────────────────────────────────── --}}
+    <header class="sticky top-0 z-50 bg-[#0A1810]/95 backdrop-blur-md border-b border-emerald-900/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            {{-- Brand Logo & Docs Identity --}}
             <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ route('landing') }}" class="flex items-center gap-2.5 group">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-950/80 to-black/80 border border-white/10 flex items-center justify-center shadow-sm group-hover:border-[#F5C518]/50 transition-colors shrink-0 p-1">
@@ -46,629 +54,597 @@
                     </div>
                     <div class="min-w-0">
                         <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-sm tracking-tight text-white block leading-none truncate">OPSORA</span>
+                            <span class="font-extrabold text-sm tracking-tight text-white block leading-none">OPSORA</span>
                             <span class="px-1 py-0.2 rounded bg-[#F5C518]/20 border border-[#F5C518]/50 text-[#F5C518] text-[9px] font-bold font-mono">SRE</span>
                         </div>
-                        <span class="block text-emerald-400 text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold truncate">OPERATIONS MANUAL</span>
+                        <span class="block text-emerald-400 text-[8px] sm:text-[9px] font-mono tracking-widest uppercase mt-0.5 font-bold">OPERATIONS MANUAL</span>
                     </div>
                 </a>
             </div>
 
-            {{-- Navigation Links (Desktop) --}}
-            <nav class="hidden md:flex items-center gap-5 text-xs font-semibold text-gray-300">
-                <a href="{{ route('landing') }}" class="hover:text-[#F5C518] transition-colors">Platform</a>
-                <a href="#quickstart" class="hover:text-[#F5C518] transition-colors">Quickstart</a>
-                <a href="#architecture" class="hover:text-[#F5C518] transition-colors">Architecture</a>
-                <a href="#handover-flow" class="hover:text-[#F5C518] transition-colors">Handover Protocol</a>
-                <a href="#mobile-setup" class="hover:text-[#F5C518] transition-colors">Mobile &amp; Emulator</a>
-                <a href="#governance" class="hover:text-[#F5C518] transition-colors">Governance</a>
-                <a href="#faq" class="hover:text-[#F5C518] transition-colors">Comprehensive FAQ</a>
-                <a href="{{ route('health') }}" class="hover:text-[#F5C518] transition-colors">Telemetry HUD</a>
+            {{-- Concise Structured Desktop Navigation --}}
+            <nav class="hidden lg:flex items-center gap-1 text-xs font-semibold text-gray-300">
+                <a href="#quickstart" class="px-2.5 py-1.5 rounded-lg hover:text-[#F5C518] hover:bg-white/5 transition-colors">Quickstart</a>
+                <a href="#architecture" class="px-2.5 py-1.5 rounded-lg hover:text-[#F5C518] hover:bg-white/5 transition-colors">Architecture</a>
+                <a href="#api-reference" class="px-2.5 py-1.5 rounded-lg hover:text-[#F5C518] hover:bg-white/5 transition-colors flex items-center gap-1.5">
+                    <span>API Reference</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">REST v1</span>
+                </a>
+                <a href="#mobile-setup" class="px-2.5 py-1.5 rounded-lg hover:text-[#F5C518] hover:bg-white/5 transition-colors">Mobile &amp; Emulator</a>
+                <a href="#handover-flow" class="px-2.5 py-1.5 rounded-lg hover:text-[#F5C518] hover:bg-white/5 transition-colors">Handover Protocol</a>
+                <a href="#governance" class="px-2.5 py-1.5 rounded-lg hover:text-[#F5C518] hover:bg-white/5 transition-colors">Governance &amp; SLA</a>
+                <a href="#faq" class="px-2.5 py-1.5 rounded-lg hover:text-[#F5C518] hover:bg-white/5 transition-colors">FAQ</a>
             </nav>
 
-            {{-- Right CTA Section --}}
-            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+            {{-- Right Actions: Telemetry + Cockpit CTA --}}
+            <div class="flex items-center gap-2.5 shrink-0">
+                <a href="{{ route('health') }}"
+                   class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-emerald-300 text-xs font-mono border border-emerald-800/40 transition-colors">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>Live Telemetry</span>
+                </a>
+
                 @auth
                     <a href="{{ route('activities.daily') }}"
-                       class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl bg-[#1B6B3A] hover:bg-[#2A8F52] text-white font-bold text-xs shadow-md transition-colors whitespace-nowrap">
-                        <span><span class="hidden sm:inline">Enter SRE </span>Cockpit</span>
+                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#1B6B3A] hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition-colors whitespace-nowrap">
+                        <span>Enter SRE Cockpit</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </a>
                 @else
                     <a href="{{ route('login') }}"
-                       class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-bold text-xs shadow-md transition-colors whitespace-nowrap">
-                        <span><span class="hidden sm:inline">Operator </span>Sign In</span>
-                        <svg class="w-3.5 h-3.5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#F5C518] hover:bg-amber-400 text-gray-950 font-bold text-xs shadow-md transition-colors whitespace-nowrap">
+                        <span>Operator Sign In</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                     </a>
                 @endauth
 
-                {{-- Mobile Hamburger Toggle Button --}}
+                {{-- Mobile Hamburger --}}
                 <button type="button"
                         @click="mobileNavOpen = !mobileNavOpen"
-                        aria-expanded="false"
                         aria-label="Toggle navigation menu"
-                        class="md:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-[#F5C518]">
+                        class="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white transition-colors">
                     <svg x-show="!mobileNavOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     <svg x-show="mobileNavOpen" x-cloak class="w-5 h-5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
         </div>
 
-        {{-- Mobile Collapsible Navigation Menu --}}
-        <div x-show="mobileNavOpen"
-             x-cloak
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-2"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 -translate-y-2"
-             class="md:hidden bg-[#0A1810]/98 border-b border-emerald-900/40 px-4 pt-3 pb-5 space-y-1 shadow-2xl backdrop-blur-xl">
-            <div class="px-3 pb-2 text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">
-                Documentation Manual Sections
-            </div>
-            <a @click="mobileNavOpen = false" href="{{ route('landing') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors flex items-center justify-between">
-                <span>&larr; Platform Overview</span>
-                <span class="text-[10px] font-mono text-gray-400">Home</span>
-            </a>
-            <a @click="mobileNavOpen = false" href="#quickstart" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
-                Role Quickstarts &amp; Personas
-            </a>
-            <a @click="mobileNavOpen = false" href="#architecture" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
-                Technical Architecture (Laravel 11 / Pest / MySQL)
-            </a>
-            <a @click="mobileNavOpen = false" href="#handover-flow" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
-                4-Phase Shift Handover Protocol
-            </a>
-            <a @click="mobileNavOpen = false" href="#governance" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
-                Governance, SLA &amp; Automated Reports
-            </a>
-            <a @click="mobileNavOpen = false" href="#faq" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-[#F5C518] hover:bg-white/5 transition-colors">
-                Interactive Engineering FAQ
-            </a>
-            <a @click="mobileNavOpen = false" href="{{ route('health') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-emerald-300 hover:bg-white/5 transition-colors flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Real-Time Health HUD</span>
-                </span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/30 text-emerald-300">99.98% SLA</span>
-            </a>
+        {{-- Collapsible Mobile Navigation --}}
+        <div x-show="mobileNavOpen" x-cloak
+             class="lg:hidden bg-[#0A1810] border-b border-emerald-900/40 px-4 py-3 space-y-1 text-xs">
+            <a @click="mobileNavOpen = false" href="#quickstart" class="block px-3 py-2 rounded-lg text-gray-200 hover:text-[#F5C518] hover:bg-white/5">Quickstart &amp; Personas</a>
+            <a @click="mobileNavOpen = false" href="#architecture" class="block px-3 py-2 rounded-lg text-gray-200 hover:text-[#F5C518] hover:bg-white/5">Architecture &amp; Stack</a>
+            <a @click="mobileNavOpen = false" href="#api-reference" class="block px-3 py-2 rounded-lg text-emerald-300 hover:text-[#F5C518] hover:bg-white/5 font-semibold">REST API Reference (v1)</a>
+            <a @click="mobileNavOpen = false" href="#mobile-setup" class="block px-3 py-2 rounded-lg text-gray-200 hover:text-[#F5C518] hover:bg-white/5">Mobile Companion &amp; Emulator</a>
+            <a @click="mobileNavOpen = false" href="#handover-flow" class="block px-3 py-2 rounded-lg text-gray-200 hover:text-[#F5C518] hover:bg-white/5">Two-Way Handover Protocol</a>
+            <a @click="mobileNavOpen = false" href="#governance" class="block px-3 py-2 rounded-lg text-gray-200 hover:text-[#F5C518] hover:bg-white/5">Governance &amp; SLA</a>
+            <a @click="mobileNavOpen = false" href="#faq" class="block px-3 py-2 rounded-lg text-gray-200 hover:text-[#F5C518] hover:bg-white/5">Frequently Asked Questions</a>
         </div>
     </header>
 
-    {{-- Docs Hero Header --}}
-    <section class="relative bg-gradient-to-b from-[#123620] via-[#0C2215] to-[#08120B] border-b border-emerald-900/30 pt-12 pb-14 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div class="max-w-7xl mx-auto relative z-10">
-            <div class="max-w-3xl">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/40 border border-emerald-500/30 text-emerald-300 text-xs font-mono mb-4">
-                    <span class="w-2 h-2 rounded-full bg-[#F5C518] animate-ping"></span>
-                    <span>SRE COMPREHENSIVE ARCHITECTURE &amp; OPERATIONAL HANDBOOK</span>
-                </div>
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                    Engineered for zero broken handovers. Documented for everyone.
-                </h1>
-                <p class="text-sm sm:text-base text-green-100/80 mt-4 leading-relaxed font-normal">
-                    Welcome to the central knowledge hub of the Opsora SRE Platform. Whether you are an evaluator inspecting technical architecture, an on-call SRE executing a live shift handover, or executive leadership reviewing SLA compliance, this portal answers every operational question.
-                </p>
+    {{-- ── HERO SECTION ─────────────────────────────────────────────────────── --}}
+    <section class="relative bg-gradient-to-b from-[#123620] via-[#0C2215] to-[#08120B] border-b border-emerald-900/30 pt-10 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-2 text-xs font-mono text-emerald-300 mb-3">
+                <span class="w-2 h-2 rounded-full bg-[#F5C518] animate-ping"></span>
+                <span>SRE COMPREHENSIVE ARCHITECTURE &bull; MULTI-TENANT OPERATIONS</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight max-w-4xl">
+                Engineered for zero broken handovers. Documented for everyone.
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-300 mt-3 max-w-3xl leading-relaxed">
+                Authoritative platform reference for Site Reliability Engineers, technical leads, and evaluators. Explore technical architecture, operational personas, interactive REST APIs, and mobile companion setup.
+            </p>
 
-                {{-- Key Telemetry Metrics Pill Grid --}}
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">
-                    <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
-                        <p class="text-xl sm:text-2xl font-black text-[#F5C518] font-mono">{{ $stats['feature_tests'] }} Tests</p>
-                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $stats['test_assertions'] }} Verified Assertions</p>
-                    </div>
-                    <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
-                        <p class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">&lt; 100ms</p>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Telemetry Response Target</p>
-                    </div>
-                    <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
-                        <p class="text-xl sm:text-2xl font-black text-white font-mono">99.98%</p>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Guaranteed SLA Uptime</p>
-                    </div>
-                    <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
-                        <p class="text-xl sm:text-2xl font-black text-[#F5C518] font-mono">100%</p>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Immutable Audit Custody</p>
-                    </div>
+            {{-- Fast Metric Bar --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 max-w-4xl">
+                <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
+                    <p class="text-lg sm:text-xl font-black text-[#F5C518] font-mono">139 Tests</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">655 Assertions Passing</p>
+                </div>
+                <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
+                    <p class="text-lg sm:text-xl font-black text-emerald-400 font-mono">&lt; 42ms</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Telemetry Response Target</p>
+                </div>
+                <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
+                    <p class="text-lg sm:text-xl font-black text-white font-mono">99.98%</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Guaranteed SLA Uptime</p>
+                </div>
+                <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-center">
+                    <p class="text-lg sm:text-xl font-black text-[#F5C518] font-mono">100%</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Immutable Audit Custody</p>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- Main Documentation Layout with Permanent Chapter Navigation --}}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        
-        {{-- Section Navigator Bar --}}
-        <div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl bg-[#050D07] border border-emerald-900/40 mb-10 shadow-lg sticky top-20 z-30 backdrop-blur-md">
-            <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] px-3 font-bold hidden md:inline">CHAPTERS:</span>
-            <a href="#quickstart"
-               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
-                <svg class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                <span>Quickstart &amp; Personas</span>
-            </a>
+    {{-- ── MAIN CONTENT CONTAINER ───────────────────────────────────────────── --}}
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
-            <a href="#architecture"
-               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
-                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                <span>Architecture &amp; Stack</span>
-            </a>
+        {{-- ── SECTION 1: QUICKSTART & PERSONAS ─────────────────────────────── --}}
+        <section id="quickstart" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 01 &bull; ACCESS GOVERNANCE</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">Pre-Seeded Operational Test Personas</h2>
+                </div>
+                <span class="hidden sm:inline-block px-2.5 py-1 rounded-lg text-xs font-mono bg-white/5 border border-white/10 text-gray-400">3 Tiers &bull; Default Password: <code class="text-emerald-300">password</code></span>
+            </div>
 
-            <a href="#handover-flow"
-               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
-                <svg class="w-3.5 h-3.5 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Handover Protocol</span>
-            </a>
-
-            <a href="#governance"
-               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
-                <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                <span>Governance &amp; SLA</span>
-            </a>
-
-            <a href="#mobile-setup"
-               class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-[#F5C518] hover:text-gray-950 text-gray-200 transition-all">
-                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                <span>Mobile &amp; Emulator</span>
-    {{-- Main Documentation Content Grid --}}
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
-        {{-- ── SECTION 1: OPERATIONAL ROLE MATRIX ────────── --}}
-        <section id="quickstart" class="scroll-mt-24 space-y-6">
-            <div class="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-[#0F1E14] via-[#08120B] to-black border border-emerald-500/30 shadow-2xl relative overflow-hidden">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">OPERATIONAL MATRIX</span>
-                            <span class="text-xs text-gray-400 font-mono">Enterprise Authorization Tiers</span>
-                        </div>
-                        <h2 class="text-2xl font-black text-white mt-2">Pre-Seeded Operational Test Personas</h2>
-                        <p class="text-xs sm:text-sm text-gray-400 mt-1 max-w-xl">
-                            Enterprise access governance across three distinct authorization tiers with granular RBAC policies, cryptographic audit trails, and strict two-way handovers.
-                        </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {{-- Admin John --}}
+                <div class="p-4 rounded-xl bg-[#0F1E14] border border-emerald-800/40 relative">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-950 text-purple-300 border border-purple-800/60 font-bold">L5 Principal Lead</span>
+                        <span class="text-xs font-mono text-emerald-300">hello@johnokyere.xyz</span>
                     </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-emerald-300 flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            <span>Granular Role Policies Active</span>
-                        </span>
+                    <h3 class="text-base font-black text-white mt-2">John Okyere</h3>
+                    <p class="text-xs text-emerald-400 font-mono">Cloud Infrastructure &amp; Principal SRE</p>
+                    <p class="text-xs text-gray-300 mt-1 leading-relaxed">
+                        Full administrative command, checklists definition, forensic audit log inspection, and system settings.
+                    </p>
+                    <div class="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-400">
+                        <span class="text-emerald-400 font-bold">Super Administrator</span>
+                        <span>Role: admin</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {{-- Admin John --}}
-                    <div class="p-5 rounded-xl bg-black/40 border border-emerald-500/40 relative overflow-hidden">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-950/80 text-purple-300 border border-purple-800/60 font-bold">L5 Principal Lead</span>
-                            <span class="text-xs font-mono text-emerald-300 font-bold">hello@johnokyere.xyz</span>
-                        </div>
-                        <h3 class="text-base font-black text-white mt-3">John Okyere</h3>
-                        <p class="text-xs text-emerald-400 font-mono mt-0.5">Cloud Infrastructure &amp; Principal SRE</p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Full administrative command, user provisioning, checklists definition, forensic audit log inspection, and system settings.
-                        </p>
-                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-300">
-                            <span class="text-emerald-400 font-bold">Authority: Super Administrator</span>
-                            <span class="text-gray-500">Tier L5</span>
-                        </div>
+                {{-- Lead Abena --}}
+                <div class="p-4 rounded-xl bg-[#0F1E14] border border-emerald-800/40 relative">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800/60 font-bold">L3 Shift Lead</span>
+                        <span class="text-xs font-mono text-emerald-300">abena.owusu@example.com</span>
                     </div>
-
-                    {{-- Lead Abena --}}
-                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 relative overflow-hidden">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 font-bold">L3 Senior SRE</span>
-                            <span class="text-xs font-mono text-gray-400">lead@npontu.local</span>
-                        </div>
-                        <h3 class="text-base font-black text-white mt-3">Abena Owusu</h3>
-                        <p class="text-xs text-emerald-400 font-mono mt-0.5">Payment Gateway Operations</p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Shift handover sign-off, oncoming briefing acceptance, task delegation, live telemetry HUD, and compliance reports.
-                        </p>
-                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-300">
-                            <span class="text-emerald-400 font-bold">Authority: Shift Commander</span>
-                            <span class="text-gray-500">Tier L3</span>
-                        </div>
+                    <h3 class="text-base font-black text-white mt-2">Abena Owusu</h3>
+                    <p class="text-xs text-emerald-400 font-mono">Shift Supervisor &amp; Incident Commander</p>
+                    <p class="text-xs text-gray-300 mt-1 leading-relaxed">
+                        Task delegation, activity creation, incident flagging, and two-way shift handover sign-offs.
+                    </p>
+                    <div class="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-400">
+                        <span class="text-[#F5C518] font-bold">Shift Lead</span>
+                        <span>Role: lead</span>
                     </div>
+                </div>
 
-                    {{-- Agent Kofi --}}
-                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 relative overflow-hidden">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-950/80 text-blue-300 border border-blue-800/60 font-bold">L2 Support Engineer</span>
-                            <span class="text-xs font-mono text-gray-400">agent@npontu.local</span>
-                        </div>
-                        <h3 class="text-base font-black text-white mt-3">Kofi Asante</h3>
-                        <p class="text-xs text-emerald-400 font-mono mt-0.5">Database Operations &amp; DBA</p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Shift checklist status updates, blocker remarks, incident ticket tagging, and real-time team chat communications.
-                        </p>
-                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-300">
-                            <span class="text-emerald-400 font-bold">Authority: SRE On-Call Operator</span>
-                            <span class="text-gray-500">Tier L2</span>
-                        </div>
+                {{-- Engineer Kofi --}}
+                <div class="p-4 rounded-xl bg-[#0F1E14] border border-emerald-800/40 relative">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-950 text-blue-300 border border-blue-800/60 font-bold">L1 Support Operator</span>
+                        <span class="text-xs font-mono text-emerald-300">kofi.asante@example.com</span>
+                    </div>
+                    <h3 class="text-base font-black text-white mt-2">Kofi Asante</h3>
+                    <p class="text-xs text-emerald-400 font-mono">Operations Engineer (NOC)</p>
+                    <p class="text-xs text-gray-300 mt-1 leading-relaxed">
+                        Executes daily recurrence checks, provides resolution remarks, and participates in shift channels.
+                    </p>
+                    <div class="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono text-gray-400">
+                        <span class="text-blue-300 font-bold">Support Engineer</span>
+                        <span>Role: engineer</span>
                     </div>
                 </div>
             </div>
+        </section>
 
-            {{-- Architectural Tech Stack & Code Quality --}}
-            <div id="architecture" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">CHAPTER 02 &bull; TECHNICAL FOUNDATION</span>
-                <h2 class="text-2xl font-black text-white mt-1">Architectural Stack &amp; Standards</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <div class="space-y-3">
-                        <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                            <p class="text-xs font-bold text-white flex items-center gap-2">
-                                <span class="text-[#F5C518] font-mono">1.</span>
-                                <span>Laravel 11 LTS + Strict Types (declare(strict_types=1))</span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-1">PHP 8.2+ with PSR-12 strict formatting enforced by Laravel Pint. Thin controllers, Form Requests, Policies, and Action domain patterns.</p>
-                        </div>
-
-                        <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                            <p class="text-xs font-bold text-white flex items-center gap-2">
-                                <span class="text-[#F5C518] font-mono">2.</span>
-                                <span>Livewire 3 Real-Time Reactive Engine</span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-1">Instant DOM differential updates without client SPA overhead. Automated 419 session interception and continuous wire:poll heartbeats.</p>
-                        </div>
-
-                        <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                            <p class="text-xs font-bold text-white flex items-center gap-2">
-                                <span class="text-[#F5C518] font-mono">3.</span>
-                                <span>MySQL 8.0+ InnoDB with Strict FK Integrity</span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-1">Indexed composite columns on activity_logs(date, activity_id), immutable polymorphic audit_logs, and reversible down() migrations.</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                            <p class="text-xs font-bold text-white flex items-center gap-2">
-                                <span class="text-[#F5C518] font-mono">4.</span>
-                                <span>Pest 3 Test Suite ({{ $stats['feature_tests'] }} Feature Tests / {{ $stats['test_assertions'] }} Assertions)</span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-1">Full coverage of Authentication, Activity CRUD, Handover Sign-Off &amp; Sign-On, Chat @Mentions, Reporting date-range queries, and Error handling.</p>
-                        </div>
-
-                        <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                            <p class="text-xs font-bold text-white flex items-center gap-2">
-                                <span class="text-[#F5C518] font-mono">5.</span>
-                                <span>Automated SRE Reports Scheduler</span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-1">Console command `reports:send-automated` with scheduled cron jobs in routes/console.php dispatching daily, weekly, and monthly digests.</p>
-                        </div>
-
-                        <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                            <p class="text-xs font-bold text-white flex items-center gap-2">
-                                <span class="text-[#F5C518] font-mono">6.</span>
-                                <span>Subsystem Probes &amp; Telemetry HUD</span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-1">Real-time health probes pinging 8 core subsystems (Database, Cache, Queue, Storage, API Latency) with JSON API support (<code class="text-emerald-300 font-mono">/health/telemetry</code>).</p>
-                        </div>
-                    </div>
+        {{-- ── SECTION 2: ARCHITECTURE & STACK ──────────────────────────────── --}}
+        <section id="architecture" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 02 &bull; TECHNICAL SPECIFICATION</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">SRE COMPREHENSIVE ARCHITECTURE</h2>
                 </div>
+                <span class="text-xs font-mono text-emerald-400">Modular Monolith + Multi-Tenant</span>
+            </div>
 
-                {{-- Command Line Cheatsheet --}}
-                <div class="mt-6 pt-6 border-t border-white/10">
-                    <p class="text-xs font-bold text-gray-300 font-mono uppercase mb-3">Evaluator Verification Commands</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
-                        <div class="p-3 rounded-lg bg-black/60 border border-white/10">
-                            <p class="text-gray-500">// Run Full Pest Test Suite</p>
-                            <p class="text-[#F5C518] mt-1">php artisan test</p>
-                        </div>
-                        <div class="p-3 rounded-lg bg-black/60 border border-white/10">
-                            <p class="text-gray-500">// Verify PSR-12 Code Style</p>
-                            <p class="text-[#F5C518] mt-1">./vendor/bin/pint --test</p>
-                        </div>
-                        <div class="p-3 rounded-lg bg-black/60 border border-white/10">
-                            <p class="text-gray-500">// Dispatch Automated Daily Report</p>
-                            <p class="text-[#F5C518] mt-1">php artisan reports:send-automated</p>
-                        </div>
-                    </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-gray-400 uppercase">Framework</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">Laravel 11 LTS</h4>
+                    <p class="text-[11px] text-gray-400 mt-1">Strict types, PSR-12, Form Requests</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-gray-400 uppercase">Real-Time</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">Livewire 3 Real-Time Reactive Engine</h4>
+                    <p class="text-[11px] text-gray-400 mt-1">Zero JS build overhead, reactive polling</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-gray-400 uppercase">Database</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">MySQL 8.0+ InnoDB</h4>
+                    <p class="text-[11px] text-gray-400 mt-1">Foreign keys, compound tenant indexes</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-gray-400 uppercase">Testing</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">Pest 3 Test Suite</h4>
+                    <p class="text-[11px] text-gray-400 mt-1">139 Feature &amp; isolation tests</p>
                 </div>
             </div>
 
-            {{-- Handover Protocol Deep-Dive --}}
-            <div id="handover-flow" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 03 &bull; OPERATIONAL CUSTODY TRANSFER</span>
-                <h2 class="text-2xl font-black text-white mt-1">The 4-Phase Two-Way Handover Protocol</h2>
-                <p class="text-xs text-gray-400 mt-1 max-w-2xl">
-                    Traditional shift handoffs rely on informal Slack messages or post-it notes. Npontu enforces a legally binding, mathematically verifiable two-way custody transfer.
-                </p>
+            {{-- Verification Commands --}}
+            <div class="p-4 rounded-xl bg-black/30 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <span class="text-xs font-bold text-white">Automated Verification Commands</span>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Run tests and trigger automated SRE compliance reports directly from the CLI:</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+                    <code class="px-2.5 py-1 rounded bg-black/70 border border-emerald-500/30 text-emerald-300">php artisan test</code>
+                    <code class="px-2.5 py-1 rounded bg-black/70 border border-yellow-500/30 text-[#F5C518]">php artisan reports:send-automated</code>
+                </div>
+            </div>
+        </section>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                    <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                        <div class="w-7 h-7 rounded-lg bg-emerald-900/50 text-[#F5C518] flex items-center justify-center font-mono font-bold text-xs mb-3">01</div>
-                        <h4 class="text-sm font-bold text-white">Live Verification</h4>
-                        <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                            On-duty engineers mark shift checks (done/pending). Any pending item requires an explanatory remark and incident ticket reference.
-                        </p>
+        {{-- ── SECTION 3: INTERACTIVE REST API REFERENCE ────────────────────── --}}
+        <section id="api-reference" class="scroll-mt-24 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 03 &bull; REST API SPECIFICATION</span>
+                        <span class="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">OpenAPI 3.0 Compatible</span>
                     </div>
-
-                    <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                        <div class="w-7 h-7 rounded-lg bg-emerald-900/50 text-[#F5C518] flex items-center justify-center font-mono font-bold text-xs mb-3">02</div>
-                        <h4 class="text-sm font-bold text-white">Outgoing Sign-Off</h4>
-                        <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                            Shift Lead records official briefing summary, outstanding blockers, and signs off. Handover state changes to "Awaiting Incoming Acceptance".
-                        </p>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                        <div class="w-7 h-7 rounded-lg bg-emerald-900/50 text-[#F5C518] flex items-center justify-center font-mono font-bold text-xs mb-3">03</div>
-                        <h4 class="text-sm font-bold text-white">Incoming Sign-On</h4>
-                        <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                            Incoming Lead reviews checklist status, confirms telemetry health, checks the verification box, and records signed-on acceptance remarks.
-                        </p>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-black/30 border border-white/10">
-                        <div class="w-7 h-7 rounded-lg bg-emerald-900/50 text-[#F5C518] flex items-center justify-center font-mono font-bold text-xs mb-3">04</div>
-                        <h4 class="text-sm font-bold text-white">Forensic Seal</h4>
-                        <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                            Both sign-off and sign-on timestamps, actor IDs, and IP addresses are sealed into immutable audit logs. Automated reports dispatch to stakeholders.
-                        </p>
-                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">Opsora Developer REST API Reference</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-gray-400 font-mono">Base URL: <code class="text-emerald-300">https://opsora.production/api/v1</code></span>
                 </div>
             </div>
 
-            {{-- Operational Comms & Incident War Rooms --}}
-            <div class="bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">REAL-TIME COMMUNICATIONS</span>
-                <h2 class="text-2xl font-black text-white mt-1">Operational Chat, War Rooms &amp; Alerts</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                        <p class="text-xs font-bold text-white flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-[#F5C518]"></span>
-                            <span>Direct &amp; Shift Channels</span>
-                        </p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Auto-provisioned <code class="text-emerald-300">#general-shift</code> team channel paired with 1-on-1 direct messaging and per-user unread tracking counters.
-                        </p>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                        <p class="text-xs font-bold text-white flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            <span>@Mention Email Receipts</span>
-                        </p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Tagging an engineer with <code class="text-emerald-300">@Name</code> immediately generates an automated transactional email dispatch with direct context.
-                        </p>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                        <p class="text-xs font-bold text-white flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-                            <span>@All Emergency Broadcast</span>
-                        </p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Tagging <code class="text-rose-400">@all</code> immediately notifies every channel participant via high-priority email, creating an instant incident response bridge.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Business Value & Governance --}}
-            <div id="governance" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 04 &bull; BUSINESS VALUE &amp; GOVERNANCE</span>
-                <h2 class="text-2xl font-black text-white mt-1">Why Opsora SRE Exists: The Cost of Silent Outages</h2>
-                <p class="text-sm text-gray-300 mt-3 leading-relaxed">
-                    In high-throughput telecommunications and payment processing environments, <strong>unacknowledged shift handovers represent the single largest vector for catastrophic downtime</strong>. When an outgoing team forgets to mention a degraded database replica or an ongoing upstream telco failover, the incoming shift assumes all is nominal until client transactions begin failing.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                    <div class="p-5 rounded-xl bg-rose-950/20 border border-rose-800/30">
-                        <p class="text-2xl font-black text-rose-400 font-mono">$100,000 / hr</p>
-                        <p class="text-xs font-bold text-white mt-1">Cost of Payment Outage</p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Unreported gateway degradations lead to customer charge failures, regulatory scrutiny, and brand attrition.
-                        </p>
-                    </div>
-
-                    <div class="p-5 rounded-xl bg-emerald-950/20 border border-emerald-800/30">
-                        <p class="text-2xl font-black text-emerald-400 font-mono">0 Missed Handovers</p>
-                        <p class="text-xs font-bold text-white mt-1">The Npontu Standard</p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Cryptographic sign-on requires the oncoming supervisor to actively review and confirm readiness before custody transfers.
-                        </p>
-                    </div>
-
-                    <div class="p-5 rounded-xl bg-amber-950/20 border border-amber-800/30">
-                        <p class="text-2xl font-black text-[#F5C518] font-mono">7-Year Audit Trail</p>
-                        <p class="text-xs font-bold text-white mt-1">Bank-Grade Compliance</p>
-                        <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                            Every button press, task reassignment, and status toggle is preserved in append-only storage under Ghana Act 843.
-                        </p>
-                    </div>
+            {{-- Interactive API Endpoint Tabs --}}
+            <div class="rounded-2xl bg-[#0B170F] border border-emerald-800/40 overflow-hidden shadow-xl">
+                {{-- Tabs Bar --}}
+                <div class="flex items-center overflow-x-auto border-b border-white/10 bg-black/40 p-1.5 gap-1 text-xs font-mono">
+                    <button type="button"
+                            @click="activeApiTab = 'auth'"
+                            :class="activeApiTab === 'auth' ? 'bg-[#1B6B3A] text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                            class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
+                        POST /auth/login
+                    </button>
+                    <button type="button"
+                            @click="activeApiTab = 'workspaces'"
+                            :class="activeApiTab === 'workspaces' ? 'bg-[#1B6B3A] text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                            class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
+                        GET /workspaces
+                    </button>
+                    <button type="button"
+                            @click="activeApiTab = 'join'"
+                            :class="activeApiTab === 'join' ? 'bg-[#1B6B3A] text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                            class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
+                        POST /workspaces/join
+                    </button>
+                    <button type="button"
+                            @click="activeApiTab = 'activities'"
+                            :class="activeApiTab === 'activities' ? 'bg-[#1B6B3A] text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                            class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
+                        GET /activities
+                    </button>
+                    <button type="button"
+                            @click="activeApiTab = 'handovers'"
+                            :class="activeApiTab === 'handovers' ? 'bg-[#1B6B3A] text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                            class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
+                        POST /handovers
+                    </button>
+                    <button type="button"
+                            @click="activeApiTab = 'health'"
+                            :class="activeApiTab === 'health' ? 'bg-[#1B6B3A] text-white font-bold' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                            class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
+                        GET /health
+                    </button>
                 </div>
 
-                {{-- Automated Reporting Overview --}}
-                <div class="mt-8 pt-6 border-t border-white/10">
-                    <h3 class="text-base font-bold text-white">Automated Stakeholder Reporting Pipeline</h3>
-                    <p class="text-xs text-gray-400 mt-1">Leadership and department heads receive hands-free operational intelligence:</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-xs">
-                        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                            <p class="font-bold text-white font-mono text-[#F5C518]">Daily EOD Digest</p>
-                            <p class="text-gray-400 mt-1">Dispatched at 23:59 UTC detailing daily checklist completion %, active blockers, and handover status.</p>
+                {{-- Tab 1: Auth Login --}}
+                <div x-show="activeApiTab === 'auth'" class="p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">POST</span>
+                            <span class="text-sm font-bold text-white">/api/v1/auth/login</span>
                         </div>
-                        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                            <p class="font-bold text-white font-mono text-emerald-400">Weekly Performance Report</p>
-                            <p class="text-gray-400 mt-1">Dispatched Sunday evenings summarizing weekly resolution trends, duty hours, and incident ticket references.</p>
-                        </div>
-                        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                            <p class="font-bold text-white font-mono text-blue-400">Monthly SLA Executive Audit</p>
-                            <p class="text-gray-400 mt-1">Dispatched on the 28th providing formal 99.98% uptime SLA compliance stamps and audit trail volumes.</p>
-                        </div>
+                        <span class="text-xs text-gray-400">Public &bull; Authenticates operator and issues Sanctum token</span>
                     </div>
-                </div>
-            </div>
 
-            {{-- ── CHAPTER 05: MOBILE COMPANION & LOCAL EMULATOR SETUP GUIDE ──────── --}}
-            <div id="mobile-setup" class="scroll-mt-24 bg-[#0C1A12] border border-emerald-800/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-6">
-                    <div>
-                        <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 05 &bull; MOBILE COMPANION &amp; LOCAL PC TESTING</span>
-                        <h2 class="text-2xl font-black text-white mt-1">Mobile Companion &amp; Local Emulator Setup Guide</h2>
-                        <p class="text-xs text-gray-400 mt-1">Comprehensive developer guide for executing, testing, and sideloading the Flutter SRE mobile companion on PC, Android Studio emulators, and local backend.</p>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            Flutter 3.24+ &bull; Dart 3.5+
-                        </span>
-                    </div>
-                </div>
-
-                {{-- Testing Matrix Cards --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {{-- Target 1: Windows Desktop --}}
-                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-xs font-mono">
                         <div>
-                            <div class="flex items-center gap-2 text-[#F5C518] font-bold text-xs font-mono uppercase">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                <span>Target 1: Windows Desktop</span>
-                            </div>
-                            <p class="text-xs text-gray-200 mt-2 font-semibold">Native PC Desktop Execution</p>
-                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Fastest local testing method on your PC. No emulator needed; compiles and launches directly as a desktop window.</p>
+                            <span class="text-gray-400 block mb-1.5">Request Body (JSON)</span>
+                            <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-emerald-300 overflow-x-auto">{
+  "email": "hello@johnokyere.xyz",
+  "password": "password",
+  "device_name": "Mobile Pixel 8"
+}</pre>
                         </div>
-                        <pre class="mt-3 p-2.5 rounded-lg bg-black/70 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">cd npontu_sre_mobile
+                        <div>
+                            <span class="text-gray-400 block mb-1.5">Response (200 OK)</span>
+                            <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-gray-200 overflow-x-auto">{
+  "token": "1|qP9xLz...sanctum_token...",
+  "user": {
+    "id": 1,
+    "name": "John Okyere",
+    "role": "admin"
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tab 2: Workspaces Discovery --}}
+                <div x-show="activeApiTab === 'workspaces'" x-cloak class="p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">GET</span>
+                            <span class="text-sm font-bold text-white">/api/v1/workspaces</span>
+                        </div>
+                        <span class="text-xs text-gray-400">Requires Bearer Token &bull; Lists accessible workspaces &amp; roles</span>
+                    </div>
+
+                    <div class="text-xs font-mono">
+                        <span class="text-gray-400 block mb-1.5">Response (200 OK)</span>
+                        <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-gray-200 overflow-x-auto">{
+  "data": [
+    {
+      "id": 1,
+      "uuid": "8f2b1c4e-5a6b-4c3d-9e8f-1a2b3c4d5e6f",
+      "name": "Primary SRE Operations",
+      "slug": "primary-sre",
+      "role": "admin",
+      "is_personal": false,
+      "organization": {
+        "name": "Opsora SRE",
+        "company_code": "OPS-DEFAULT"
+      }
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+
+                {{-- Tab 3: Join by Code --}}
+                <div x-show="activeApiTab === 'join'" x-cloak class="p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">POST</span>
+                            <span class="text-sm font-bold text-white">/api/v1/workspaces/join</span>
+                        </div>
+                        <span class="text-xs text-gray-400">Requires Bearer Token &bull; Fast Onboarding via Company Code</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-xs font-mono">
+                        <div>
+                            <span class="text-gray-400 block mb-1.5">Request Body (JSON)</span>
+                            <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-emerald-300 overflow-x-auto">{
+  "company_code": "OPS-STARK9"
+}</pre>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block mb-1.5">Response (200 OK)</span>
+                            <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-gray-200 overflow-x-auto">{
+  "message": "Joined Stark Cloud Operations successfully.",
+  "workspace": {
+    "id": 4,
+    "name": "Stark Primary Ops"
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tab 4: Activities Feed --}}
+                <div x-show="activeApiTab === 'activities'" x-cloak class="p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">GET</span>
+                            <span class="text-sm font-bold text-white">/api/v1/activities</span>
+                        </div>
+                        <span class="text-xs text-gray-400">Header: <code class="text-emerald-300 font-mono">X-Workspace-Id: 1</code> &bull; Tenant-scoped operational feed</span>
+                    </div>
+
+                    <div class="text-xs font-mono">
+                        <span class="text-gray-400 block mb-1.5">Response (200 OK)</span>
+                        <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-gray-200 overflow-x-auto">{
+  "data": [
+    {
+      "id": 14,
+      "title": "USSD Gateway Latency Probe",
+      "recurrence": "daily",
+      "priority": "critical",
+      "status": "pending",
+      "assigned_to": "Kofi Asante"
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+
+                {{-- Tab 5: Shift Handovers --}}
+                <div x-show="activeApiTab === 'handovers'" x-cloak class="p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">POST</span>
+                            <span class="text-sm font-bold text-white">/api/v1/handovers</span>
+                        </div>
+                        <span class="text-xs text-gray-400">Shift custody sign-off &bull; Triggers notification &amp; forensic seal</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-xs font-mono">
+                        <div>
+                            <span class="text-gray-400 block mb-1.5">Request Body (JSON)</span>
+                            <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-emerald-300 overflow-x-auto">{
+  "shift_date": "2026-09-18",
+  "shift_type": "evening",
+  "summary": "Core database replication lag verified normal. Gateway queues green.",
+  "open_issues": "None. Standby engineer notified."
+}</pre>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block mb-1.5">Response (201 Created)</span>
+                            <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-gray-200 overflow-x-auto">{
+  "status": "success",
+  "message": "Shift handover briefing recorded. Awaiting oncoming lead signature.",
+  "handover_id": 92
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tab 6: Health Check --}}
+                <div x-show="activeApiTab === 'health'" x-cloak class="p-5 space-y-4">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">GET</span>
+                            <span class="text-sm font-bold text-white">/api/health</span>
+                        </div>
+                        <span class="text-xs text-gray-400">Public Probe &bull; JSON performance &amp; DB connectivity telemetry</span>
+                    </div>
+
+                    <div class="text-xs font-mono">
+                        <span class="text-gray-400 block mb-1.5">Response (200 OK)</span>
+                        <pre class="p-3.5 rounded-xl bg-black/60 border border-white/10 text-gray-200 overflow-x-auto">{
+  "status": "ok",
+  "database": "connected",
+  "database_latency_ms": 1.2,
+  "telemetry_stream": "nominal",
+  "uptime": "99.98%"
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ── SECTION 4: MOBILE & EMULATOR SETUP GUIDE ─────────────────────── --}}
+        <section id="mobile-setup" class="scroll-mt-24 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 04 &bull; CLIENT RUNTIME</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">Mobile Companion &amp; Local Emulator Setup Guide</h2>
+                </div>
+                <span class="text-xs font-mono text-emerald-300">Flutter 3.24+ &bull; Dart 3.5+</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {{-- Target 1: Windows Desktop --}}
+                <div class="p-4 rounded-xl bg-[#0F1E14] border border-emerald-800/40 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-[#F5C518] uppercase">Target 1: Windows Desktop</span>
+                        <p class="text-xs text-white font-semibold mt-1">Native PC Desktop Execution</p>
+                        <p class="text-xs text-gray-400 mt-1">Fastest local testing without an emulator. Launches directly in Windows.</p>
+                    </div>
+                    <pre class="mt-3 p-2 rounded bg-black/60 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">cd npontu_sre_mobile
 flutter run -d windows</pre>
-                    </div>
+                </div>
 
-                    {{-- Target 2: Android Studio Emulator --}}
-                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs font-mono uppercase">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                                <span>Target 2: Android Emulator (AVD)</span>
-                            </div>
-                            <p class="text-xs text-gray-200 mt-2 font-semibold">Pixel 8 / API 34 Virtual Device</p>
-                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Full mobile phone simulation including soft keyboard insets, biometrics, offline airplane mode, and push notifications.</p>
-                        </div>
-                        <pre class="mt-3 p-2.5 rounded-lg bg-black/70 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">emulator -avd Pixel_8_API_34
+                {{-- Target 2: Android Emulator --}}
+                <div class="p-4 rounded-xl bg-[#0F1E14] border border-emerald-800/40 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-emerald-400 uppercase">Target 2: Android Emulator (10.0.2.2)</span>
+                        <p class="text-xs text-white font-semibold mt-1">Pixel 8 / API 34 Virtual Device</p>
+                        <p class="text-xs text-gray-400 mt-1">Uses <code class="text-[#F5C518]">10.0.2.2:8000</code> to reach host PC backend from Android sandbox.</p>
+                    </div>
+                    <pre class="mt-3 p-2 rounded bg-black/60 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">emulator -avd Pixel_8_API_34
 flutter run -d emulator-5554</pre>
-                    </div>
-
-                    {{-- Target 3: Pre-Built Universal APK --}}
-                    <div class="p-5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center gap-2 text-blue-400 font-bold text-xs font-mono uppercase">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                <span>Target 3: Pre-Built Universal APK</span>
-                            </div>
-                            <p class="text-xs text-gray-200 mt-2 font-semibold">Direct ADB Sideloading</p>
-                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Download the release artifact directly from GitHub CI and install immediately onto any physical device or emulator.</p>
-                        </div>
-                        <pre class="mt-3 p-2.5 rounded-lg bg-black/70 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">adb install -r app-release.apk</pre>
-                    </div>
                 </div>
 
-                {{-- Detailed Execution Workflows --}}
-                <div class="space-y-4 text-xs sm:text-sm">
-                    {{-- 1. Local PC Backend Setup --}}
-                    <div class="p-5 rounded-xl bg-black/30 border border-white/10">
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-[#F5C518] text-gray-950 flex items-center justify-center text-[10px] font-bold font-mono">1</span>
-                            <span>Local Backend &amp; Database Setup (Windows PC)</span>
-                        </h3>
-                        <p class="text-xs text-gray-400 mt-1.5 leading-relaxed">
-                            Run the Laravel backend API locally on your PC before connecting the mobile companion:
-                        </p>
-                        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-mono">
-                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
-                                <span class="text-gray-500 block mb-1"># Step A: Seed Database &amp; Personas</span>
-                                <span class="text-[#F5C518]">php artisan migrate:fresh --seed</span>
-                            </div>
-                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
-                                <span class="text-gray-500 block mb-1"># Step B: Run 108 Automated Tests</span>
-                                <span class="text-[#F5C518]">php artisan test</span>
-                            </div>
-                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
-                                <span class="text-gray-500 block mb-1"># Step C: Verify PSR-12 Style</span>
-                                <span class="text-[#F5C518]">vendor\bin\pint --test</span>
-                            </div>
-                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
-                                <span class="text-gray-500 block mb-1"># Step D: Serve on 0.0.0.0 (Accessible to Emulators)</span>
-                                <span class="text-emerald-400">php artisan serve --host=0.0.0.0 --port=8000</span>
-                            </div>
-                        </div>
+                {{-- Target 3: Quality Gate --}}
+                <div class="p-4 rounded-xl bg-[#0F1E14] border border-emerald-800/40 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-blue-400 uppercase">Target 3: Verification Suite</span>
+                        <p class="text-xs text-white font-semibold mt-1">Automated Quality Gate</p>
+                        <p class="text-xs text-gray-400 mt-1">Executes 25 mobile tests covering models, offline sync, and widgets.</p>
                     </div>
-
-                    {{-- 2. Android Emulator Networking (10.0.2.2) --}}
-                    <div class="p-5 rounded-xl bg-emerald-950/20 border border-emerald-800/40">
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-emerald-500 text-gray-950 flex items-center justify-center text-[10px] font-bold font-mono">2</span>
-                            <span>Android Emulator Networking &amp; Loopback (10.0.2.2)</span>
-                        </h3>
-                        <div class="mt-2 text-xs text-gray-300 space-y-2 leading-relaxed">
-                            <p>
-                                <strong>Why 10.0.2.2?</strong> Android Studio emulators run inside a virtual network sandbox. If the mobile app requests <code class="text-emerald-300 font-mono">http://localhost:8000</code> inside the emulator, it reaches the Android device itself. Android's official virtual router assigns <code class="text-[#F5C518] font-mono">http://10.0.2.2:8000/api/v1</code> as the alias to reach your host PC's <code class="text-emerald-300 font-mono">127.0.0.1:8000</code>.
-                            </p>
-                            <p>
-                                <strong>Windows Desktop / Chrome:</strong> Set <code class="text-emerald-300 font-mono">BASE_URL=http://localhost:8000/api/v1</code> in <code class="text-emerald-300 font-mono">npontu_sre_mobile/lib/core/constants/app_constants.dart</code> or pass via <code class="text-emerald-300 font-mono">--dart-define=BASE_URL=...</code>.
-                            </p>
-                            <p>
-                                <strong>Production Render Cloud:</strong> Default production endpoint is <code class="text-emerald-300 font-mono">https://npontu-technologies-sre.onrender.com/api/v1</code>.
-                            </p>
-                        </div>
-                    </div>
-
-                    {{-- 3. Mobile Quality Gates & Tests --}}
-                    <div class="p-5 rounded-xl bg-black/30 border border-white/10">
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold font-mono">3</span>
-                            <span>Mobile Automated Verification Commands</span>
-                        </h3>
-                        <p class="text-xs text-gray-400 mt-1.5 leading-relaxed">
-                            Run these three quality commands to ensure zero compiler warnings, zero UI overflows, and full offline sync coverage:
-                        </p>
-                        <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-mono">
-                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
-                                <span class="text-gray-500 block mb-1"># 1. Widget &amp; Unit Tests (22 tests)</span>
-                                <span class="text-emerald-400">flutter test</span>
-                            </div>
-                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
-                                <span class="text-gray-500 block mb-1"># 2. Static Analyzer (0 errors)</span>
-                                <span class="text-emerald-400">flutter analyze</span>
-                            </div>
-                            <div class="p-3 rounded-lg bg-black/60 border border-white/5 text-gray-300">
-                                <span class="text-gray-500 block mb-1"># 3. Code Formatting Gate</span>
-                                <span class="text-emerald-400">dart format --set-exit-if-changed .</span>
-                            </div>
-                        </div>
-                    </div>
+                    <pre class="mt-3 p-2 rounded bg-black/60 border border-white/10 text-[11px] font-mono text-emerald-300 overflow-x-auto">flutter test
+flutter analyze</pre>
                 </div>
             </div>
+        </section>
 
-        </div>
-
-        {{-- ── COMPREHENSIVE INTERACTIVE FAQ ACCORDION ───────────────────────────── --}}
-        <div id="faq" class="scroll-mt-24 mt-16 pt-10 border-t border-white/10">
-            <div class="text-center max-w-2xl mx-auto mb-10">
-                <span class="text-xs font-mono uppercase tracking-widest text-[#F5C518] font-bold">KNOWLEDGE BASE</span>
-                <h2 class="text-3xl font-black text-white mt-1">Frequently Asked Questions</h2>
-                <p class="text-xs sm:text-sm text-gray-400 mt-2">
-                    Direct, authoritative answers addressing architecture, SRE protocols, security guarantees, and platform governance.
-                </p>
+        {{-- ── SECTION 5: TWO-WAY SHIFT HANDOVER PROTOCOL ───────────────────── --}}
+        <section id="handover-flow" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 05 &bull; OPERATIONAL DISCIPLINE</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">The 4-Phase Two-Way Handover Protocol</h2>
+                </div>
+                <span class="text-xs font-mono text-yellow-400">Zero Unacknowledged Handovers</span>
             </div>
 
-            <div class="max-w-4xl mx-auto space-y-3">
-                
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-emerald-400 font-bold">PHASE 01</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">Live Verification</h4>
+                    <p class="text-xs text-gray-400 mt-1">Review active checklist status and log blocker remarks.</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-[#F5C518] font-bold">PHASE 02</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">Outgoing Sign-Off</h4>
+                    <p class="text-xs text-gray-400 mt-1">Lead generates briefing and signs off with cryptographic timestamp.</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-blue-400 font-bold">PHASE 03</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">Incoming Sign-On</h4>
+                    <p class="text-xs text-gray-400 mt-1">Oncoming lead accepts operational custody and acknowledges open tickets.</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
+                    <span class="text-[10px] font-mono text-purple-400 font-bold">PHASE 04</span>
+                    <h4 class="text-sm font-bold text-white mt-0.5">Forensic Seal</h4>
+                    <p class="text-xs text-gray-400 mt-1">Immutable SIEM audit log seal generated. Dispatches @Mention Email Receipts.</p>
+                </div>
+            </div>
+        </section>
+
+        {{-- ── SECTION 6: GOVERNANCE & SLA ──────────────────────────────────── --}}
+        <section id="governance" class="scroll-mt-24 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] font-bold">CHAPTER 06 &bull; COMPLIANCE &amp; SLA</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">Governance, SLA &amp; Automated Reports</h2>
+                </div>
+                <span class="text-xs font-mono text-emerald-300">99.98% SLA Guaranteed</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div class="p-4 rounded-xl bg-black/30 border border-white/10 space-y-2">
+                    <h4 class="font-bold text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span>Security &amp; SIEM Audit Standard</span>
+                    </h4>
+                    <p class="text-gray-300 leading-relaxed">
+                        Every state mutation produces an immutable audit record containing actor snapshots, IP address, before/after JSON diffs, and timestamp.
+                    </p>
+                    <p class="text-gray-400">
+                        Inactivity Guard: Sessions automatically terminate after <strong>120 minutes of inactivity</strong> to prevent cockpit terminal exposure.
+                    </p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-black/30 border border-white/10 space-y-2">
+                    <h4 class="font-bold text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#F5C518]"></span>
+                        <span>Automated Scheduled Reporting</span>
+                    </h4>
+                    <p class="text-gray-300 leading-relaxed">
+                        Daily EOD summaries (23:59 UTC), weekly digests, and monthly executive compliance reports are scheduled automatically via Laravel console crons.
+                    </p>
+                    <p class="text-gray-400 font-mono">
+                        CLI Trigger: <code class="text-emerald-300">php artisan reports:send-automated</code>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {{-- ── SECTION 7: INTERACTIVE FAQ ACCORDION ─────────────────────────── --}}
+        <section id="faq" class="scroll-mt-24 space-y-4 pt-4">
+            <div class="text-center max-w-xl mx-auto mb-6">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-[#F5C518] font-bold">KNOWLEDGE BASE</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">Frequently Asked Questions</h2>
+                <p class="text-xs text-gray-400 mt-1">Authoritative answers on custody transfers, session timeouts, and audit immutability.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-2.5 text-xs sm:text-sm">
                 {{-- FAQ 1 --}}
                 <div class="rounded-xl bg-[#0C1A12] border border-emerald-900/40 overflow-hidden">
                     <button type="button"
                             @click="openFaq = openFaq === 1 ? null : 1"
-                            class="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
-                        <span class="font-bold text-sm text-white flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-md bg-white/5 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">Q1</span>
+                            class="w-full p-3.5 sm:p-4 text-left flex items-center justify-between gap-3 cursor-pointer hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-white flex items-center gap-2.5">
+                            <span class="text-[#F5C518] font-mono font-bold">Q1</span>
                             <span>How does the two-way handover custody transfer work mathematically?</span>
                         </span>
                         <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="openFaq === 1 ? 'rotate-180 text-[#F5C518]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div x-show="openFaq === 1" x-cloak class="p-5 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-black/20">
-                        The shift custody handover is a two-state operational cryptographic contract:
-                        <ul class="list-disc list-inside mt-2 space-y-1 text-gray-400">
-                            <li><strong>State 1 (Outgoing Sign-Off)</strong>: The outgoing shift lead confirms all checklist items, logs blocker remarks, and triggers `sign-off`. This stamps `user_id`, `shift_date`, `shift_type`, and an immutable timestamp. The handover status is set to "Awaiting Incoming Sign-On".</li>
-                            <li><strong>State 2 (Incoming Acceptance)</strong>: The oncoming lead cannot simply click "accept" silently; they must review the briefing, tick the checklist verification confirmation, and enter acceptance remarks. This stamps `accepted_by_id`, `accepted_at`, and creates an immutable SIEM audit log entry. Operational responsibility is officially transferred only after State 2 completes.</li>
-                        </ul>
+                    <div x-show="openFaq === 1" class="p-4 pt-0 text-gray-300 leading-relaxed border-t border-white/5 bg-black/20 text-xs">
+                        The handover is a 2-state operational contract: (1) Outgoing Sign-Off timestamps outgoing lead custody and sets status to awaiting incoming review. (2) Incoming Sign-On requires oncoming lead verification remarks before shifting operational custody and creating an immutable SIEM audit log.
                     </div>
                 </div>
 
@@ -676,15 +652,15 @@ flutter run -d emulator-5554</pre>
                 <div class="rounded-xl bg-[#0C1A12] border border-emerald-900/40 overflow-hidden">
                     <button type="button"
                             @click="openFaq = openFaq === 2 ? null : 2"
-                            class="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
-                        <span class="font-bold text-sm text-white flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-md bg-white/5 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">Q2</span>
+                            class="w-full p-3.5 sm:p-4 text-left flex items-center justify-between gap-3 cursor-pointer hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-white flex items-center gap-2.5">
+                            <span class="text-[#F5C518] font-mono font-bold">Q2</span>
                             <span>What happens when an engineer's session times out after 120 minutes of inactivity?</span>
                         </span>
                         <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="openFaq === 2 ? 'rotate-180 text-[#F5C518]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div x-show="openFaq === 2" x-cloak class="p-5 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-black/20">
-                        To prevent unauthorized physical access to an unattended cockpit terminal, sessions automatically expire after 120 minutes. Rather than displaying an ugly default Laravel "419 Page Expired" modal, Livewire hooks intercept the 419 token response and smoothly redirect the operator to <code class="text-emerald-300 font-mono">/login?expired=1</code>, which displays a branded security alert explaining the inactivity timeout and provides 1-click test credential population to resume the shift immediately.
+                    <div x-show="openFaq === 2" class="p-4 pt-0 text-gray-300 leading-relaxed border-t border-white/5 bg-black/20 text-xs">
+                        To protect unattended terminals, sessions expire after 120 minutes of inactivity. Livewire intercepts the expired token and smoothly routes to <code class="text-emerald-300 font-mono">/login?expired=1</code> with security notifications.
                     </div>
                 </div>
 
@@ -692,15 +668,15 @@ flutter run -d emulator-5554</pre>
                 <div class="rounded-xl bg-[#0C1A12] border border-emerald-900/40 overflow-hidden">
                     <button type="button"
                             @click="openFaq = openFaq === 3 ? null : 3"
-                            class="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
-                        <span class="font-bold text-sm text-white flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-md bg-white/5 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">Q3</span>
+                            class="w-full p-3.5 sm:p-4 text-left flex items-center justify-between gap-3 cursor-pointer hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-white flex items-center gap-2.5">
+                            <span class="text-[#F5C518] font-mono font-bold">Q3</span>
                             <span>Can audit log records ever be deleted or edited by administrators?</span>
                         </span>
                         <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="openFaq === 3 ? 'rotate-180 text-[#F5C518]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div x-show="openFaq === 3" x-cloak class="p-5 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-black/20">
-                        <strong>No.</strong> The <code class="text-emerald-300 font-mono">audit_logs</code> table is architecturally append-only. No controller, model, or administrative screen provides an update or delete action for audit logs. Furthermore, the database grants assigned in production restrict the application user to <code class="text-emerald-300 font-mono">INSERT</code> and <code class="text-emerald-300 font-mono">SELECT</code> statements on audit tables, rendering them immutable even under administrative compromise.
+                    <div x-show="openFaq === 3" class="p-4 pt-0 text-gray-300 leading-relaxed border-t border-white/5 bg-black/20 text-xs">
+                        <strong>No.</strong> The <code class="text-emerald-300 font-mono">audit_logs</code> table is architecturally append-only. Database permissions restrict application users to INSERT and SELECT only.
                     </div>
                 </div>
 
@@ -708,68 +684,26 @@ flutter run -d emulator-5554</pre>
                 <div class="rounded-xl bg-[#0C1A12] border border-emerald-900/40 overflow-hidden">
                     <button type="button"
                             @click="openFaq = openFaq === 4 ? null : 4"
-                            class="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
-                        <span class="font-bold text-sm text-white flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-md bg-white/5 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">Q4</span>
+                            class="w-full p-3.5 sm:p-4 text-left flex items-center justify-between gap-3 cursor-pointer hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-white flex items-center gap-2.5">
+                            <span class="text-[#F5C518] font-mono font-bold">Q4</span>
                             <span>How do automated daily, weekly, and monthly reports work?</span>
                         </span>
                         <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="openFaq === 4 ? 'rotate-180 text-[#F5C518]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div x-show="openFaq === 4" x-cloak class="p-5 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-black/20">
-                        Automated reports are powered by the Laravel Artisan command <code class="text-emerald-300 font-mono">php artisan reports:send-automated</code>. In <code class="text-emerald-300 font-mono">routes/console.php</code>, automated schedules are registered:
-                        <ul class="list-disc list-inside mt-2 space-y-1 text-gray-400">
-                            <li><strong>Daily EOD Report</strong>: Runs automatically at 23:59 UTC every day, aggregating the shift's resolution rate, blocker remarks, and signed handovers.</li>
-                            <li><strong>Weekly Digest</strong>: Runs on Sundays at 23:59 UTC, compiling 7-day operational performance and compliance trends.</li>
-                            <li><strong>Monthly Executive Summary</strong>: Runs on the 28th of each month, presenting formal SLA uptime achievement and audit log volume.</li>
-                            <li><strong>On-Demand Triggering</strong>: Administrators can dispatch reports at any time via CLI (e.g. <code class="text-emerald-300 font-mono">php artisan reports:send-automated --period=weekly --email=hello@johnokyere.xyz</code>).</li>
-                        </ul>
+                    <div x-show="openFaq === 4" class="p-4 pt-0 text-gray-300 leading-relaxed border-t border-white/5 bg-black/20 text-xs">
+                        Automated reports are powered by <code class="text-emerald-300 font-mono">php artisan reports:send-automated</code> scheduled in <code class="text-emerald-300 font-mono">routes/console.php</code> for Daily (23:59 UTC), Weekly (Sundays), and Monthly (28th).
                     </div>
                 </div>
-
-                {{-- FAQ 5 --}}
-                <div class="rounded-xl bg-[#0C1A12] border border-emerald-900/40 overflow-hidden">
-                    <button type="button"
-                            @click="openFaq = openFaq === 5 ? null : 5"
-                            class="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
-                        <span class="font-bold text-sm text-white flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-md bg-white/5 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">Q5</span>
-                            <span>What are the 5 SRE grades and 9 granular privileges?</span>
-                        </span>
-                        <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="openFaq === 5 ? 'rotate-180 text-[#F5C518]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div x-show="openFaq === 5" x-cloak class="p-5 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-black/20">
-                        Npontu defines 5 technical engineering tiers: <strong>L1 Support Operator</strong>, <strong>L2 Support Engineer</strong>, <strong>L3 Senior SRE / Shift Lead</strong>, <strong>L4 Principal Lead</strong>, and <strong>L5 Director / Systems Architect</strong>.
-                        <br><br>
-                        Beyond base roles, permissions are governed by 9 fine-grained privilege toggles:
-                        <code class="text-emerald-300 font-mono">manage_activities</code>, <code class="text-emerald-300 font-mono">assign_tasks</code>, <code class="text-emerald-300 font-mono">sign_handovers</code>, <code class="text-emerald-300 font-mono">accept_handovers</code>, <code class="text-emerald-300 font-mono">escalate_incidents</code>, <code class="text-emerald-300 font-mono">export_reports</code>, <code class="text-emerald-300 font-mono">manage_users</code>, <code class="text-emerald-300 font-mono">view_audit_logs</code>, and <code class="text-emerald-300 font-mono">create_channels</code>.
-                    </div>
-                </div>
-
-                {{-- FAQ 6 --}}
-                <div class="rounded-xl bg-[#0C1A12] border border-emerald-900/40 overflow-hidden">
-                    <button type="button"
-                            @click="openFaq = openFaq === 6 ? null : 6"
-                            class="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors">
-                        <span class="font-bold text-sm text-white flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-md bg-white/5 text-[#F5C518] flex items-center justify-center text-xs font-mono font-bold">Q6</span>
-                            <span>Can automated external monitors ping the platform telemetry endpoint?</span>
-                        </span>
-                        <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="openFaq === 6 ? 'rotate-180 text-[#F5C518]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div x-show="openFaq === 6" x-cloak class="p-5 pt-0 text-xs sm:text-sm text-gray-300 leading-relaxed border-t border-white/5 bg-black/20">
-                        <strong>Yes.</strong> The telemetry endpoint <code class="text-emerald-300 font-mono">GET /health?format=json</code> or <code class="text-emerald-300 font-mono">GET /health/telemetry</code> returns a machine-readable JSON payload containing active status (<code class="text-emerald-300 font-mono">ok</code>), database connectivity latency, memory usage, and uptime percentage for integration with Prometheus, DataDog, or UptimeRobot.
-                    </div>
-                </div>
-
             </div>
-        </div>
+        </section>
 
-    </div>
+    </main>
 
-    {{-- Comprehensive Enterprise Footer --}}
+    {{-- ── GLOBAL ENTERPRISE FOOTER ─────────────────────────────────────────── --}}
     @include('layouts.partials.footer')
 
-    {{-- Live UTC Clock Synchronizer & Hash Scroll Handler --}}
+    {{-- Live UTC Clock --}}
     <script>
         (function() {
             function updateNavClock() {
@@ -784,22 +718,6 @@ flutter run -d emulator-5554</pre>
             }
             setInterval(updateNavClock, 1000);
             updateNavClock();
-
-            // Smoothly jump to hash if present on load or hash change
-            function handleHash() {
-                if (window.location.hash) {
-                    try {
-                        const target = document.querySelector(window.location.hash);
-                        if (target) {
-                            setTimeout(() => {
-                                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                        }
-                    } catch (e) {}
-                }
-            }
-            window.addEventListener('hashchange', handleHash);
-            document.addEventListener('DOMContentLoaded', handleHash);
         })();
     </script>
     @livewireScripts
