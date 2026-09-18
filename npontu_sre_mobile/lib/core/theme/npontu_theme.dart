@@ -274,3 +274,8 @@ class NpontuTheme {
     );
   }
 }
+
+/// Opsora brand design system aliases
+typedef OpsoraColors = NpontuColors;
+typedef OpsoraTheme = NpontuTheme;
+

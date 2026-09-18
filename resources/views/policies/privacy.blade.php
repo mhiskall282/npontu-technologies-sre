@@ -158,7 +158,7 @@
             <span>Mobile Companion Application &amp; App Store / Play Store Disclosures</span>
         </h2>
         <p>
-            The <strong>Npontu SRE Mobile Companion</strong> (available for Android and iOS) adheres strictly to Google Play User Data Policies and Apple App Store Review Guidelines (specifically Guideline 5.1.1 on Data Collection and Storage):
+            The <strong>Opsora SRE Mobile Companion</strong> (available for Android and iOS) adheres strictly to Google Play User Data Policies and Apple App Store Review Guidelines (specifically Guideline 5.1.1 on Data Collection and Storage):
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
             <div class="p-4 rounded-xl bg-white/5 border border-white/10">
@@ -167,13 +167,13 @@
                     <li><strong class="text-white">Push Notifications:</strong> Used exclusively for real-time P1/P2 incident escalations and shift handover transfer requests. No promotional or marketing notifications are ever sent.</li>
                     <li><strong class="text-white">Local Encrypted Storage:</strong> Encrypted shared preferences cache operational checklists, handover history, and active war rooms for offline resilience.</li>
                     <li><strong class="text-white">Camera / Photo Library:</strong> Strictly optional; used only if an operator chooses to attach an error screenshot or topology diagram to an operational chat or activity log.</li>
-                    <li><strong class="text-white">Biometrics (FaceID / Fingerprint):</strong> Handled locally on-device by OS Secure Enclave / Keystore; biometric vectors are never transmitted to Npontu servers.</li>
+                    <li><strong class="text-white">Biometrics (FaceID / Fingerprint):</strong> Handled locally on-device by OS Secure Enclave / Keystore; biometric vectors are never transmitted to Opsora servers.</li>
                 </ul>
             </div>
             <div class="p-4 rounded-xl bg-white/5 border border-white/10">
                 <p class="text-xs font-bold text-[#F5C518] uppercase tracking-wider font-mono">Zero Third-Party Trackers or Data Brokers</p>
                 <p class="text-xs text-gray-400 mt-2 leading-relaxed">
-                    The mobile application does NOT include Google AdMob, Meta Audience Network, Firebase Analytics, or any third-party behavioral tracking SDKs. No Advertising ID (IDFA / AAID) is ever accessed or collected. All telemetry connects directly to authorized Npontu enterprise endpoints via TLS 1.3 encryption with certificate pinning capabilities.
+                    The mobile application does NOT include Google AdMob, Meta Audience Network, Firebase Analytics, or any third-party behavioral tracking SDKs. No Advertising ID (IDFA / AAID) is ever accessed or collected. All telemetry connects directly to authorized Opsora enterprise endpoints via TLS 1.3 encryption with certificate pinning capabilities.
                 </p>
             </div>
         </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity Report — Npontu Technologies</title>
+    <title>Activity Report — Opsora SRE</title>
     <style>
         /* ── Reset & Base ────────────────────────────────── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -270,9 +270,9 @@
     {{-- ── Report Header ───────────────────────────────────────────── --}}
     <div class="report-header">
         <div class="brand-block">
-            <div class="brand-logo">N</div>
+            <div class="brand-logo">O</div>
             <div>
-                <div class="brand-name">Npontu Technologies</div>
+                <div class="brand-name">Opsora SRE Operations</div>
                 <div class="brand-tagline">Support Activity Tracker — Official Report</div>
             </div>
         </div>
@@ -438,7 +438,7 @@
 
     {{-- ── Footer ──────────────────────────────────────────────────── --}}
     <div class="report-footer">
-        <span>© {{ date('Y') }} Npontu Technologies — Support Activity Tracker</span>
+        <span>© {{ date('Y') }} Opsora SRE Operations — Support Activity Tracker</span>
         <span>
             <strong>Period:</strong>
             {{ \Carbon\Carbon::parse($from)->format('d M Y') }} to {{ \Carbon\Carbon::parse($to)->format('d M Y') }}

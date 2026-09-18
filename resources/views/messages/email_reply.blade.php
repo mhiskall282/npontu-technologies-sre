@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Instant Reply — SRE Operations Comms — Npontu</title>
+    <title>Instant Reply — SRE Operations Comms — Opsora</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -150,7 +150,7 @@
 
     {{-- Footer --}}
     <footer class="border-t border-[#1A2E22] px-6 py-3.5 text-center text-xs text-gray-500 bg-[#0A120E]/50">
-        &copy; {{ date('Y') }} Npontu Technologies. All operations verified and recorded in immutable audit logs.
+        &copy; {{ date('Y') }} Opsora SRE Operations. All operations verified and recorded in immutable audit logs.
     </footer>
 </body>
 </html>

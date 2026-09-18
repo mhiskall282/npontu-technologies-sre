@@ -29,7 +29,7 @@
             <span>99.98% Operational Availability Commitment</span>
         </h2>
         <p>
-            Npontu Technologies guarantees a minimum monthly platform uptime of <strong>99.98%</strong> for the Support Activity Tracker and associated health probe APIs. This corresponds to an allowed unscheduled downtime error budget of less than <strong>8 minutes and 45 seconds per month</strong>.
+            Opsora guarantees a minimum monthly platform uptime of <strong>99.98%</strong> for the Support Activity Tracker and associated health probe APIs. This corresponds to an allowed unscheduled downtime error budget of less than <strong>8 minutes and 45 seconds per month</strong>.
         </p>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-center">
             <div class="p-3.5 rounded-xl bg-black/30 border border-white/10">

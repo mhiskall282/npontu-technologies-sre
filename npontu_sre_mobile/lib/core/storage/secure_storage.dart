@@ -87,6 +87,57 @@ class SecureStorageService {
     }
   }
 
+  Future<void> saveActiveWorkspaceId(String workspaceId) async {
+    if (kIsWeb) {
+      final prefs = await _getPrefs();
+      await prefs.setString(AppConstants.activeWorkspaceKey, workspaceId);
+      return;
+    }
+    try {
+      await _storage
+          .write(key: AppConstants.activeWorkspaceKey, value: workspaceId)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      final prefs = await _getPrefs();
+      await prefs.setString(AppConstants.activeWorkspaceKey, workspaceId);
+    }
+  }
+
+  Future<String?> getActiveWorkspaceId() async {
+    if (kIsWeb) {
+      final prefs = await _getPrefs();
+      return prefs.getString(AppConstants.activeWorkspaceKey);
+    }
+    try {
+      return await _storage
+          .read(key: AppConstants.activeWorkspaceKey)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      try {
+        final prefs = await _getPrefs();
+        return prefs.getString(AppConstants.activeWorkspaceKey);
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
+  Future<void> deleteActiveWorkspaceId() async {
+    if (kIsWeb) {
+      final prefs = await _getPrefs();
+      await prefs.remove(AppConstants.activeWorkspaceKey);
+      return;
+    }
+    try {
+      await _storage
+          .delete(key: AppConstants.activeWorkspaceKey)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      final prefs = await _getPrefs();
+      await prefs.remove(AppConstants.activeWorkspaceKey);
+    }
+  }
+
   Future<void> saveUserData(Map<String, dynamic> userMap) async {
     final encoded = jsonEncode(userMap);
     if (kIsWeb) {

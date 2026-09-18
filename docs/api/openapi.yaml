@@ -13,7 +13,7 @@ info:
 servers:
   - url: http://localhost:8000/api/v1
     description: Local Development Environment
-  - url: https://api-sre.npontu.com/api/v1
+  - url: https://npontu-support-tracker.onrender.com/api/v1
     description: Production Environment
 
 tags:

@@ -40,6 +40,16 @@
                 </svg>
                 <span class="truncate">All Activities</span>
             </a>
+
+            {{-- Workspaces Directory --}}
+            <a href="{{ route('workspaces.index') }}"
+               class="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all duration-150
+                      {{ request()->routeIs('workspaces.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
+                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('workspaces.*') ? 'text-[#F5C518]' : 'text-gray-400 group-hover:text-gray-200' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                <span class="truncate">Workspaces</span>
+            </a>
         </div>
     </div>
 
@@ -96,11 +106,20 @@
             @if(auth()->user()->isAdmin() || auth()->user()->canManageActivities())
             <a href="{{ route('admin.activities.index') }}"
                class="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all duration-150
-                      {{ request()->routeIs('admin.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
-                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('admin.*') ? 'text-[#F5C518]' : 'text-gray-400 group-hover:text-gray-200' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {{ request()->routeIs('admin.activities.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
+                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('admin.activities.*') ? 'text-[#F5C518]' : 'text-gray-400 group-hover:text-gray-200' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
                 <span class="truncate">Admin Console</span>
+            </a>
+
+            <a href="{{ route('admin.organizations.applications') }}"
+               class="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all duration-150
+                      {{ request()->routeIs('admin.organizations.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
+                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('admin.organizations.*') ? 'text-[#F5C518]' : 'text-gray-400 group-hover:text-gray-200' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <span class="truncate">Org Applications</span>
             </a>
             @endif
 
