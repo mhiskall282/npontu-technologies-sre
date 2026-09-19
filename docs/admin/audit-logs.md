@@ -1,34 +1,93 @@
-# Immutable Audit Trail
+# Immutable Audit Trail & Client IP Provenance
 
 > **Module:** `/admin/platform/audit`  
 > **Service:** `App\Services\AuditService`  
-> **Model:** `App\Models\AuditLog` (`audit_logs` table)
+> **Model:** `App\Models\AuditLog` (`audit_logs` table)  
+> **API Endpoints:** `GET /api/v1/audit-logs`, `GET /api/v1/platform/audit-logs`
 
-## Overview
+## 1. Overview & Compliance Standard
 
-In accordance with strict SRE compliance standards and assignment requirements, every user-facing and platform-level mutation creates an immutable audit log entry. Audit logs are write-only and cannot be altered or purged by ordinary administrators.
+In accordance with strict SRE compliance standards, multi-tenant security requirements, and enterprise SOC-2 guidelines, every state mutation across Opsora generates an immutable, cryptographically timestamped audit log entry. Audit logs are write-only and cannot be altered or purged by ordinary administrators or tenants.
 
 ---
 
-## Log Record Schema
+## 2. Client IP Resolution & Provenance Pipeline
+
+To guarantee non-repudiation and forensic provenance, client IP addresses are extracted server-side and recorded on every mutation.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as Engineer / API Client
+    participant Proxy as Reverse Proxy / Load Balancer
+    participant App as Laravel Middleware
+    participant Service as AuditService / Platform Action
+    participant Model as AuditLog Model
+    participant Database as audit_logs Table
+
+    Client->>Proxy: Mutation Request (POST/PUT/PATCH/DELETE)
+    Proxy->>App: Forward Request with X-Forwarded-For / Remote-Addr
+    App->>Service: Execute State Change
+    Service->>Service: Resolve Client IP: Request::ip() ?? '127.0.0.1'
+    Service->>Model: AuditLog::create(['actor_ip' => $ip, ...])
+    Note over Model: Accessor getIpAddressAttribute() & mutator setIpAddressAttribute() guarantee dual compatibility
+    Model->>Database: INSERT INTO audit_logs (actor_ip, ...)
+    Database-->>App: Persisted Record
+    App-->>Client: Success Response
+```
+
+### 2.1 Database & Model Mapping
+- **Database Column:** `actor_ip VARCHAR(45) NULL` (supports IPv4 and full IPv6 addresses).
+- **Model Accessor:** `getIpAddressAttribute()` returns `$this->actor_ip ?? $this->attributes['ip_address'] ?? '127.0.0.1'`.
+- **Model Mutator:** `setIpAddressAttribute($value)` assigns `$this->attributes['actor_ip'] = $value`.
+- **Mass Assignment:** Both `actor_ip` and `ip_address` are registered in `$fillable`.
+- **API Resource:** `AuditLogResource` outputs both `actor_ip` and `ip_address` for seamless client compatibility.
+
+---
+
+## 3. Log Record Schema
 
 Each audit log entry captures:
 
-- **`actor_id`**: Foreign key to `users` table.
-- **`actor_name`**: Denormalized string snapshot of the actor's name at the instant of mutation (protects against subsequent user renaming).
-- **`subject_type` & `subject_id`**: Morphable relationship pointing to the mutated resource (`User`, `Organization`, `Workspace`, `Subscription`, `FeatureFlag`, etc.).
-- **`event`**: Event verb (`created`, `updated`, `status_changed`, `deleted`, `suspended`, `reactivated`).
-- **`old_values`**: JSON snapshot of pre-mutation attribute values.
-- **`new_values`**: JSON snapshot of post-mutation attribute values.
-- **`ip_address`**: Client IP address of the initiating request.
-- **`created_at`**: Immutable timestamp.
+| Column | Type | Description |
+|---|---|---|
+| `id` | `BIGINT UNSIGNED` | Auto-incrementing primary key |
+| `workspace_id` | `BIGINT UNSIGNED NULL` | Tenant workspace scope (null for platform-level mutations) |
+| `actor_id` | `BIGINT UNSIGNED NULL` | Foreign key to `users` table |
+| `actor_name` | `VARCHAR(255)` | Denormalized snapshot of actor's name at mutation moment |
+| `actor_role` | `VARCHAR(50) NULL` | Denormalized snapshot of actor's role (`admin`, `lead`, `agent`) |
+| `actor_ip` | `VARCHAR(45) NULL` | Validated IPv4 / IPv6 client network origin |
+| `subject_type` | `VARCHAR(255)` | Morphable model class (e.g. `App\Models\User`, `App\Models\Workspace`) |
+| `subject_id` | `BIGINT UNSIGNED` | ID of the mutated record |
+| `event` | `VARCHAR(50)` | Verb: `created`, `updated`, `status_changed`, `deleted`, `user_privileges_updated`, `platform_role_changed` |
+| `old_values` | `JSON NULL` | Pre-mutation attribute snapshot |
+| `new_values` | `JSON NULL` | Post-mutation attribute snapshot |
+| `created_at` | `TIMESTAMP` | Immutable creation timestamp |
 
 ---
 
-## Search & Filtering
+## 4. UI Representation in Platform Control Plane
 
-The Platform Audit Trail screen (`/admin/platform/audit`) provides:
-- Filtering by Event Verb (`created`, `updated`, `suspended`, `reactivated`, etc.).
-- Filtering by Subject Type (`Organization`, `User`, `Plan`, `Subscription`, `FeatureFlag`, `Activity`, `ShiftHandover`).
-- Free-text search matching actor name or IP address.
-- Full JSON diff modal inspectable directly in the UI.
+In `/admin/platform/audit`, each record displays:
+1. **Timestamp & Date:** Formatted with UTC relative tooltips.
+2. **Actor Profile:** Name with email subtitle and link to user directory.
+3. **Action / Event:** Color-coded status badge (e.g., `CREATED`, `STATUS_CHANGED`, `USER_PRIVILEGES_UPDATED`).
+4. **Subject Entity:** Model class basename with ID badge (e.g., `User #4`, `Workspace #2`).
+5. **State Diff / Payload:** Collapsible JSON delta showing changed keys.
+6. **Client IP Badge:** High-contrast, monospace badge with network globe icon:
+   ```html
+   <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-mono text-[11px] font-semibold border border-gray-200 dark:border-white/10 shadow-xs">
+       <svg class="w-3.5 h-3.5 text-gray-400">...</svg>
+       127.0.0.1
+   </span>
+   ```
+
+---
+
+## 5. Search & Filtering Capabilities
+
+The Global Platform Audit Trail provides:
+- **Free-Text Search:** Automatically matches actor name, event type, subject type, or IP address (`actor_ip`).
+- **Event Filter:** Dropdown populated dynamically with distinct persisted event verbs.
+- **Date Range Picker:** Filter by `from` and `to` ISO dates.
+- **Pagination:** 25 records per page with query string preservation.

@@ -190,6 +190,93 @@
                 </div>
             </div>
 
+            {{-- Granular Privileges & Operational Authorizations --}}
+            <div class="p-5 rounded-2xl bg-white dark:bg-[#16241B] border border-gray-200 dark:border-white/10 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div>
+                        <h2 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span>Granular User Privileges &amp; Capabilities</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#1B6B3A]/20 text-[#1B6B3A] dark:text-emerald-300">
+                                {{ count($allPrivileges) }} Available
+                            </span>
+                        </h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Configure explicit authorizations for operational checks, multi-tenancy, and security governance.
+                        </p>
+                    </div>
+                </div>
+
+                @if($user->isAdmin())
+                    <div class="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2 font-medium">
+                        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        <span>Account holds the <strong>Administrator</strong> role and unconditionally inherits all system privileges. Configuring checkboxes sets explicit fallback grants.</span>
+                    </div>
+                @endif
+
+                <form action="{{ route('admin.platform.users.update-privileges', $user->id) }}" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PATCH')
+
+                    @php
+                        $groupedPrivileges = [];
+                        foreach ($allPrivileges as $privKey => $privData) {
+                            $cat = $privData['category'] ?? 'General';
+                            $groupedPrivileges[$cat][$privKey] = $privData;
+                        }
+                    @endphp
+
+                    <div class="space-y-4 max-h-[420px] overflow-y-auto pr-1">
+                        @foreach($groupedPrivileges as $category => $privileges)
+                            <div>
+                                <div class="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#1B6B3A]"></span>
+                                    <span>{{ $category }}</span>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                                    @foreach($privileges as $privKey => $privData)
+                                        @php
+                                            $isExplicitlyGranted = $user->privileges !== null && in_array($privKey, $user->privileges, true);
+                                            $isRoleDefault = $user->privileges === null && $user->hasPrivilege($privKey);
+                                            $isChecked = $isExplicitlyGranted || $isRoleDefault || $user->isAdmin();
+                                        @endphp
+                                        <label class="flex items-start gap-3 p-3 rounded-xl border border-gray-200 dark:border-white/5 hover:border-[#1B6B3A] dark:hover:border-[#1B6B3A] bg-gray-50/50 dark:bg-black/20 cursor-pointer transition-colors">
+                                            <input type="checkbox"
+                                                   name="privileges[]"
+                                                   value="{{ $privKey }}"
+                                                   {{ $isChecked ? 'checked' : '' }}
+                                                   class="rounded border-gray-300 dark:border-white/20 text-[#1B6B3A] focus:ring-[#1B6B3A] mt-0.5 h-4 w-4 bg-white dark:bg-black/40">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center justify-between gap-1">
+                                                    <span class="text-xs font-bold text-gray-900 dark:text-white">{{ $privData['label'] }}</span>
+                                                    <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-gray-200/60 dark:bg-white/10 text-gray-600 dark:text-gray-300 font-medium">
+                                                        {{ $privKey }}
+                                                    </span>
+                                                </div>
+                                                <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">{{ $privData['description'] }}</p>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                            Mutations are cryptographically recorded in the compliance audit trail.
+                        </span>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#1B6B3A] hover:bg-emerald-600 text-white text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Save Privileges</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             {{-- Recent Security & SIEM Events --}}
             <div class="p-5 rounded-2xl bg-white dark:bg-[#16241B] border border-gray-200 dark:border-white/10 shadow-sm">
                 <h2 class="text-base font-bold text-gray-900 dark:text-white mb-2">Security & SIEM Telemetry</h2>

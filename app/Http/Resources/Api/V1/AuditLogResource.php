@@ -26,6 +26,7 @@ class AuditLogResource extends JsonResource
             'actor_name' => $this->actor_name,
             'actor_role' => $this->actor_role,
             'actor_ip' => $this->actor_ip,
+            'ip_address' => $this->ip_address,
             'actor' => new UserResource($this->whenLoaded('actor')),
             'subject_type' => class_basename($this->subject_type),
             'subject_id' => $this->subject_id,

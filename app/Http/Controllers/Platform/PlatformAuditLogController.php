@@ -23,7 +23,7 @@ final class PlatformAuditLogController extends Controller
                 $q->where('actor_name', 'like', "%{$search}%")
                     ->orWhere('event', 'like', "%{$search}%")
                     ->orWhere('subject_type', 'like', "%{$search}%")
-                    ->orWhere('ip_address', 'like', "%{$search}%");
+                    ->orWhere('actor_ip', 'like', "%{$search}%");
             });
         }
 

@@ -67,6 +67,7 @@ class User extends Authenticatable
      * Complete Catalog of Granular Permissions / Privileges.
      */
     public const ALL_PRIVILEGES = [
+        // Operations
         'manage_activities' => [
             'label' => 'Manage Activities',
             'description' => 'Create, edit, and configure operational activity checks and recurrences',
@@ -77,6 +78,13 @@ class User extends Authenticatable
             'description' => 'Delegate checks to team members individually or in bulk batches',
             'category' => 'Operations',
         ],
+        'execute_runbooks' => [
+            'label' => 'Execute SRE Runbooks',
+            'description' => 'Trigger automated remediation runbooks, failovers, and recovery jobs',
+            'category' => 'Operations',
+        ],
+
+        // Shift Management
         'sign_handovers' => [
             'label' => 'Sign Shift Handovers',
             'description' => 'Draft and digitally sign off SRE shift handover briefings',
@@ -87,30 +95,88 @@ class User extends Authenticatable
             'description' => 'Formally acknowledge and accept shift handovers as incoming lead',
             'category' => 'Shift Management',
         ],
+
+        // Incident Response
         'escalate_incidents' => [
             'label' => 'Flag Incidents & Escalations',
             'description' => 'Escalate operational checks and attach incident tracking tickets',
             'category' => 'Incident Response',
         ],
-        'export_reports' => [
-            'label' => 'Reporting & Data Export',
-            'description' => 'Access system reporting screens and export operational CSV/print reports',
-            'category' => 'Reporting',
+        'resolve_incidents' => [
+            'label' => 'Resolve Incidents & Post-Mortem',
+            'description' => 'Formally declare incidents resolved and publish post-mortem Root Cause Analyses',
+            'category' => 'Incident Response',
+        ],
+
+        // Multi-Tenancy & Workspaces
+        'manage_workspaces' => [
+            'label' => 'Manage Workspaces',
+            'description' => 'Provision, configure, switch, and archive operational team workspaces',
+            'category' => 'Multi-Tenancy',
+        ],
+
+        // Commercial Billing & Subscriptions
+        'manage_billing' => [
+            'label' => 'Subscription & Billing Access',
+            'description' => 'View commercial invoices, plan tiers, payment receipts, and subscription quotas',
+            'category' => 'Commercial',
+        ],
+
+        // Security & SIEM Telemetry
+        'view_audit_logs' => [
+            'label' => 'View Security Audit Trails',
+            'description' => 'Inspect immutable security audit logs and state mutation diffs',
+            'category' => 'Security & Compliance',
+        ],
+        'manage_security' => [
+            'label' => 'SIEM & Security Telemetry',
+            'description' => 'Inspect security events, analyze threat telemetry, and revoke compromised tokens',
+            'category' => 'Security & Compliance',
+        ],
+
+        // Platform & Entitlements
+        'manage_feature_flags' => [
+            'label' => 'Feature Flags & Entitlements',
+            'description' => 'Inspect and toggle tenant-level dynamic feature flags and release toggles',
+            'category' => 'Platform Governance',
         ],
         'manage_users' => [
             'label' => 'User Administration',
             'description' => 'Provision accounts, configure granular privileges, and trigger password resets',
-            'category' => 'Administration',
+            'category' => 'Platform Governance',
         ],
-        'view_audit_logs' => [
-            'label' => 'View Security Audit Trails',
-            'description' => 'Inspect immutable security audit logs and state mutation diffs',
-            'category' => 'Administration',
+
+        // Integrations & Webhooks
+        'manage_integrations' => [
+            'label' => 'Webhooks & API Integrations',
+            'description' => 'Configure outbound SIEM webhooks, third-party relays, and API access tokens',
+            'category' => 'Integrations',
         ],
+
+        // Communications
         'create_channels' => [
             'label' => 'Create Chat Channels',
             'description' => 'Create group communication channels and incident response chat rooms',
             'category' => 'Communications',
+        ],
+        'broadcast_announcements' => [
+            'label' => 'Broadcast Emergency Announcements',
+            'description' => 'Send high-priority operational broadcasts to all active SRE engineers',
+            'category' => 'Communications',
+        ],
+
+        // Compliance & Governance
+        'purge_audit_records' => [
+            'label' => 'Compliance Archival & Data Purge',
+            'description' => 'Request or execute compliance-driven archival and soft-deleted record purges',
+            'category' => 'Compliance',
+        ],
+
+        // Reporting
+        'export_reports' => [
+            'label' => 'Reporting & Data Export',
+            'description' => 'Access system reporting screens and export operational CSV/print reports',
+            'category' => 'Reporting',
         ],
     ];
 
@@ -265,12 +331,16 @@ class User extends Authenticatable
             return in_array($privilege, [
                 'manage_activities',
                 'assign_tasks',
+                'execute_runbooks',
                 'sign_handovers',
                 'accept_handovers',
                 'escalate_incidents',
+                'resolve_incidents',
                 'export_reports',
                 'view_audit_logs',
                 'create_channels',
+                'broadcast_announcements',
+                'manage_workspaces',
             ], true);
         }
 
@@ -278,6 +348,7 @@ class User extends Authenticatable
         return in_array($privilege, [
             'escalate_incidents',
             'create_channels',
+            'execute_runbooks',
         ], true);
     }
 
@@ -298,6 +369,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user has permission to execute automated SRE runbooks.
+     */
+    public function canExecuteRunbooks(): bool
+    {
+        return $this->hasPrivilege('execute_runbooks');
+    }
+
+    /**
      * Check if user has permission to sign off shift handovers.
      */
     public function canSignHandovers(): bool
@@ -311,6 +390,110 @@ class User extends Authenticatable
     public function canAcceptHandovers(): bool
     {
         return $this->hasPrivilege('accept_handovers');
+    }
+
+    /**
+     * Check if user has permission to flag operational incidents.
+     */
+    public function canEscalateIncidents(): bool
+    {
+        return $this->hasPrivilege('escalate_incidents');
+    }
+
+    /**
+     * Check if user has permission to formally resolve incidents and publish post-mortems.
+     */
+    public function canResolveIncidents(): bool
+    {
+        return $this->hasPrivilege('resolve_incidents');
+    }
+
+    /**
+     * Check if user has permission to manage workspaces and tenant boundaries.
+     */
+    public function canManageWorkspaces(): bool
+    {
+        return $this->hasPrivilege('manage_workspaces');
+    }
+
+    /**
+     * Check if user has permission to manage commercial billing and subscriptions.
+     */
+    public function canManageBilling(): bool
+    {
+        return $this->hasPrivilege('manage_billing');
+    }
+
+    /**
+     * Check if user has permission to inspect security events and audit logs.
+     */
+    public function canViewAuditLogs(): bool
+    {
+        return $this->hasPrivilege('view_audit_logs');
+    }
+
+    /**
+     * Check if user has permission to manage SIEM security telemetry.
+     */
+    public function canManageSecurity(): bool
+    {
+        return $this->hasPrivilege('manage_security');
+    }
+
+    /**
+     * Check if user has permission to manage dynamic feature flags.
+     */
+    public function canManageFeatureFlags(): bool
+    {
+        return $this->hasPrivilege('manage_feature_flags');
+    }
+
+    /**
+     * Check if user has permission to administer user accounts.
+     */
+    public function canManageUsers(): bool
+    {
+        return $this->hasPrivilege('manage_users');
+    }
+
+    /**
+     * Check if user has permission to manage external webhooks and integrations.
+     */
+    public function canManageIntegrations(): bool
+    {
+        return $this->hasPrivilege('manage_integrations');
+    }
+
+    /**
+     * Check if user has permission to create chat channels and war rooms.
+     */
+    public function canCreateChannels(): bool
+    {
+        return $this->hasPrivilege('create_channels');
+    }
+
+    /**
+     * Check if user has permission to broadcast urgent announcements.
+     */
+    public function canBroadcastAnnouncements(): bool
+    {
+        return $this->hasPrivilege('broadcast_announcements');
+    }
+
+    /**
+     * Check if user has permission to request compliance data archival and record purges.
+     */
+    public function canPurgeRecords(): bool
+    {
+        return $this->hasPrivilege('purge_audit_records');
+    }
+
+    /**
+     * Check if user has permission to export operational reports and metrics.
+     */
+    public function canExportReports(): bool
+    {
+        return $this->hasPrivilege('export_reports');
     }
 
     // ──────────────────────────────────────────

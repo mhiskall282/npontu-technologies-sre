@@ -67,15 +67,31 @@ In the mobile app and web platform, tapping or clicking on any operator's name o
 
 ```php
 public const ALL_PRIVILEGES = [
-    'manage_activities' => 'Create, edit, and configure operational activity checks',
-    'assign_tasks'      => 'Delegate checks to team members individually or in bulk',
-    'sign_handovers'    => 'Draft and digitally sign off SRE shift handover briefings',
-    'accept_handovers'  => 'Formally acknowledge and accept incoming shift handovers',
-    'escalate_incidents'=> 'Flag operational checks and attach incident tracking tickets',
-    'export_reports'    => 'Access system reporting screens and export operational CSVs',
-    'manage_users'      => 'Provision accounts and configure security privileges',
-    'view_audit_logs'   => 'Inspect immutable security audit logs and state diffs',
-    'create_channels'   => 'Create group communication channels and incident war rooms',
+    // Operations & Shift Work
+    'manage_activities'      => 'Create, edit, and configure operational activity checks',
+    'assign_tasks'           => 'Delegate checks to team members individually or in bulk',
+    'execute_runbooks'       => 'Trigger automated remediation runbooks, failovers, and recovery jobs',
+    'sign_handovers'         => 'Draft and digitally sign off SRE shift handover briefings',
+    'accept_handovers'       => 'Formally acknowledge and accept incoming shift handovers',
+    'escalate_incidents'     => 'Flag operational checks and attach incident tracking tickets',
+    'resolve_incidents'      => 'Formally declare incidents resolved and publish post-mortem RCAs',
+
+    // Multi-Tenancy & Commercial
+    'manage_workspaces'      => 'Provision, configure, switch, and archive team workspaces',
+    'manage_billing'         => 'View commercial invoices, plan tiers, payment receipts, and quotas',
+
+    // Security, Governance & Integrations
+    'view_audit_logs'        => 'Inspect immutable security audit logs and state mutation diffs',
+    'manage_security'        => 'Inspect security events, threat telemetry, and revoke tokens',
+    'manage_feature_flags'   => 'Inspect and toggle tenant-level dynamic feature flags',
+    'manage_users'           => 'Provision accounts and configure granular privileges',
+    'manage_integrations'    => 'Configure outbound SIEM webhooks, third-party relays, and API tokens',
+
+    // Communications & Reporting
+    'create_channels'        => 'Create group communication channels and incident war rooms',
+    'broadcast_announcements'=> 'Send high-priority operational broadcasts to all active engineers',
+    'purge_audit_records'    => 'Request or execute compliance-driven archival and record purges',
+    'export_reports'         => 'Access system reporting screens and export operational CSVs',
 ];
 ```
 

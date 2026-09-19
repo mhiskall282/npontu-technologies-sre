@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrganizationController;
 use App\Http\Controllers\Api\V1\Platform\PlatformApiController;
+use App\Http\Controllers\Api\V1\PrivilegeController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\ShiftHandoverController;
 use App\Http\Controllers\Api\V1\SystemHealthController;
@@ -95,6 +96,10 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('/team', [TeamController::class, 'index'])->name('team.index');
         Route::get('/team/{user}', [TeamController::class, 'show'])->name('team.show');
 
+        // Granular Permissions & Privileges
+        Route::get('/privileges', [PrivilegeController::class, 'index'])->name('privileges.index');
+        Route::put('/users/{id}/privileges', [PrivilegeController::class, 'update'])->name('users.privileges.update');
+
         // Security Compliance Audit Trail
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 
@@ -110,12 +115,14 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                 Route::post('/organizations/{id}/reactivate', [PlatformApiController::class, 'reactivateOrganization'])->name('organizations.reactivate');
                 Route::get('/users', [PlatformApiController::class, 'users'])->name('users.index');
                 Route::get('/users/{id}', [PlatformApiController::class, 'userShow'])->name('users.show');
+                Route::put('/users/{id}/privileges', [PlatformApiController::class, 'updateUserPrivileges'])->name('users.privileges');
                 Route::post('/users/{id}/suspend', [PlatformApiController::class, 'suspendUser'])->name('users.suspend');
                 Route::post('/users/{id}/reactivate', [PlatformApiController::class, 'reactivateUser'])->name('users.reactivate');
                 Route::get('/workspaces', [PlatformApiController::class, 'workspaces'])->name('workspaces.index');
                 Route::get('/plans', [PlatformApiController::class, 'plans'])->name('plans.index');
                 Route::get('/subscriptions', [PlatformApiController::class, 'subscriptions'])->name('subscriptions.index');
                 Route::get('/features', [PlatformApiController::class, 'featureFlags'])->name('features.index');
+                Route::get('/privileges', [PlatformApiController::class, 'privileges'])->name('privileges');
                 Route::get('/health', [PlatformApiController::class, 'health'])->name('health');
                 Route::get('/security-events', [PlatformApiController::class, 'securityEvents'])->name('security-events');
                 Route::get('/audit-logs', [PlatformApiController::class, 'auditLogs'])->name('audit-logs');

@@ -50,12 +50,29 @@ class AuditLog extends Model
         'actor_name',
         'actor_role',
         'actor_ip',
+        'ip_address',
         'subject_type',
         'subject_id',
         'event',
         'old_values',
         'new_values',
     ];
+
+    /**
+     * Accessor for ip_address (resolves actor_ip snapshot).
+     */
+    public function getIpAddressAttribute(): ?string
+    {
+        return $this->actor_ip ?? $this->attributes['ip_address'] ?? '127.0.0.1';
+    }
+
+    /**
+     * Mutator for ip_address (persists to actor_ip column).
+     */
+    public function setIpAddressAttribute(?string $value): void
+    {
+        $this->attributes['actor_ip'] = $value;
+    }
 
     /**
      * Attribute type casting.

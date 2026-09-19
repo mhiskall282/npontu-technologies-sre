@@ -46,7 +46,7 @@ final class AuditService
             'actor_id' => $actor?->id,
             'actor_name' => $actor?->name ?? 'System',
             'actor_role' => $actor?->role,
-            'actor_ip' => Request::ip(),
+            'actor_ip' => Request::ip() ?? request()->ip() ?? '127.0.0.1',
             'subject_type' => get_class($subject),
             'subject_id' => $subject->getKey(),
             'event' => $event,

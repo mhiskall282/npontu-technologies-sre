@@ -114,8 +114,13 @@
                                 @endif
                             </td>
 
-                            <td class="px-5 py-3.5 text-right text-gray-400 shrink-0">
-                                {{ $log->ip_address }}
+                            <td class="px-5 py-3.5 text-right shrink-0 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-mono text-[11px] font-semibold border border-gray-200 dark:border-white/10 shadow-xs">
+                                    <svg class="w-3.5 h-3.5 text-gray-400 dark:text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                                    </svg>
+                                    {{ $log->ip_address ?? $log->actor_ip ?? '127.0.0.1' }}
+                                </span>
                             </td>
                         </tr>
                     @empty

@@ -144,42 +144,77 @@ flowchart LR
 
 ---
 
-## 4. SIEM Security Telemetry & Audit Trail Architecture
+## 4. SIEM Security Telemetry & Immutable Audit Trail Architecture
 
-Security telemetry is captured synchronously on all operational events via `SecurityEvent::record(...)` and `AuditService::record(...)`.
+Security telemetry is captured synchronously on all operational and platform-level mutations via `SecurityEvent::record(...)` and `AuditService::log(...)`. Every mutation captures authenticated actor snapshot details, state diff payloads, and verifiable client IP address provenance.
 
 ```mermaid
 flowchart TD
-    subgraph TriggerPoints["Event Triggers"]
+    subgraph TriggerPoints["Operational & Platform Mutation Triggers"]
         LoginEvent["User Login / Token Issuance"]
         SuspensionEvent["Account / Org Suspension"]
         RoleChangeEvent["Platform Role Modification"]
+        PrivilegeUpdate["Granular Privileges Modification"]
         FlagEvent["Feature Flag Toggle"]
         IncidentEscalation["SRE Incident Flagged"]
     end
 
-    subgraph TelemetryEngine["Security & SIEM Engine"]
+    subgraph ProvenanceEngine["Client IP Provenance & Telemetry Engine"]
+        IPExtractor["Request::ip() ?? '127.0.0.1'<br/>(X-Forwarded-For Provenance)"]
         SIEMRecorder["SecurityEvent::record()"]
-        AuditRecorder["AuditLog::create()"]
+        AuditRecorder["AuditLog::create()<br/>(actor_ip + ip_address Accessor)"]
     end
 
-    subgraph PersistentLogs["Security Data Stores"]
-        SecurityTable[("security_events<br/>(severity, ip, user_agent)")]
-        AuditTable[("audit_logs<br/>(old_values, new_values, actor)")]
-        LogChannel["Laravel Log Stream: state_changes"]
+    subgraph PersistentLogs["Security & Compliance Data Stores"]
+        SecurityTable[("security_events<br/>severity, ip_address, details")]
+        AuditTable[("audit_logs<br/>actor_ip, old_values, new_values")]
+        ControlPlaneAuditView["/admin/platform/audit<br/>(Monospace IP Badge & Diff Modals)"]
+        AuditAPI["GET /api/v1/audit-logs<br/>(SIEM Integration Relay)"]
     end
 
-    TriggerPoints --> SIEMRecorder
-    TriggerPoints --> AuditRecorder
+    TriggerPoints --> IPExtractor
+    IPExtractor --> SIEMRecorder
+    IPExtractor --> AuditRecorder
 
     SIEMRecorder --> SecurityTable
     AuditRecorder --> AuditTable
-    AuditRecorder --> LogChannel
+    AuditTable --> ControlPlaneAuditView
+    AuditTable --> AuditAPI
 ```
 
 ---
 
-## 5. Mobile Hybrid SRE Ingress & WebSocket/Polling Architecture
+## 5. Granular User Privileges & Fleet RBAC Governance
+
+Opsora decouples tenant user roles (`admin`, `lead`, `agent`) from platform administrative roles (`PlatformRole`), enabling fine-grained operational authorizations across 18 specialized enterprise capabilities.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Admin as Super Admin / Organization Lead
+    participant API as Privilege Endpoints (/api/v1/privileges)
+    participant Ctrl as PrivilegeController / PlatformUserController
+    participant Gate as Authorization Gate (managePrivileges)
+    participant Model as User Model (ALL_PRIVILEGES)
+    participant Audit as AuditLog & SecurityEvent
+
+    Admin->>API: PUT /api/v1/users/{id}/privileges {"privileges": [...]}
+    API->>Ctrl: Route Request
+    Ctrl->>Gate: Verify Authorization (Platform Admin or Workspace Admin)
+    alt Unauthorized Caller
+        Gate-->>Admin: 403 Forbidden
+    else Authorized Operator
+        Ctrl->>Model: Validate against User::ALL_PRIVILEGES (18 items)
+        Ctrl->>Model: Update user->privileges JSON array
+        Ctrl->>Audit: AuditLog::create(event: 'user_privileges_updated', ip: Request::ip())
+        Ctrl->>Audit: SecurityEvent::record(event: 'privileges_updated')
+        Ctrl-->>Admin: 200 OK (Serialized UserResource)
+    end
+```
+
+---
+
+## 6. Mobile Hybrid SRE Ingress & WebSocket/Polling Architecture
 
 The Flutter mobile application connects via REST and Livewire-compatible polling endpoints.
 
@@ -193,7 +228,8 @@ flowchart TB
     end
 
     subgraph APIEndpoints["Backend API Endpoints (/api/v1)"]
-        AuthMe["GET /api/v1/me (User + Org + Plan)"]
+        AuthMe["GET /api/v1/me (User + Org + Plan + Privileges)"]
+        PrivilegesCatalog["GET /api/v1/privileges (18 Capabilities)"]
         Workspaces["GET /api/v1/workspaces (Tenant Workspaces)"]
         SwitchWS["POST /api/v1/workspaces/switch"]
         JoinOrg["POST /api/v1/organizations/join-by-code"]
@@ -202,6 +238,7 @@ flowchart TB
     end
 
     MobileUI --> AuthMe
+    MobileUI --> PrivilegesCatalog
     ActiveTenantBar --> WorkspaceSwitcher
     WorkspaceSwitcher --> Workspaces
     WorkspaceSwitcher --> SwitchWS
@@ -213,7 +250,7 @@ flowchart TB
 
 ---
 
-## 6. Architecture Verification & Quality Gates
+## 7. Architecture Verification & Quality Gates
 
 The implementation conforms to the following strict operational metrics:
 - **Zero Foreign Key Violations**: Cascading soft-deletes implemented across all tenant and platform models.

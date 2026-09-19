@@ -83,6 +83,7 @@ final class PlatformUserController extends Controller
             return view('admin.platform.users.show', [
                 'user' => $user,
                 'platformRoles' => $platformRoles,
+                'allPrivileges' => User::ALL_PRIVILEGES,
             ]);
         });
     }
@@ -188,6 +189,53 @@ final class PlatformUserController extends Controller
             );
 
             return redirect()->back()->with('success', "Revoked {$tokenCount} active token(s) for user '{$user->name}'.");
+        });
+    }
+
+    /**
+     * Update granular operational privileges for a user.
+     */
+    public function updatePrivileges(Request $request, int $id): RedirectResponse
+    {
+        return TenantContext::withoutTenancy(function () use ($request, $id): RedirectResponse {
+            $user = User::findOrFail($id);
+
+            $validated = $request->validate([
+                'privileges' => 'nullable|array',
+                'privileges.*' => 'string|in:'.implode(',', array_keys(User::ALL_PRIVILEGES)),
+            ]);
+
+            $oldPrivileges = $user->privileges ?? [];
+            $newPrivileges = array_values(array_unique($validated['privileges'] ?? []));
+
+            $user->privileges = $newPrivileges;
+            $user->save();
+
+            AuditLog::create([
+                'actor_id' => $request->user()->id,
+                'actor_name' => $request->user()->name,
+                'actor_role' => $request->user()->role,
+                'actor_ip' => $request->ip() ?? '127.0.0.1',
+                'subject_type' => User::class,
+                'subject_id' => $user->id,
+                'event' => 'user_privileges_updated',
+                'old_values' => ['privileges' => $oldPrivileges],
+                'new_values' => ['privileges' => $newPrivileges],
+                'created_at' => now(),
+            ]);
+
+            SecurityEvent::record(
+                eventType: 'privileges_updated',
+                severity: 'info',
+                actor: $request->user(),
+                details: [
+                    'target_user_id' => $user->id,
+                    'target_user_email' => $user->email,
+                    'privileges_count' => count($newPrivileges),
+                ]
+            );
+
+            return redirect()->back()->with('success', "Granular privileges for '{$user->name}' updated successfully.");
         });
     }
 }

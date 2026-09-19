@@ -76,13 +76,22 @@ class UserModel {
   static const Map<String, String> privilegeCatalog = {
     'manage_activities': 'Manage Activities & Checks',
     'assign_tasks': 'Delegate & Reassign Tasks',
+    'execute_runbooks': 'Execute SRE Runbooks',
     'sign_handovers': 'Sign Shift Handovers',
     'accept_handovers': 'Accept & Sign-On Handovers',
     'escalate_incidents': 'Flag Incidents & Escalations',
-    'export_reports': 'Reporting & Data Export',
-    'manage_users': 'User Administration',
+    'resolve_incidents': 'Resolve Incidents & Post-Mortem',
+    'manage_workspaces': 'Manage Workspaces',
+    'manage_billing': 'Subscription & Billing Access',
     'view_audit_logs': 'View Security Audit Trails',
+    'manage_security': 'SIEM & Security Telemetry',
+    'manage_feature_flags': 'Feature Flags & Entitlements',
+    'manage_users': 'User Administration',
+    'manage_integrations': 'Webhooks & API Integrations',
     'create_channels': 'Create Chat Channels',
+    'broadcast_announcements': 'Broadcast Emergency Announcements',
+    'purge_audit_records': 'Compliance Archival & Data Purge',
+    'export_reports': 'Reporting & Data Export',
   };
 
   bool hasPrivilege(String privilege) {
@@ -93,13 +102,23 @@ class UserModel {
   bool get canManageActivities => hasPrivilege('manage_activities');
   bool get canManageChecklists => isAdmin || isLead || canManageActivities;
   bool get canAssignTasks => hasPrivilege('assign_tasks');
+  bool get canExecuteRunbooks => hasPrivilege('execute_runbooks');
   bool get canSignHandovers =>
       isAdmin || isLead || hasPrivilege('sign_handovers');
   bool get canAcceptHandovers => hasPrivilege('accept_handovers');
   bool get canEscalateIncidents => hasPrivilege('escalate_incidents');
-  bool get canExportReports => hasPrivilege('export_reports');
+  bool get canResolveIncidents => hasPrivilege('resolve_incidents');
+  bool get canManageWorkspaces => hasPrivilege('manage_workspaces');
+  bool get canManageBilling => hasPrivilege('manage_billing');
   bool get canViewAuditLogs => hasPrivilege('view_audit_logs');
+  bool get canManageSecurity => hasPrivilege('manage_security');
+  bool get canManageFeatureFlags => hasPrivilege('manage_feature_flags');
+  bool get canManageUsers => hasPrivilege('manage_users');
+  bool get canManageIntegrations => hasPrivilege('manage_integrations');
   bool get canCreateChannels => hasPrivilege('create_channels');
+  bool get canBroadcastAnnouncements => hasPrivilege('broadcast_announcements');
+  bool get canPurgeRecords => hasPrivilege('purge_audit_records');
+  bool get canExportReports => hasPrivilege('export_reports');
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     final org = json['organization'] as Map<String, dynamic>?;

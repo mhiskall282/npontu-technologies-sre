@@ -287,4 +287,55 @@ final class PlatformApiController extends ApiController
             return $this->respondWithSuccess($logs, 'Audit logs retrieved');
         });
     }
+
+    /**
+     * Get the full catalog of available granular user privileges.
+     */
+    public function privileges(): JsonResponse
+    {
+        return $this->respondWithSuccess([
+            'catalog' => User::ALL_PRIVILEGES,
+            'total' => count(User::ALL_PRIVILEGES),
+        ], 'Privileges catalog retrieved successfully');
+    }
+
+    /**
+     * Update a user's granular privileges across the platform fleet.
+     */
+    public function updateUserPrivileges(Request $request, int $id): JsonResponse
+    {
+        return TenantContext::withoutTenancy(function () use ($request, $id): JsonResponse {
+            $user = User::findOrFail($id);
+
+            $validated = $request->validate([
+                'privileges' => ['present', 'array'],
+                'privileges.*' => ['string', 'in:'.implode(',', array_keys(User::ALL_PRIVILEGES))],
+            ]);
+
+            $oldPrivileges = $user->privileges ?? [];
+            $newPrivileges = array_values(array_unique($validated['privileges']));
+
+            $user->privileges = $newPrivileges;
+            $user->save();
+
+            AuditLog::create([
+                'actor_id' => $request->user()->id,
+                'actor_name' => $request->user()->name,
+                'actor_role' => $request->user()->role,
+                'actor_ip' => $request->ip() ?? '127.0.0.1',
+                'subject_type' => User::class,
+                'subject_id' => $user->id,
+                'event' => 'user_privileges_updated',
+                'old_values' => ['privileges' => $oldPrivileges],
+                'new_values' => ['privileges' => $newPrivileges],
+                'created_at' => now(),
+            ]);
+
+            return $this->respondWithSuccess([
+                'id' => $user->id,
+                'name' => $user->name,
+                'privileges' => $user->privileges,
+            ], "Privileges for '{$user->name}' updated successfully");
+        });
+    }
 }

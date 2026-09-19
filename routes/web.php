@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', [PlatformUserController::class, 'index'])->name('users.index');
             Route::get('/users/{id}', [PlatformUserController::class, 'show'])->name('users.show');
             Route::match(['patch', 'put'], '/users/{id}/role', [PlatformUserController::class, 'updateRole'])->name('users.update-role');
+            Route::match(['patch', 'put'], '/users/{id}/privileges', [PlatformUserController::class, 'updatePrivileges'])->name('users.update-privileges');
             Route::post('/users/{id}/suspend', [PlatformUserController::class, 'suspend'])->name('users.suspend');
             Route::post('/users/{id}/reactivate', [PlatformUserController::class, 'reactivate'])->name('users.reactivate');
             Route::post('/users/{id}/revoke-tokens', [PlatformUserController::class, 'revokeTokens'])->name('users.revoke-tokens');
