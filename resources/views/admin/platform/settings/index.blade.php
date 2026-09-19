@@ -146,11 +146,55 @@
             </div>
         </div>
 
+        {{-- System Maintenance Mode & Emergency Lockout --}}
+        <div class="p-6 rounded-2xl bg-white dark:bg-[#16241B] border border-gray-200 dark:border-white/10 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <span>Platform Maintenance Mode &amp; Emergency Lockout</span>
+                        @if(!empty($settings['maintenance_mode']))
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-red-100 dark:bg-red-950/60 text-[#E63946] border border-red-300 dark:border-red-900/60">
+                                ACTIVE LOCKOUT
+                            </span>
+                        @endif
+                    </h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Put the platform into maintenance mode. Platform Admins remain exempt and can access the Control Plane.</p>
+                </div>
+
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="maintenance_mode" value="1" class="sr-only peer" {{ !empty($settings['maintenance_mode']) ? 'checked' : '' }}>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E63946]"></div>
+                </label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div>
+                    <label for="maintenance_ends_at" class="block text-xs font-mono font-bold text-gray-700 dark:text-gray-300 mb-1">Estimated Restoration / Downtime</label>
+                    <input type="text" id="maintenance_ends_at" name="maintenance_ends_at" value="{{ old('maintenance_ends_at', $settings['maintenance_ends_at'] ?? '') }}"
+                           placeholder="e.g. Sunday 03:00 UTC (approx. 45 mins)"
+                           class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-white/10 bg-white dark:bg-black/30 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]">
+                </div>
+
+                <div>
+                    <label for="maintenance_bypass_key" class="block text-xs font-mono font-bold text-gray-700 dark:text-gray-300 mb-1">Secret Bypass Key (?bypass_key=...)</label>
+                    <input type="text" id="maintenance_bypass_key" name="maintenance_bypass_key" value="{{ old('maintenance_bypass_key', $settings['maintenance_bypass_key'] ?? 'sre-opsora-emergency-bypass') }}"
+                           class="w-full px-3 py-2 text-sm font-mono rounded-xl border border-gray-300 dark:border-white/10 bg-white dark:bg-black/30 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]">
+                </div>
+            </div>
+
+            <div>
+                <label for="maintenance_message" class="block text-xs font-mono font-bold text-gray-700 dark:text-gray-300 mb-1">Custom Maintenance Broadcast Notice</label>
+                <textarea id="maintenance_message" name="maintenance_message" rows="3"
+                          class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-white/10 bg-white dark:bg-black/30 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1B6B3A]">{{ old('maintenance_message', $settings['maintenance_message'] ?? 'Opsora SRE is currently undergoing scheduled platform maintenance. Services will resume shortly.') }}</textarea>
+                <p class="text-[11px] text-gray-500 mt-1">Rendered on the 503 Maintenance Page and returned to API / mobile clients.</p>
+            </div>
+        </div>
+
         {{-- Submit Button --}}
         <div class="flex items-center justify-end gap-3 pt-2">
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#1B6B3A] hover:bg-emerald-600 text-white text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
+            <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#1B6B3A] hover:bg-emerald-600 text-white text-sm font-bold shadow-sm transition-colors flex items-center gap-2 cursor-pointer">
                 <svg class="w-4 h-4 text-[#F5C518]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                <span>Save Platform Policies</span>
+                <span>Save Platform Policies &amp; Maintenance State</span>
             </button>
         </div>
     </form>

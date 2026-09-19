@@ -32,6 +32,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
     Route::get('/health', [SystemHealthController::class, 'index'])->name('health.index');
     Route::get('/health/telemetry', [SystemHealthController::class, 'telemetry'])->name('health.telemetry');
+    Route::get('/announcements/active', [PlatformApiController::class, 'activeAnnouncements'])->name('announcements.active');
 
     // ─── Protected API Endpoints (Sanctum Bearer Token Required) ──────────
     Route::middleware('auth:sanctum')->group(function (): void {

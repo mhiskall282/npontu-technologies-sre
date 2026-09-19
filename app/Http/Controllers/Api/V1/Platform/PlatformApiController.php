@@ -13,6 +13,7 @@ use App\Models\AuditLog;
 use App\Models\FeatureFlag;
 use App\Models\Organization;
 use App\Models\Plan;
+use App\Models\PlatformAnnouncement;
 use App\Models\SecurityEvent;
 use App\Models\Subscription;
 use App\Models\User;
@@ -337,5 +338,17 @@ final class PlatformApiController extends ApiController
                 'privileges' => $user->privileges,
             ], "Privileges for '{$user->name}' updated successfully");
         });
+    }
+
+    /**
+     * List active platform announcements for web & mobile clients.
+     */
+    public function activeAnnouncements(): JsonResponse
+    {
+        $announcements = PlatformAnnouncement::active()
+            ->latest('id')
+            ->get();
+
+        return $this->respondWithSuccess($announcements, 'Active platform announcements retrieved');
     }
 }

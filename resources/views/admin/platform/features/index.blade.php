@@ -76,15 +76,25 @@
                                 @endif
                             </td>
 
-                            <td class="px-5 py-4 text-right">
-                                <form method="POST" action="{{ route('admin.platform.features.toggle', $flag->id) }}">
+                            <td class="px-5 py-4 text-right space-x-2 whitespace-nowrap">
+                                <form method="POST" action="{{ route('admin.platform.features.toggle', $flag->id) }}" class="inline">
                                     @csrf
-                                    @method('PUT')
+                                    @method('PATCH')
                                     <input type="hidden" name="is_enabled" value="{{ $flag->is_enabled ? 0 : 1 }}">
                                     <button type="submit"
                                             class="px-3 py-1 rounded-xl text-xs font-bold transition-colors cursor-pointer
                                                    {{ $flag->is_enabled ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 hover:bg-red-600 hover:text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white' }}">
                                         {{ $flag->is_enabled ? 'Turn Off' : 'Turn On' }}
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{{ route('admin.platform.features.destroy', $flag->id) }}" class="inline" onsubmit="return confirm('Permanently delete feature flag {{ $flag->name }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="px-2.5 py-1 rounded-xl text-xs font-bold bg-red-500/10 text-[#E63946] border border-red-500/30 hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
+                                            title="Delete Flag">
+                                        Delete
                                     </button>
                                 </form>
                             </td>

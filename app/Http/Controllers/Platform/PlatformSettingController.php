@@ -27,6 +27,9 @@ final class PlatformSettingController extends Controller
             'require_org_application_review' => false,
             'white_label_enabled' => true,
             'maintenance_mode' => false,
+            'maintenance_message' => 'Opsora SRE is undergoing scheduled platform maintenance. Services will resume shortly.',
+            'maintenance_ends_at' => null,
+            'maintenance_bypass_key' => 'sre-opsora-emergency-bypass',
         ]);
 
         return view('admin.platform.settings.index', [
@@ -47,6 +50,10 @@ final class PlatformSettingController extends Controller
             'allow_self_service_registration' => 'nullable|boolean',
             'require_org_application_review' => 'nullable|boolean',
             'white_label_enabled' => 'nullable|boolean',
+            'maintenance_mode' => 'nullable|boolean',
+            'maintenance_message' => 'nullable|string|max:1000',
+            'maintenance_ends_at' => 'nullable|string|max:100',
+            'maintenance_bypass_key' => 'nullable|string|max:100',
         ]);
 
         $settings = [
@@ -57,7 +64,10 @@ final class PlatformSettingController extends Controller
             'allow_self_service_registration' => (bool) ($validated['allow_self_service_registration'] ?? false),
             'require_org_application_review' => (bool) ($validated['require_org_application_review'] ?? false),
             'white_label_enabled' => (bool) ($validated['white_label_enabled'] ?? false),
-            'maintenance_mode' => false,
+            'maintenance_mode' => (bool) ($validated['maintenance_mode'] ?? false),
+            'maintenance_message' => $validated['maintenance_message'] ?: 'Opsora SRE is undergoing scheduled platform maintenance. Services will resume shortly.',
+            'maintenance_ends_at' => $validated['maintenance_ends_at'] ?: null,
+            'maintenance_bypass_key' => $validated['maintenance_bypass_key'] ?: 'sre-opsora-emergency-bypass',
         ];
 
         Cache::forever('opsora_platform_settings', $settings);
@@ -74,6 +84,6 @@ final class PlatformSettingController extends Controller
         ]);
 
         return redirect()->route('admin.platform.settings.index')
-            ->with('success', 'Platform settings and enterprise policies updated successfully.');
+            ->with('success', 'Platform settings, maintenance state, and enterprise policies updated successfully.');
     }
 }

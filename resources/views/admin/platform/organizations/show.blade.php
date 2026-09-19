@@ -15,6 +15,17 @@
 
         <div class="flex items-center gap-2">
             @if($organization->status === 'active')
+                <form method="POST" action="{{ route('admin.platform.organizations.impersonate', $organization->id) }}">
+                    @csrf
+                    <button type="submit"
+                            onclick="return confirm('Initiate support session and impersonate tenant organization {{ $organization->name }}? All actions will be audited.')"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#F5C518]/20 text-[#F5C518] hover:bg-[#F5C518] hover:text-gray-950 border border-[#F5C518]/40 transition-colors flex items-center gap-1.5 cursor-pointer"
+                            title="Assume Tenant Context for Support Triage">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                        <span>Impersonate Tenant</span>
+                    </button>
+                </form>
+
                 <form method="POST" action="{{ route('admin.platform.organizations.suspend', $organization->id) }}">
                     @csrf
                     <input type="hidden" name="reason" value="Suspended from Organization Detail Console.">

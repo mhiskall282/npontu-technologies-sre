@@ -38,6 +38,18 @@
         </div>
 
         <div class="flex items-center gap-2">
+            @if(!$user->isPlatformAdmin())
+                <form method="POST" action="{{ route('admin.platform.users.impersonate', $user->id) }}">
+                    @csrf
+                    <button type="submit"
+                            onclick="return confirm('Initiate support session and impersonate {{ $user->name }}? All actions will be audited with your IP.')"
+                            class="px-3 py-2 rounded-xl text-xs font-bold bg-[#F5C518]/20 text-[#F5C518] hover:bg-[#F5C518] hover:text-gray-950 border border-[#F5C518]/40 transition-colors flex items-center gap-1.5 cursor-pointer"
+                            title="Login as User for Support Diagnosis">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                        <span>Impersonate User</span>
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('admin.platform.users.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-[#16241B] border border-gray-300 dark:border-white/10 text-gray-800 dark:text-gray-200 text-xs font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                 &larr; Back to Users
             </a>

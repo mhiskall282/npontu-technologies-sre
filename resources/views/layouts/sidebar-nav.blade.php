@@ -100,6 +100,26 @@
                 <span class="truncate">SaaS Intelligence</span>
             </a>
 
+            {{-- Announcements & Broadcasts --}}
+            <a href="{{ route('admin.platform.announcements.index') }}"
+               class="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all duration-150
+                      {{ request()->routeIs('admin.platform.announcements.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
+                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('admin.platform.announcements.*') ? 'text-[#F5C518]' : 'text-gray-400 group-hover:text-gray-200' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                </svg>
+                <span class="truncate">Announcements &amp; Broadcasts</span>
+            </a>
+
+            {{-- System Health & Operations --}}
+            <a href="{{ route('admin.platform.health.index') }}"
+               class="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all duration-150
+                      {{ request()->routeIs('admin.platform.health.*') ? 'bg-[#1B6B3A] text-white shadow-sm border-l-4 border-[#F5C518]' : 'text-gray-300 hover:text-white hover:bg-[#1A2E22]' }}">
+                <svg class="w-4 h-4 shrink-0 {{ request()->routeIs('admin.platform.health.*') ? 'text-[#F5C518]' : 'text-gray-400 group-hover:text-gray-200' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <span class="truncate">Operations &amp; Health</span>
+            </a>
+
             {{-- Policies & Settings --}}
             <a href="{{ route('admin.platform.settings.index') }}"
                class="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all duration-150

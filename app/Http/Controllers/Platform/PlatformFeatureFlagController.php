@@ -70,6 +70,44 @@ final class PlatformFeatureFlagController extends Controller
     }
 
     /**
+     * Update metadata and target tiers of an existing feature flag.
+     */
+    public function update(Request $request, int $id): RedirectResponse
+    {
+        $flag = FeatureFlag::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'description' => 'nullable|string|max:255',
+            'target_tiers' => 'nullable|array',
+            'target_tiers.*' => 'string|in:free,team,enterprise,customer_hosted',
+        ]);
+
+        $oldValues = $flag->only(['name', 'description', 'target_tiers']);
+
+        $flag->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'target_tiers' => $validated['target_tiers'] ?? null,
+        ]);
+
+        AuditLog::create([
+            'actor_id' => $request->user()->id,
+            'actor_name' => $request->user()->name,
+            'subject_type' => FeatureFlag::class,
+            'subject_id' => $flag->id,
+            'event' => 'feature_flag_updated',
+            'old_values' => $oldValues,
+            'new_values' => $flag->only(['name', 'description', 'target_tiers']),
+            'ip_address' => $request->ip() ?? '127.0.0.1',
+            'created_at' => now(),
+        ]);
+
+        return redirect()->route('admin.platform.features.index')
+            ->with('success', "Feature flag '{$flag->name}' updated successfully.");
+    }
+
+    /**
      * Toggle or update targeting for a feature flag.
      */
     public function toggle(Request $request, int $id, ToggleFeatureFlagAction $action): RedirectResponse
@@ -93,5 +131,30 @@ final class PlatformFeatureFlagController extends Controller
 
         return redirect()->route('admin.platform.features.index')
             ->with('success', "Feature flag '{$flag->name}' updated successfully.");
+    }
+
+    /**
+     * Permanently delete a feature flag.
+     */
+    public function destroy(Request $request, int $id): RedirectResponse
+    {
+        $flag = FeatureFlag::findOrFail($id);
+        $name = $flag->name;
+
+        AuditLog::create([
+            'actor_id' => $request->user()->id,
+            'actor_name' => $request->user()->name,
+            'subject_type' => FeatureFlag::class,
+            'subject_id' => $flag->id,
+            'event' => 'feature_flag_deleted',
+            'old_values' => $flag->toArray(),
+            'ip_address' => $request->ip() ?? '127.0.0.1',
+            'created_at' => now(),
+        ]);
+
+        $flag->delete();
+
+        return redirect()->route('admin.platform.features.index')
+            ->with('success', "Feature flag '{$name}' has been deleted.");
     }
 }

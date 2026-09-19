@@ -311,6 +311,56 @@
         {{-- ── Right-Side Main Content Area ───────────────────────────────────── --}}
         <div class="flex-1 min-w-0 flex flex-col min-h-screen bg-[#F4F7F5] dark:bg-[#07100B]">
 
+            {{-- Platform Support Impersonation Session Sticky Banner --}}
+            @if(session()->has('opsora_impersonator_id'))
+                <div class="bg-[#F5C518] text-gray-950 px-4 py-2.5 flex items-center justify-between text-xs font-semibold shadow-md z-40 border-b border-amber-600/30 sticky top-0">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                        <span>
+                            <strong>Support Impersonation Mode:</strong> Currently acting as <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->email }}). All actions are recorded to the immutable audit ledger.
+                        </span>
+                    </div>
+                    <form method="POST" action="{{ route('admin.platform.impersonate.exit') }}" class="shrink-0">
+                        @csrf
+                        <button type="submit" class="px-3 py-1 bg-gray-950 hover:bg-black text-white rounded-lg text-xs font-bold transition shadow-xs cursor-pointer">
+                            Exit Support Session
+                        </button>
+                    </form>
+                </div>
+            @endif
+
+            {{-- Platform Operational Announcement / Emergency Broadcast Banner --}}
+            @php
+                $globalActiveAnnouncement = \Illuminate\Support\Facades\Schema::hasTable('platform_announcements')
+                    ? \App\Models\PlatformAnnouncement::active()->latest('id')->first()
+                    : null;
+            @endphp
+            @if($globalActiveAnnouncement)
+                <div x-data="{ dismissed: false }"
+                     x-show="!dismissed"
+                     class="px-4 py-2 text-xs font-medium border-b flex items-center justify-between z-30 transition-all
+                            @if($globalActiveAnnouncement->type === 'critical')
+                                bg-[#E63946] text-white border-red-800 shadow-md
+                            @elseif($globalActiveAnnouncement->type === 'warning')
+                                bg-amber-500 text-gray-950 border-amber-600
+                            @else
+                                bg-[#1B6B3A] text-white border-emerald-800
+                            @endif">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="w-2 h-2 rounded-full bg-white animate-pulse shrink-0"></span>
+                        <div class="truncate">
+                            <strong class="font-bold tracking-wide uppercase font-mono text-[11px] mr-1.5">
+                                [{{ strtoupper($globalActiveAnnouncement->type) }}]:
+                            </strong>
+                            <span>{{ $globalActiveAnnouncement->title }} &mdash; {{ $globalActiveAnnouncement->message }}</span>
+                        </div>
+                    </div>
+                    @if($globalActiveAnnouncement->dismissible)
+                        <button type="button" @click="dismissed = true" class="ml-3 text-current hover:opacity-80 font-bold text-sm leading-none cursor-pointer" aria-label="Dismiss Announcement">&times;</button>
+                    @endif
+                </div>
+            @endif
+
             {{-- Top Context & Breadcrumb Bar --}}
             <header class="bg-white dark:bg-[#0D1812] border-b border-gray-200 dark:border-[#1A2E22] h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between shrink-0 shadow-2xs no-print">
                 <div class="flex items-center gap-3">

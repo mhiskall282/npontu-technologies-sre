@@ -11,10 +11,12 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\OrganizationApplicationController;
+use App\Http\Controllers\Platform\PlatformAnnouncementController;
 use App\Http\Controllers\Platform\PlatformAuditLogController;
 use App\Http\Controllers\Platform\PlatformDashboardController;
 use App\Http\Controllers\Platform\PlatformFeatureFlagController;
 use App\Http\Controllers\Platform\PlatformHealthController;
+use App\Http\Controllers\Platform\PlatformImpersonationController;
 use App\Http\Controllers\Platform\PlatformOrganizationController;
 use App\Http\Controllers\Platform\PlatformPlanController;
 use App\Http\Controllers\Platform\PlatformReportController;
@@ -124,6 +126,9 @@ Route::middleware('auth')->group(function () {
         abort(403, 'Platform Administration Access Prohibited.');
     })->name('admin.entry');
 
+    // Exit Support Impersonation Session (Restores platform admin authentication)
+    Route::post('/admin/platform/impersonate/exit', [PlatformImpersonationController::class, 'exit'])->name('admin.platform.impersonate.exit');
+
     Route::prefix('admin/platform')
         ->name('admin.platform.')
         ->middleware(['platform.admin'])
@@ -131,15 +136,16 @@ Route::middleware('auth')->group(function () {
             // Dashboard
             Route::get('/', [PlatformDashboardController::class, 'index'])->name('dashboard');
 
-            // Organizations Management
+            // Organizations Management & Impersonation
             Route::get('/organizations', [PlatformOrganizationController::class, 'index'])->name('organizations.index');
             Route::get('/organizations/{id}', [PlatformOrganizationController::class, 'show'])->name('organizations.show');
             Route::post('/organizations/{id}', [PlatformOrganizationController::class, 'update'])->name('organizations.update');
             Route::post('/organizations/{id}/suspend', [PlatformOrganizationController::class, 'suspend'])->name('organizations.suspend');
             Route::post('/organizations/{id}/reactivate', [PlatformOrganizationController::class, 'reactivate'])->name('organizations.reactivate');
             Route::put('/organizations/{id}/plan', [PlatformOrganizationController::class, 'updatePlan'])->name('organizations.update-plan');
+            Route::post('/organizations/{id}/impersonate', [PlatformImpersonationController::class, 'impersonateOrganization'])->name('organizations.impersonate');
 
-            // Users & Operators Management
+            // Users & Operators Management & Impersonation
             Route::get('/users', [PlatformUserController::class, 'index'])->name('users.index');
             Route::get('/users/{id}', [PlatformUserController::class, 'show'])->name('users.show');
             Route::match(['patch', 'put'], '/users/{id}/role', [PlatformUserController::class, 'updateRole'])->name('users.update-role');
@@ -147,6 +153,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/users/{id}/suspend', [PlatformUserController::class, 'suspend'])->name('users.suspend');
             Route::post('/users/{id}/reactivate', [PlatformUserController::class, 'reactivate'])->name('users.reactivate');
             Route::post('/users/{id}/revoke-tokens', [PlatformUserController::class, 'revokeTokens'])->name('users.revoke-tokens');
+            Route::post('/users/{id}/impersonate', [PlatformImpersonationController::class, 'impersonateUser'])->name('users.impersonate');
 
             // Workspaces Oversight
             Route::get('/workspaces', [PlatformWorkspaceController::class, 'index'])->name('workspaces.index');
@@ -167,12 +174,23 @@ Route::middleware('auth')->group(function () {
             // Feature Flags & Entitlements
             Route::get('/features', [PlatformFeatureFlagController::class, 'index'])->name('features.index');
             Route::post('/features', [PlatformFeatureFlagController::class, 'store'])->name('features.store');
+            Route::put('/features/{id}', [PlatformFeatureFlagController::class, 'update'])->name('features.update');
             Route::patch('/features/{id}/toggle', [PlatformFeatureFlagController::class, 'toggle'])->name('features.toggle');
             Route::delete('/features/{id}', [PlatformFeatureFlagController::class, 'destroy'])->name('features.destroy');
 
-            // System Health & Diagnostics
+            // Operational Announcements & Emergency Broadcasts
+            Route::get('/announcements', [PlatformAnnouncementController::class, 'index'])->name('announcements.index');
+            Route::post('/announcements', [PlatformAnnouncementController::class, 'store'])->name('announcements.store');
+            Route::post('/announcements/{id}/toggle', [PlatformAnnouncementController::class, 'toggle'])->name('announcements.toggle');
+            Route::delete('/announcements/{id}', [PlatformAnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
+            // System Health & Operations Hub
             Route::get('/health', [PlatformHealthController::class, 'index'])->name('health.index');
             Route::post('/health/retry-jobs', [PlatformHealthController::class, 'retryFailedJobs'])->name('health.retryJobs');
+            Route::post('/health/clear-cache', [PlatformHealthController::class, 'clearCache'])->name('health.clear-cache');
+            Route::post('/health/prune-tokens', [PlatformHealthController::class, 'pruneTokens'])->name('health.prune-tokens');
+            Route::post('/health/dispatch-reports', [PlatformHealthController::class, 'dispatchReports'])->name('health.dispatch-reports');
+            Route::post('/health/diagnostics', [PlatformHealthController::class, 'runDiagnostics'])->name('health.diagnostics');
 
             // Security Center & SIEM
             Route::get('/security', [PlatformSecurityController::class, 'index'])->name('security.index');

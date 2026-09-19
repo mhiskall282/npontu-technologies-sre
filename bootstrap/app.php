@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsurePlatformAdmin;
+use App\Http\Middleware\EnsurePlatformNotUnderMaintenance;
 use App\Http\Middleware\EnsurePlatformPermission;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\ResolveTenantContext;
@@ -30,9 +31,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'platform.permission' => EnsurePlatformPermission::class,
         ]);
         $middleware->web(append: [
+            EnsurePlatformNotUnderMaintenance::class,
             ResolveTenantContext::class,
         ]);
         $middleware->api(append: [
+            EnsurePlatformNotUnderMaintenance::class,
             ResolveTenantContext::class,
         ]);
     })
