@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -105,11 +106,47 @@ class Organization extends Model
     }
 
     /**
+     * Users alias for members relationship.
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->members();
+    }
+
+    /**
      * Applications associated with this organization.
      */
     public function applications(): HasMany
     {
         return $this->hasMany(OrganizationApplication::class, 'organization_slug', 'slug');
+    }
+
+    /**
+     * Subscriptions for this organization.
+     *
+     * @return HasMany<Subscription, $this>
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Active commercial subscription.
+     *
+     * @return HasOne<Subscription, $this>
+     */
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)->latestOfMany();
+    }
+
+    /**
+     * Resolve the active plan for this organization.
+     */
+    public function activePlan(): ?Plan
+    {
+        return $this->subscription?->plan;
     }
 
     /**

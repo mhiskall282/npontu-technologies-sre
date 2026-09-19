@@ -42,6 +42,8 @@ final class WorkspaceController extends ApiController
                         'name' => $ws->organization->name,
                         'slug' => $ws->organization->slug,
                         'company_code' => $ws->organization->company_code,
+                        'tier' => $ws->organization->tier ?? 'team',
+                        'plan_name' => $ws->organization->activePlan()?->name ?? (ucfirst($ws->organization->tier ?? 'Team').' Plan'),
                     ] : null,
                 ];
             });

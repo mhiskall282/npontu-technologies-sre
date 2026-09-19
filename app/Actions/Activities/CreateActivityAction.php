@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Activities;
 
+use App\Mail\ActivityAssignedMail;
+use App\Mail\ActivityIncidentEscalatedMail;
 use App\Models\Activity;
+use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * CreateActivityAction — Domain Action to Provision a New Operational Check Definition
@@ -52,6 +56,34 @@ final class CreateActivityAction
             'actor_id' => Auth::id(),
             'assigned_to' => $activity->assigned_to,
         ]);
+
+        // Customized operational email notification on task assignment
+        if (! empty($activity->assigned_to)) {
+            $assignee = User::find($activity->assigned_to);
+            if ($assignee && $assignee->email) {
+                try {
+                    Mail::to($assignee->email)->queue(
+                        new ActivityAssignedMail($activity, $assignee, Auth::user())
+                    );
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        }
+
+        // Customized email notification on urgent SRE incident
+        if (! empty($validated['is_incident']) || $activity->priority === 'critical') {
+            $recipient = $activity->assignee ?? Auth::user();
+            if ($recipient && $recipient->email) {
+                try {
+                    Mail::to($recipient->email)->queue(
+                        new ActivityIncidentEscalatedMail($activity, $recipient, Auth::user())
+                    );
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        }
 
         return $activity;
     }

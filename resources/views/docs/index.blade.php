@@ -282,7 +282,7 @@
                     <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">Opsora Developer REST API Reference</h2>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-[11px] text-gray-400 font-mono">Base URL: <code class="text-emerald-300">https://opsora.production/api/v1</code></span>
+                    <span class="text-[11px] text-gray-400 font-mono">Base URL: <code class="text-emerald-300">https://npontu-support-tracker.onrender.com/api/v1</code></span>
                 </div>
             </div>
 

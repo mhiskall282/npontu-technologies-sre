@@ -13,7 +13,7 @@ Send your operator email and password to `/api/v1/auth/login`:
 
 ### cURL
 ```bash
-curl -X POST https://opsora.production/api/v1/auth/login \
+curl -X POST https://npontu-support-tracker.onrender.com/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "hello@johnokyere.xyz",
@@ -39,7 +39,7 @@ Response:
 ## 2. Listing Accessible Workspaces
 
 ```bash
-curl -X GET https://opsora.production/api/v1/workspaces \
+curl -X GET https://npontu-support-tracker.onrender.com/api/v1/workspaces \
   -H "Authorization: Bearer 1|sre_token_xyz987..." \
   -H "Accept: application/json"
 ```
@@ -51,7 +51,7 @@ curl -X GET https://opsora.production/api/v1/workspaces \
 Pass the desired workspace ID in `X-Workspace-Id`:
 
 ```bash
-curl -X GET https://opsora.production/api/v1/activities \
+curl -X GET https://npontu-support-tracker.onrender.com/api/v1/activities \
   -H "Authorization: Bearer 1|sre_token_xyz987..." \
   -H "X-Workspace-Id: 1" \
   -H "Accept: application/json"
@@ -65,7 +65,7 @@ curl -X GET https://opsora.production/api/v1/activities \
 import 'package:dio/dio.dart';
 
 final dio = Dio(BaseOptions(
-  baseUrl: 'https://opsora.production/api/v1',
+  baseUrl: 'https://npontu-support-tracker.onrender.com/api/v1',
   headers: {
     'Authorization': 'Bearer $token',
     'X-Workspace-Id': '$activeWorkspaceId',

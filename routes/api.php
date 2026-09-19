@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrganizationController;
+use App\Http\Controllers\Api\V1\Platform\PlatformApiController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\ShiftHandoverController;
 use App\Http\Controllers\Api\V1\SystemHealthController;
@@ -96,5 +97,28 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         // Security Compliance Audit Trail
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+        // ─── Platform Control Plane REST APIs (Guarded by platform.admin) ────
+        Route::prefix('platform')
+            ->name('platform.')
+            ->middleware('platform.admin')
+            ->group(function (): void {
+                Route::get('/dashboard', [PlatformApiController::class, 'dashboard'])->name('dashboard');
+                Route::get('/organizations', [PlatformApiController::class, 'organizations'])->name('organizations.index');
+                Route::get('/organizations/{id}', [PlatformApiController::class, 'organizationShow'])->name('organizations.show');
+                Route::post('/organizations/{id}/suspend', [PlatformApiController::class, 'suspendOrganization'])->name('organizations.suspend');
+                Route::post('/organizations/{id}/reactivate', [PlatformApiController::class, 'reactivateOrganization'])->name('organizations.reactivate');
+                Route::get('/users', [PlatformApiController::class, 'users'])->name('users.index');
+                Route::get('/users/{id}', [PlatformApiController::class, 'userShow'])->name('users.show');
+                Route::post('/users/{id}/suspend', [PlatformApiController::class, 'suspendUser'])->name('users.suspend');
+                Route::post('/users/{id}/reactivate', [PlatformApiController::class, 'reactivateUser'])->name('users.reactivate');
+                Route::get('/workspaces', [PlatformApiController::class, 'workspaces'])->name('workspaces.index');
+                Route::get('/plans', [PlatformApiController::class, 'plans'])->name('plans.index');
+                Route::get('/subscriptions', [PlatformApiController::class, 'subscriptions'])->name('subscriptions.index');
+                Route::get('/features', [PlatformApiController::class, 'featureFlags'])->name('features.index');
+                Route::get('/health', [PlatformApiController::class, 'health'])->name('health');
+                Route::get('/security-events', [PlatformApiController::class, 'securityEvents'])->name('security-events');
+                Route::get('/audit-logs', [PlatformApiController::class, 'auditLogs'])->name('audit-logs');
+            });
     });
 });

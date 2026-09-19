@@ -2,7 +2,7 @@
 
 > **Status:** IMPLEMENTED  
 > **API Version:** v1  
-> **Base URL:** `https://opsora.production/api/v1`
+> **Base URL:** `https://npontu-support-tracker.onrender.com/api/v1`
 
 The Opsora API provides programmatic access to technical operations, shift checklists, two-way handovers, multi-workspace routing, and compliance telemetry.
 

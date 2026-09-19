@@ -54,7 +54,7 @@ graph TD
 
 ### Via REST API:
 ```bash
-curl -X POST https://opsora.production/api/v1/workspaces \
+curl -X POST https://npontu-support-tracker.onrender.com/api/v1/workspaces \
   -H "Authorization: Bearer <API_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{

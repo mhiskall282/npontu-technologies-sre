@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Actions\Handovers;
 
+use App\Mail\ShiftHandoverReadyMail;
 use App\Models\ShiftHandover;
 use App\Services\AuditService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * CreateShiftHandoverAction — Formal SRE Shift Handover Domain Action
@@ -74,6 +76,17 @@ final class CreateShiftHandoverAction
             'outgoing_lead_id' => $handover->outgoing_lead_id,
             'incoming_lead_id' => $handover->incoming_lead_id,
         ]);
+
+        // Dispatch customized email notification to incoming shift lead
+        if ($handover->incomingLead && $handover->incomingLead->email) {
+            try {
+                Mail::to($handover->incomingLead->email)->queue(
+                    new ShiftHandoverReadyMail($handover, $handover->incomingLead, Auth::user())
+                );
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
 
         return $handover;
     }

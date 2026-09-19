@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsurePlatformAdmin;
+use App\Http\Middleware\EnsurePlatformPermission;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\ResolveTenantContext;
 use Illuminate\Foundation\Application;
@@ -24,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => EnsureRole::class,
             'tenant' => ResolveTenantContext::class,
+            'platform.admin' => EnsurePlatformAdmin::class,
+            'platform.permission' => EnsurePlatformPermission::class,
         ]);
         $middleware->web(append: [
             ResolveTenantContext::class,

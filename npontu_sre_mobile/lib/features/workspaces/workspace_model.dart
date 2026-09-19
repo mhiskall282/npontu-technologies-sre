@@ -12,6 +12,8 @@ class WorkspaceModel {
   final String myRole;
   final String? organizationName;
   final String? companyCode;
+  final String? tier;
+  final String? planName;
 
   const WorkspaceModel({
     required this.id,
@@ -25,6 +27,8 @@ class WorkspaceModel {
     required this.myRole,
     this.organizationName,
     this.companyCode,
+    this.tier,
+    this.planName,
   });
 
   factory WorkspaceModel.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,8 @@ class WorkspaceModel {
       myRole: json['my_role'] as String? ?? 'agent',
       organizationName: org?['name'] as String?,
       companyCode: org?['company_code'] as String?,
+      tier: org?['tier'] as String?,
+      planName: org?['plan_name'] as String?,
     );
   }
 

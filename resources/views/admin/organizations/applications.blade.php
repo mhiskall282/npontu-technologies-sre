@@ -26,7 +26,7 @@
     <div class="rounded-2xl bg-white dark:bg-[#16241B] border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-                <thead class="bg-gray-50 dark:bg-black/30 text-gray-500 dark:text-gray-400 font-mono uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-white/10">
+                <thead class="bg-gray-50 dark:bg-black/40 text-gray-700 dark:text-gray-300 font-mono uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-white/10">
                     <tr>
                         <th class="px-5 py-3.5">Organization</th>
                         <th class="px-5 py-3.5">Applicant</th>
@@ -122,7 +122,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-10 text-center text-gray-400">
+                            <td colspan="6" class="px-5 py-10 text-center text-gray-600 dark:text-gray-300 font-medium">
                                 No organization applications pending in queue.
                             </td>
                         </tr>

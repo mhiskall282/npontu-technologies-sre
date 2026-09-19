@@ -17,6 +17,27 @@ docs/
 ├── documentation-coverage.md              # Documentation coverage matrix
 ├── contributing.md                        # Documentation maintenance guidelines
 │
+├── admin/                                 # Platform Control Plane (Super Admin)
+│   ├── README.md                          # Platform Control Plane master index
+│   ├── architecture.md                    # Control Plane vs Tenant Plane data flow
+│   ├── login-guide.md                     # Platform admin login, seeds & MFA
+│   ├── roles-and-permissions.md           # PlatformRole enum & granular permissions
+│   ├── dashboard.md                       # Administrative Cockpit & live telemetry
+│   ├── metrics.md                         # Authoritative MRR, ARR, and SLA formulas
+│   ├── organizations.md                   # Tenant org lifecycle & suspensions
+│   ├── users.md                           # User governance & token revocation
+│   ├── workspaces.md                      # Cross-tenant workspace oversight
+│   ├── subscriptions.md                   # Commercial subscriptions & billing ledger
+│   ├── plans.md                           # Commercial plan tiers & entitlements
+│   ├── entitlements.md                    # Centralized feature access resolution
+│   ├── feature-flags.md                   # Targeted feature gating & audits
+│   ├── security.md                        # SIEM telemetry & threat detection
+│   ├── audit-logs.md                      # Immutable compliance audit trail
+│   ├── platform-health.md                 # Live subsystem diagnostics (DB/Cache/Queue)
+│   ├── enterprise.md                      # Dedicated VPC & sovereign topologies
+│   ├── api.md                             # Platform REST API reference
+│   └── troubleshooting.md                 # Administrative runbooks & recovery
+│
 ├── architecture/                          # Core System Architecture & Multi-Tenancy
 │   ├── overview.md                        # High-level architecture & design philosophy
 │   ├── system.md                          # Client -> Control Plane -> Execution Plane

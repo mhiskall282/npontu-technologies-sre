@@ -2,7 +2,7 @@ name: Backend CI (Laravel & SRE Platform)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feat/opsora-saas ]
     paths:
       - 'app/**'
       - 'bootstrap/**'
@@ -14,7 +14,7 @@ on:
       - 'composer.lock'
       - '.github/workflows/backend-ci.yml'
   pull_request:
-    branches: [ main ]
+    branches: [ main, feat/opsora-saas ]
     paths:
       - 'app/**'
       - 'bootstrap/**'

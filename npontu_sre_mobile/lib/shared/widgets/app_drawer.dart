@@ -6,6 +6,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/services/notification_service.dart';
 import '../../core/theme/npontu_theme.dart';
 import '../../features/auth/presentation/auth_controller.dart';
+import '../../features/workspaces/workspace_switcher_sheet.dart';
 import 'user_profile_sheet.dart';
 
 class AppDrawer extends ConsumerWidget {
@@ -140,6 +141,131 @@ class AppDrawer extends ConsumerWidget {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ),
+
+          // Active SaaS Tenant & Workspace Card
+          Container(
+            margin: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF16241B) : const Color(0xFFEBF5EE),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: NpontuColors.green.withAlpha(isDark ? 80 : 50),
+              ),
+            ),
+            child: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                WorkspaceSwitcherSheet.show(context);
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: NpontuColors.green,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.corporate_fare_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                user?.organizationName ?? 'Npontu Technologies',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark ? Colors.white : const Color(0xFF111827),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (user?.companyCode != null) ...[
+                              const SizedBox(width: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: NpontuColors.gold.withAlpha(40),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: NpontuColors.gold.withAlpha(120), width: 0.5),
+                                ),
+                                child: Text(
+                                  user!.companyCode!,
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                    fontFamily: 'monospace',
+                                    color: isDark ? NpontuColors.gold : const Color(0xFF92400E),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.layers_outlined,
+                              size: 11,
+                              color: isDark ? NpontuColors.textSecondaryDark : NpontuColors.textSecondaryLight,
+                            ),
+                            const SizedBox(width: 3),
+                            Expanded(
+                              child: Text(
+                                user?.currentWorkspaceName ?? 'Production Cockpit',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: isDark ? NpontuColors.textSecondaryDark : NpontuColors.textSecondaryLight,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: NpontuColors.green.withAlpha(30),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                (user?.tier ?? 'Enterprise').toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w800,
+                                  color: NpontuColors.green,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.swap_horiz_rounded,
+                    color: NpontuColors.gold,
+                    size: 20,
+                  ),
+                ],
               ),
             ),
           ),

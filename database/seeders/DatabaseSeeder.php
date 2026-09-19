@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ActivitySeeder::class,
             ActivityLogSeeder::class,
+            PlatformControlPlaneSeeder::class,
         ]);
     }
 }

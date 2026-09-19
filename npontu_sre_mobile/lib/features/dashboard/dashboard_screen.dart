@@ -12,6 +12,8 @@ import '../../shared/widgets/error_retry.dart';
 import '../../shared/widgets/priority_badge.dart';
 import '../../shared/widgets/skeleton_loader.dart';
 import '../../shared/widgets/status_badge.dart';
+import '../auth/presentation/auth_controller.dart';
+import '../workspaces/workspace_switcher_sheet.dart';
 import 'dashboard_controller.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -23,7 +25,51 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ops Cockpit'),
+        title: Consumer(
+          builder: (ctx, ref, _) {
+            final user = ref.watch(authControllerProvider).user;
+            return InkWell(
+              onTap: () => WorkspaceSwitcherSheet.show(ctx),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            user?.organizationName ?? 'Ops Cockpit',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_drop_down_rounded, size: 18, color: NpontuColors.gold),
+                      ],
+                    ),
+                    Text(
+                      '${user?.currentWorkspaceName ?? "Cockpit"} • ${(user?.tier ?? "Enterprise").toUpperCase()}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white.withAlpha(200),
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),

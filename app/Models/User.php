@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\PlatformRole;
 use App\Notifications\QueuedResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -123,11 +124,13 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'platform_role',
         'grade',
         'department',
         'privileges',
         'designation',
         'phone',
+        'suspended_at',
     ];
 
     /**
@@ -151,6 +154,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'privileges' => 'array',
+            'suspended_at' => 'datetime',
         ];
     }
 
@@ -180,6 +184,59 @@ class User extends Authenticatable
     public function isAgent(): bool
     {
         return $this->role === 'agent';
+    }
+
+    /**
+     * Check if user account is administratively suspended.
+     */
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
+    }
+
+    /**
+     * Check if user possesses any platform-level administrative role.
+     */
+    public function isPlatformAdmin(): bool
+    {
+        return ! empty($this->platform_role) && ! $this->isSuspended();
+    }
+
+    /**
+     * Check if user possesses root Super Administrator privileges.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->platform_role === PlatformRole::SuperAdmin->value && ! $this->isSuspended();
+    }
+
+    /**
+     * Resolve the user's platform role enum instance.
+     */
+    public function platformRoleEnum(): ?PlatformRole
+    {
+        if (empty($this->platform_role)) {
+            return null;
+        }
+
+        return PlatformRole::tryFrom($this->platform_role);
+    }
+
+    /**
+     * Check whether user holds a specific platform-level permission.
+     */
+    public function hasPlatformPermission(string $permission): bool
+    {
+        if ($this->isSuspended()) {
+            return false;
+        }
+
+        $enum = $this->platformRoleEnum();
+        if ($enum === null) {
+            return false;
+        }
+
+        return $enum->hasPermission($permission);
     }
 
     /**
@@ -288,6 +345,16 @@ class User extends Authenticatable
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class, 'actor_id');
+    }
+
+    /**
+     * SIEM security telemetry events associated with this operator.
+     *
+     * @return HasMany<SecurityEvent, $this>
+     */
+    public function securityEvents(): HasMany
+    {
+        return $this->hasMany(SecurityEvent::class, 'actor_id');
     }
 
     /**

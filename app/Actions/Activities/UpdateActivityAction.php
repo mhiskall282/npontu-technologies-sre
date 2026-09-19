@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Activities;
 
+use App\Mail\ActivityAssignedMail;
+use App\Mail\ActivityIncidentEscalatedMail;
 use App\Models\Activity;
+use App\Models\User;
 use App\Services\AuditService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * UpdateActivityAction — Domain Action to Modify Operational Check Definitions
@@ -45,6 +50,34 @@ final class UpdateActivityAction
             oldValues: $oldValues,
             newValues: $validated,
         );
+
+        // Notify if assigned_to was updated and newly set
+        if (isset($validated['assigned_to']) && $validated['assigned_to'] !== ($oldValues['assigned_to'] ?? null)) {
+            $assignee = User::find($validated['assigned_to']);
+            if ($assignee && $assignee->email) {
+                try {
+                    Mail::to($assignee->email)->queue(
+                        new ActivityAssignedMail($activity, $assignee, Auth::user())
+                    );
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        }
+
+        // Notify if newly marked as incident
+        if (! empty($validated['is_incident']) && empty($oldValues['is_incident'])) {
+            $recipient = $activity->assignee ?? Auth::user();
+            if ($recipient && $recipient->email) {
+                try {
+                    Mail::to($recipient->email)->queue(
+                        new ActivityIncidentEscalatedMail($activity, $recipient, Auth::user())
+                    );
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        }
 
         return $activity;
     }

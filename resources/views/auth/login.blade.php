@@ -171,6 +171,10 @@
                         </button>
                     </form>
 
+                    <div class="mt-5 pt-3 border-t border-gray-100 text-center text-xs text-gray-500">
+                        Need an SRE account?
+                        <a href="{{ route('register') }}" class="text-[#1B6B3A] font-bold hover:underline ml-1">Sign Up</a>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-center flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-gray-400 mt-5 pt-3 border-t border-gray-100">

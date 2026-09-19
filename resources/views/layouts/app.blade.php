@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-full bg-[#F4F7F5] font-sans antialiased text-gray-900">
+<body class="min-h-full bg-[#F4F7F5] dark:bg-[#07100B] font-sans antialiased text-gray-900 dark:text-gray-100">
     {{-- Splash Screen Loader for App (Smooth slide-in, glowing emblem, and progress animatic) --}}
     <div id="app-splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0B1911] transition-all duration-500 pointer-events-auto select-none">
         <style>
@@ -309,14 +309,14 @@
         </aside>
 
         {{-- ── Right-Side Main Content Area ───────────────────────────────────── --}}
-        <div class="flex-1 min-w-0 flex flex-col min-h-screen bg-[#F4F7F5]">
+        <div class="flex-1 min-w-0 flex flex-col min-h-screen bg-[#F4F7F5] dark:bg-[#07100B]">
 
             {{-- Top Context & Breadcrumb Bar --}}
-            <header class="bg-white border-b border-gray-200 h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between shrink-0 shadow-2xs no-print">
+            <header class="bg-white dark:bg-[#0D1812] border-b border-gray-200 dark:border-[#1A2E22] h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between shrink-0 shadow-2xs no-print">
                 <div class="flex items-center gap-3">
                     @if(!request()->routeIs('activities.daily'))
                     <button onclick="window.history.back()"
-                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 text-gray-700 dark:text-gray-200 font-semibold text-xs rounded-lg transition-colors cursor-pointer"
                             title="Return to previous screen">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                         <span>Back</span>
@@ -324,10 +324,10 @@
                     @endif
 
                     {{-- Breadcrumb trail --}}
-                    <div class="flex items-center gap-2 text-xs text-gray-500">
-                        <span class="font-medium text-gray-600 hidden sm:inline">Opsora SRE</span>
+                    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        <span class="font-medium text-gray-600 dark:text-gray-400 hidden sm:inline">Opsora SRE</span>
                         <span class="hidden sm:inline">/</span>
-                        <span class="text-gray-900 font-bold capitalize">
+                        <span class="text-gray-900 dark:text-white font-bold capitalize">
                             @if(request()->routeIs('activities.daily'))
                                 Today's Board
                             @elseif(request()->routeIs('activities.*'))
@@ -335,13 +335,17 @@
                             @elseif(request()->routeIs('reports.handovers'))
                                 Shift Handover Compliance
                             @elseif(request()->routeIs('reports.timelines'))
-                                Operator Work Timelines
+                                Operational Timeline History
                             @elseif(request()->routeIs('reports.*'))
-                                Operational Reports
+                                SRE Reporting & Analytics
                             @elseif(request()->routeIs('messages.*'))
-                                Ops Comms & Channels
-                            @elseif(request()->routeIs('admin.users.*'))
-                                Team & User Privileges
+                                Shift Communications & Ops Comms
+                            @elseif(request()->routeIs('workspaces.*'))
+                                Workspaces & Multi-Tenant Hub
+                            @elseif(request()->routeIs('organizations.*'))
+                                Organizations & Enterprise Tenants
+                            @elseif(request()->routeIs('admin.platform.*') || request()->routeIs('platform.*'))
+                                Platform Control Plane
                             @elseif(request()->routeIs('admin.*'))
                                 Admin Management
                             @elseif(request()->routeIs('monitoring.*'))
@@ -360,14 +364,14 @@
                 {{-- Right side telemetry and live clock --}}
                 <div class="flex items-center gap-3">
                     {{-- Live UTC Clock --}}
-                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-50 border border-gray-200 text-[11px] font-mono text-gray-600">
+                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-[11px] font-mono text-gray-600 dark:text-gray-300">
                         <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <span id="header-utc-clock">UTC --:--:--</span>
                     </div>
 
                     {{-- Live Telemetry Status Pill --}}
                     <a href="{{ route('health') }}"
-                       class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-[#1B6B3A] border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                       class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-[#1B6B3A] dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-950 transition-colors"
                        title="View System Health & Telemetry">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

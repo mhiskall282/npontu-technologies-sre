@@ -12,6 +12,13 @@ class UserModel {
   final String? phone;
   final List<String> privileges;
   final int unreadMessagesCount;
+  final String? organizationName;
+  final String? companyCode;
+  final String? tier;
+  final String? planName;
+  final String? platformRole;
+  final bool isPlatformAdmin;
+  final String? currentWorkspaceName;
 
   const UserModel({
     required this.id,
@@ -25,6 +32,13 @@ class UserModel {
     this.phone,
     this.privileges = const [],
     this.unreadMessagesCount = 0,
+    this.organizationName,
+    this.companyCode,
+    this.tier,
+    this.planName,
+    this.platformRole,
+    this.isPlatformAdmin = false,
+    this.currentWorkspaceName,
   });
 
   bool get isAdmin => role == 'admin';
@@ -88,6 +102,9 @@ class UserModel {
   bool get canCreateChannels => hasPrivilege('create_channels');
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final org = json['organization'] as Map<String, dynamic>?;
+    final currentWs = json['current_workspace'] as Map<String, dynamic>?;
+
     return UserModel(
       id: json['id'] is int
           ? json['id'] as int
@@ -107,6 +124,13 @@ class UserModel {
               .toList() ??
           [],
       unreadMessagesCount: json['unread_messages_count'] as int? ?? 0,
+      organizationName: org?['name'] as String?,
+      companyCode: org?['company_code'] as String?,
+      tier: org?['tier'] as String?,
+      planName: org?['plan_name'] as String?,
+      platformRole: json['platform_role'] as String?,
+      isPlatformAdmin: json['is_platform_admin'] as bool? ?? false,
+      currentWorkspaceName: currentWs?['name'] as String?,
     );
   }
 
@@ -123,6 +147,19 @@ class UserModel {
       'phone': phone,
       'privileges': privileges,
       'unread_messages_count': unreadMessagesCount,
+      'platform_role': platformRole,
+      'is_platform_admin': isPlatformAdmin,
+      'organization': organizationName != null
+          ? {
+              'name': organizationName,
+              'company_code': companyCode,
+              'tier': tier,
+              'plan_name': planName,
+            }
+          : null,
+      'current_workspace': currentWorkspaceName != null
+          ? {'name': currentWorkspaceName}
+          : null,
     };
   }
 }
