@@ -1,0 +1,14 @@
+# Vercel Deployment Exclusions
+/npontu_sre_mobile
+/tests
+/docs
+/scratch
+/.github
+/.agents
+/node_modules
+/.phpunit.result.cache
+/ROLE_*.pdf
+/instructions.md
+.env
+.env.*
+!.env.example

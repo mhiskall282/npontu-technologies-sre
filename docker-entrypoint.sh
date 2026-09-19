@@ -28,7 +28,13 @@ php artisan migrate --force
 echo "Seeding initial data if missing..."
 php artisan db:seed --force || true
 
-# Start Apache in foreground
-exec apache2-foreground
+# Start Apache or execute custom command (worker/scheduler)
+if [ "$#" -gt 0 ]; then
+    echo "Executing custom container command: $@"
+    exec "$@"
+else
+    echo "Starting Apache web server on port 80..."
+    exec apache2-foreground
+fi
 
 

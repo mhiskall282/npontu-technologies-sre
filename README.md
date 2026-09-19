@@ -502,11 +502,26 @@ Automated GitHub Actions pipelines ensure continuous code quality and release re
 
 ---
 
+---
+
+## Production Cloud Deployment (Blueprints &amp; IaC)
+
+| Target Platform | Infrastructure Blueprint | Step-by-Step Runbook | Architecture Model |
+|---|---|---|---|
+| **Render.com** | [`render.yaml`](render.yaml) | [`docs/deployment/render.md`](docs/deployment/render.md) | Multi-Service Container (Web + Queue Worker + Cron + Managed PostgreSQL) |
+| **Vercel** | [`vercel.json`](vercel.json) | [`docs/deployment/vercel.md`](docs/deployment/vercel.md) | Serverless Functions (`vercel-php`) + Edge Asset CDN + Cloud Database |
+
+---
+
 ## Documentation Index
 
 | Document | Contents |
 |---|---|
 | [README.md](README.md) | Project overview, web & mobile setup, architecture, and verification commands |
+| [docs/deployment/render.md](docs/deployment/render.md) | Comprehensive 1-click blueprint guide for deploying Web, Workers, Cron, and PostgreSQL on Render |
+| [docs/deployment/vercel.md](docs/deployment/vercel.md) | Serverless PHP architecture guide, ephemeral storage bridge, and deployment guide for Vercel |
+| [docs/architecture/saas-control-plane-architecture.md](docs/architecture/saas-control-plane-architecture.md) | Enterprise SaaS control plane, tenant isolation, impersonation protocol, and Mermaid diagrams |
+| [docs/admin/platform-governance.md](docs/admin/platform-governance.md) | Control plane administrative runbook, emergency maintenance lockout, and operational protocols |
 | [docs/mobile-expansion-audit.md](docs/mobile-expansion-audit.md) | Comprehensive initial architecture audit, database schemas, roles, and API gap analysis |
 | [docs/mobile-api.md](docs/mobile-api.md) | Exhaustive REST API v1 developer reference with request/response envelopes |
 | [docs/api/openapi.yaml](docs/api/openapi.yaml) | Complete OpenAPI 3.0 / Swagger specification covering all 33 endpoints |
