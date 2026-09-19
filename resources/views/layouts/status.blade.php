@@ -23,7 +23,7 @@
 <body class="min-h-full bg-[#F4F7F5] dark:bg-[#07100B] font-sans antialiased text-gray-900 dark:text-gray-100 flex flex-col selection:bg-[#F5C518] selection:text-gray-900">
 
     {{-- ── Standalone Status Navigation Bar (No App Sidebar, No Breadcrumbs) ───── --}}
-    <header class="sticky top-0 z-50 bg-[#0A140E]/95 backdrop-blur-md border-b border-[#14261B] text-white shadow-md">
+    <header class="sticky top-0 z-50 bg-[#0A140E] backdrop-blur-md border-b border-[#14261B] text-white shadow-md" style="background-color: #0A140E; border-bottom: 1px solid #14261B;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
             
             {{-- Brand Logo & Status Identification --}}
