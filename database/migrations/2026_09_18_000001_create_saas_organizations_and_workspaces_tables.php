@@ -111,8 +111,8 @@ return new class extends Migration
         // 6. Add workspace_id foreign keys to operational tables
         Schema::table('activities', function (Blueprint $table) {
             $table->foreignId('workspace_id')->nullable()->after('id')->constrained('workspaces')->nullOnDelete();
-            $table->index(['workspace_id', 'status']);
-            $table->index(['workspace_id', 'scheduled_date']);
+            $table->index('workspace_id');
+            $table->index(['workspace_id', 'is_active']);
         });
 
         Schema::table('activity_logs', function (Blueprint $table) {
@@ -122,7 +122,7 @@ return new class extends Migration
 
         Schema::table('shift_handovers', function (Blueprint $table) {
             $table->foreignId('workspace_id')->nullable()->after('id')->constrained('workspaces')->nullOnDelete();
-            $table->index(['workspace_id', 'shift_date']);
+            $table->index(['workspace_id', 'date']);
         });
 
         Schema::table('conversations', function (Blueprint $table) {
