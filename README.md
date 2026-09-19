@@ -4,13 +4,95 @@
 
 🌐 **Production Deployment**: [https://npontu-support-tracker.onrender.com](https://npontu-support-tracker.onrender.com)
 
-[![Backend Tests](https://img.shields.io/badge/backend%20tests-139%20passing%20(655%20assertions)-brightgreen)](tests/)
+[![Backend Tests](https://img.shields.io/badge/backend%20tests-173%20passing%20(825%20assertions)-brightgreen)](tests/)
 [![Mobile Tests](https://img.shields.io/badge/mobile%20tests-25%20passing-brightgreen)](npontu_sre_mobile/test/)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue)](https://php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
 [![Flutter](https://img.shields.io/badge/Flutter-3.24+-02569B?logo=flutter)](npontu_sre_mobile/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.x-cyan)](https://tailwindcss.com)
 [![MVP Ready](https://img.shields.io/badge/MVP%20Pilot-Ready%20%26%20Verified-brightgreen)](docs/mvp/README.md)
+
+---
+
+## 🌐 The Two Applications: Web Cockpit & Mobile Companion
+
+Opsora SRE operates as a unified dual-application ecosystem designed to eliminate operational blind spots across desktop mission control and on-call field operations.
+
+```mermaid
+graph TB
+    subgraph Clients ["Two Unified Client Applications"]
+        WebApp["🖥️ Opsora SRE Web & Control Plane<br/>(Laravel 11/12 LTS + Livewire 3 + Blade + Tailwind v3)"]
+        MobileApp["📱 Opsora SRE Mobile Companion<br/>(Flutter 3.24+ / Dart 3.5+ for Android, iOS, Windows)"]
+    end
+
+    subgraph Gateway ["Unified REST API & Security Gateway"]
+        AuthBridge["Sanctum Bearer Tokens & HMAC Inbound Email Bridge"]
+        TenantContext["ResolveTenantContext Middleware (X-Workspace-Id)"]
+    end
+
+    subgraph CoreEngine ["Opsora SaaS Core Engine"]
+        MultiTenant["Multi-Tenant Isolation (Workspaces & Orgs)"]
+        ShiftBoard["24/7 Shift Checklists & Handshake Engine"]
+        WarRooms["Incident War Rooms & Real-Time Comms"]
+        AuditLedger["Immutable SIEM Audit Trail (Append-Only)"]
+        StatusHub["Multi-Probe Telemetry & Standalone Status Page (/health)"]
+    end
+
+    subgraph DataStorage ["Persistent Data Layer"]
+        MySQL[(PostgreSQL / MySQL 8.0+ InnoDB)]
+        Storage[(S3 / DigitalOcean Spaces / Ephemeral Local)]
+    end
+
+    WebApp --> AuthBridge
+    MobileApp --> AuthBridge
+    AuthBridge --> TenantContext
+    TenantContext --> CoreEngine
+    CoreEngine --> DataStorage
+```
+
+### 1. Opsora SRE Web Cockpit & Platform Control Plane
+*Desktop Mission Control & Multi-Tenant Administration*
+
+- **Path**: Root repository (`app/`, `resources/views/`, `routes/web.php`)
+- **Stack**: Laravel 11/12 LTS, Livewire 3, Blade, Tailwind CSS v3, Chart.js, PostgreSQL / MySQL
+- **Primary Roles**: SRE Leads, Incident Commanders, Operations Managers, and Platform Administrators
+- **Key Modules**:
+  - **Administrative Control Plane**: Self-service organization registration, risk scoring approval queue, emergency maintenance lockout (`EnsurePlatformNotUnderMaintenance`), platform announcements banner, feature flags, and tenant support impersonation mode.
+  - **24/7 Shift Operations Board**: Real-time checklists with inline status toggling (`Done` / `Pending`), mandatory blocker remarks, incident ticket linking (`INC-1042`), and engineer task delegation.
+  - **Two-Way Custody Handover Protocol**: 4-phase custody handshake between outgoing lead and oncoming lead with cryptographic timestamping and email notifications.
+  - **Operational Communications & War Rooms**: Shift channels (`#general-shift`), 1-on-1 direct chat, Base64 PDF/image attachments, `@mention` alerts, and 1-click HMAC SHA256 email reply bridge.
+  - **Standalone System Status Dashboard (`/health`)**: Dedicated zero-sidebar status page providing real-time subsystem telemetry (DB, cache, memory, mail), 24h heartbeat graphs, 7-day latency trends, and raw `{ } JSON API` probes.
+  - **Automated SRE Reports Scheduler**: Automated daily, weekly, and monthly digests with SLA metrics dispatched via `php artisan reports:send-automated`.
+- **Local Run**:
+  ```bash
+  php artisan serve --port=8000
+  npm run dev
+  ```
+  *Access in browser*: `http://localhost:8000`
+
+### 2. Opsora SRE Mobile Companion App
+*On-Call Field Response & Multi-Tenant Pocket Operations*
+
+- **Path**: `npontu_sre_mobile/` (Dedicated Flutter 3.24+ project)
+- **Stack**: Flutter 3.24+ (Dart 3.5+), Riverpod 2.6+, Dio 5.11+, FlutterSecureStorage, GoRouter
+- **Supported Platforms**: Android (Phones & Tablets), iOS (iPhone & iPad), Windows Native Desktop
+- **Primary Roles**: On-call SREs, field engineers, roaming leads, and standby responders
+- **Key Modules**:
+  - **Hardware-Backed KeyStore Security**: Encrypted storage of Sanctum Bearer tokens and active workspace credentials using Android AES-GCM KeyStore and iOS Keychain.
+  - **Multi-Tenant Workspace Switcher**: Switch between personal, corporate, and client workspaces with automatic `X-Workspace-Id` header injection.
+  - **Shift Checklists & Inline Updates**: Instant checklist updates and blocker remark logging from the mobile device.
+  - **Two-Way Shift Handover on Mobile**: Review briefings, sign off custody, and accept oncoming shifts on mobile.
+  - **Real-Time 3-Second Telemetry HUD**: Live stream of database latency, memory footprint, cache roundtrip, and queue health.
+  - **Incident War Rooms on Mobile**: Read and send operational messages, preview PDF attachments, and track unread notification badges.
+  - **Offline Caching & Biometrics**: Local cache for fast zero-latency launch even during network disconnects.
+- **Local Run**:
+  ```bash
+  cd npontu_sre_mobile
+  flutter run -d windows         # Native Windows Desktop (fastest)
+  flutter run -d emulator-5554    # Android Emulator (bridges via 10.0.2.2:8000)
+  flutter run -d chrome           # Chrome Web
+  ```
+- **Pre-Built APK**: Pre-compiled universal release APKs are automatically generated on every commit in GitHub Actions.
 
 ---
 

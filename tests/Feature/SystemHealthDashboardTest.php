@@ -74,15 +74,18 @@ test('health check endpoint renders interactive system health dashboard for brow
     $response->assertSee('JSON API');
 });
 
-test('authenticated operator can view system health dashboard with user layout navigation', function () {
+test('health check endpoint renders as a standalone status page without internal app sidebar navigation', function () {
     $user = User::factory()->create(['name' => 'Kofi SRE Lead', 'role' => 'lead']);
 
     $response = $this->actingAs($user)->get(route('health'));
 
     $response->assertOk();
     $response->assertSee('System Health');
-    $response->assertSee('Kofi SRE Lead');
-    $response->assertSee("Today's Board", false);
+    $response->assertSee('STATUS');
+    $response->assertSee('SRE Cockpit');
+    // Ensure internal app sidebar navigation is not rendered on standalone status page
+    $response->assertDontSee("Today's Board");
+    $response->assertDontSee('Shift Handover Compliance');
 });
 
 test('system health service generates telemetry probes and timeline structures', function () {

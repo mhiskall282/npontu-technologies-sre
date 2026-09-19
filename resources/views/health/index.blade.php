@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.status')
 @section('title', 'System Health & Software Status')
 
 @section('content')

@@ -254,7 +254,52 @@
                 <div class="p-3.5 rounded-xl bg-black/40 border border-white/10">
                     <span class="text-[10px] font-mono text-gray-400 uppercase">Testing</span>
                     <h4 class="text-sm font-bold text-white mt-0.5">Pest 3 Test Suite</h4>
-                    <p class="text-[11px] text-gray-400 mt-1">139 Feature &amp; isolation tests</p>
+                    <p class="text-[11px] text-gray-400 mt-1">173 Feature &amp; isolation tests (825 assertions)</p>
+                </div>
+            </div>
+
+            {{-- Dual-Client Architecture Showcase --}}
+            <div class="rounded-2xl bg-[#0F1E14] border border-emerald-800/40 p-5 sm:p-6 space-y-4 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#F5C518]"></div>
+                        <h3 class="text-base sm:text-lg font-black text-white">Two Unified Applications, One Operational Core</h3>
+                    </div>
+                    <span class="text-xs font-mono text-[#F5C518]">Web Mission Control &bull; Mobile Pocket Operations</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- App 1: Web Cockpit --}}
+                    <div class="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#1B6B3A] text-white">APP 01 &bull; WEB COCKPIT</span>
+                            <span class="text-[11px] font-mono text-emerald-300">Laravel 11/12 + Livewire 3</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white">Opsora SRE Web &amp; Platform Control Plane</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Desktop operations hub featuring multi-tenant SaaS governance, 24/7 daily shift checklists, war rooms, standalone status dashboard (<code class="text-emerald-300">/health</code>), automated email digests, and SIEM immutable audit logs.
+                        </p>
+                        <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-gray-400">
+                            <span>Stack: PHP 8.2+, Blade, Tailwind</span>
+                            <code class="text-[#F5C518]">php artisan serve</code>
+                        </div>
+                    </div>
+
+                    {{-- App 2: Mobile Companion --}}
+                    <div class="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#02569B] text-white">APP 02 &bull; MOBILE COMPANION</span>
+                            <span class="text-[11px] font-mono text-cyan-300">Flutter 3.24+ &bull; Dart 3.5+</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white">Opsora SRE Mobile Companion App</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Pocket operations client for on-call SREs with hardware-backed KeyStore encryption, multi-tenant workspace switcher (<code class="text-emerald-300">X-Workspace-Id</code>), two-way handover sign-offs, offline caching, and 3-second live telemetry HUD.
+                        </p>
+                        <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-gray-400">
+                            <span>Targets: Android, iOS, Windows</span>
+                            <code class="text-cyan-300">flutter run -d windows</code>
+                        </div>
+                    </div>
                 </div>
             </div>
 

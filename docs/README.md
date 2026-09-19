@@ -8,6 +8,19 @@ Welcome to the central, authoritative documentation hub for **Opsora** — the S
 
 ---
 
+## 📱 Dual-Application Platform Architecture
+
+Opsora SRE is engineered around two tightly integrated client applications serving complementary operational needs:
+
+| Application | Technology Stack | Primary Scope | Documentation Guide |
+|---|---|---|---|
+| **Opsora SRE Web Cockpit & Control Plane** | Laravel 11/12 LTS, Livewire 3, Tailwind CSS v3, Blade, PostgreSQL / MySQL | Desktop mission control, multi-tenant administrative governance, 24/7 daily shift checklist, war rooms, standalone status dashboard (`/health`), and automated reports | [`frontend/architecture.md`](frontend/architecture.md) |
+| **Opsora SRE Mobile Companion** | Flutter 3.24+, Dart 3.5+, Riverpod, Dio, Secure KeyStore, GoRouter | On-call field engineering, roving shift supervisors, biometric login, offline caching, instant checklist updates, and 3-second live telemetry | [`mobile/architecture.md`](mobile/architecture.md) |
+
+Both client applications interface through a unified REST API v1 (`/api/v1/*`) secured by Laravel Sanctum Bearer tokens and scoped by the `X-Workspace-Id` tenant isolation header.
+
+---
+
 ## 🗺️ Master Documentation Directory Tree
 
 ```text
